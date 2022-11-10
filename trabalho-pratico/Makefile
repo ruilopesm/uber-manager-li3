@@ -10,7 +10,7 @@ else
 endif
 LIBS := -lm `pkg-config --libs glib-2.0`
 PKG_CONFIG := `pkg-config --cflags glib-2.0`
-INC := -I include/
+INC := -I includes/
 SRC := $(wildcard src/*.c)
 OBJ := $(SRC:src/%.c=build/%.o)
 
@@ -21,7 +21,7 @@ SRC_TEST := $(wildcard tests/*.c)
 OBJ_TEST := $(filter-out build/main.o, $(OBJ)) $(SRC_TEST:tests/%.c=build/%.o)
 
 BUILD_DIR := $(shell mkdir -p build)
-INCLUDE_FILES := $(wildcard include/*.h)
+INCLUDE_FILES := $(wildcard includes/*.h)
 
 .SUFFIXES:
 
