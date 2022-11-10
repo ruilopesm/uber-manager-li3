@@ -19,8 +19,8 @@ const char *gender_to_string(int x);
 
 const char *account_status_to_string(int x);
 
-const char* car_class_to_string(int x);
+const char *car_class_to_string(int x);
 
-const char* pay_method_to_string(int x);
+const char *pay_method_to_string(int x);
 
 #endif
