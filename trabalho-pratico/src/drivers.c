@@ -168,3 +168,10 @@ enum account_status get_driver_account_status(DRIVER driver) {
   enum account_status status = driver->account_status;
   return status;
 }
+
+void free_driver(DRIVER driver) {
+  free(driver->name);
+  free(driver->license_plate);
+  free(driver->city);
+  free(driver);
+}

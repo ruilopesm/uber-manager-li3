@@ -49,4 +49,6 @@ struct date get_driver_account_creation(DRIVER driver);
 
 enum account_status get_driver_account_status(DRIVER driver);
 
+void free_driver(DRIVER driver);
+
 #endif

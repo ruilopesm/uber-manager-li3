@@ -1,8 +1,8 @@
 #include "../lib/greatest.h"
 
+#include "drivers.test.c"
 #include "rides.test.c"
 #include "users.test.c"
-#include "drivers.test.c"
 
 GREATEST_MAIN_DEFS();
 
