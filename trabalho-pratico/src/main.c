@@ -5,9 +5,9 @@
 #include "common.h"
 #include "drivers.h"
 #include "parser.h"
+#include "querier.h"
 #include "rides.h"
 #include "users.h"
-#include "querier.h"
 
 int main(int argc, char **argv) {
   if (argc != 3) {
@@ -25,7 +25,8 @@ int main(int argc, char **argv) {
   FILE *rides_file = fopen(rides_filename, "r");
   FILE *inputs_file = fopen(argv[2], "r");
 
-  if (users_file == NULL || drivers_file == NULL || rides_file == NULL || inputs_file == NULL) {
+  if (users_file == NULL || drivers_file == NULL || rides_file == NULL ||
+      inputs_file == NULL) {
     printf("Error opening files\n");
     return 1;
   }

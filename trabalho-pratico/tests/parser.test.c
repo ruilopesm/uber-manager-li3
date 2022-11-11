@@ -4,7 +4,9 @@
 #include "common.h"
 
 TEST line_parsing(void) {
-  char *line = strdup("000000000416;Duarte Ribeiro;06/12/1943;M;premium;91-CD-15;Gonça City;13/3/2020;active");
+  char *line = strdup(
+      "000000000416;Duarte Ribeiro;06/12/1943;M;premium;91-CD-15;Gonça "
+      "City;13/3/2020;active");
   char **tokens = parse_line(line, MAX_DRIVER_TOKENS);
 
   ASSERT_STR_EQ("000000000416", tokens[0]);
