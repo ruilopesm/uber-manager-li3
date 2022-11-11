@@ -1,5 +1,16 @@
 #include "common.h"
 
+#include <stdlib.h>
+#include <string.h>
+
+char *create_filename(char *folder, const char *string) {
+  char *filename = malloc(sizeof(char) * (strlen(folder) + strlen(string) + 1));
+  strcpy(filename, folder);
+  strcat(filename, string);
+
+  return filename;
+}
+
 const char *gender_to_string(int x) {
   switch ((enum gender)x) {
   case M:

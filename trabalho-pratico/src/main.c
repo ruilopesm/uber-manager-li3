@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common.h"
 #include "drivers.h"
 #include "parser.h"
 #include "rides.h"
@@ -14,20 +15,9 @@ int main(int argc, char **argv) {
   }
 
   char *folder = argv[1];
-  char *users_filename =
-      malloc(sizeof(char) * (strlen(folder) + strlen("/users.csv") + 1));
-  char *drivers_filename =
-      malloc(sizeof(char) * (strlen(folder) + strlen("/drivers.csv") + 1));
-  char *rides_filename =
-      malloc(sizeof(char) * (strlen(folder) + strlen("/rides.csv") + 1));
-
-  strcpy(users_filename, folder);
-  strcpy(drivers_filename, folder);
-  strcpy(rides_filename, folder);
-
-  strcat(users_filename, "/users.csv");
-  strcat(drivers_filename, "/drivers.csv");
-  strcat(rides_filename, "/rides.csv");
+  char *users_filename = create_filename(folder, "/users.csv");
+  char *drivers_filename = create_filename(folder, "/drivers.csv");
+  char *rides_filename = create_filename(folder, "/rides.csv");
 
   FILE *users_file = fopen(users_filename, "r");
   FILE *drivers_file = fopen(drivers_filename, "r");
@@ -45,47 +35,34 @@ int main(int argc, char **argv) {
   GHashTable *rides_hash_table = g_hash_table_new_full(
       g_str_hash, g_str_equal, free, (GDestroyNotify)free_ride);
 
-  char *line = malloc(sizeof(char) * MAX_LINE_LENGTH);
+  parse_file(users_file, MAX_USER_TOKENS, insert_user, users_hash_table);
+  parse_file(drivers_file, MAX_DRIVER_TOKENS, insert_driver,
+             drivers_hash_table);
+  parse_file(rides_file, MAX_RIDE_TOKENS, insert_ride, rides_hash_table);
 
-  while (fgets(line, MAX_LINE_LENGTH, users_file)) {
-    char **tokens = parse_line(line, MAX_USER_TOKENS);
-    insert_user(tokens, users_hash_table);
-
-    free(tokens);
-  }
-
-  while (fgets(line, MAX_LINE_LENGTH, drivers_file)) {
-    char **tokens = parse_line(line, MAX_DRIVER_TOKENS);
-    insert_driver(tokens, drivers_hash_table);
-
-    free(tokens);
-  }
-
-  while (fgets(line, MAX_LINE_LENGTH, rides_file)) {
-    char **tokens = parse_line(line, MAX_RIDE_TOKENS);
-    insert_ride(tokens, rides_hash_table);
-
-    free(tokens);
-  }
-
-  free(line);
-
+  // Testing purposes
   USER user = g_hash_table_lookup(users_hash_table, "JorgMiranda");
 
   if (user != NULL) {
     printf("User: %s\n", get_user_name(user));
+  } else {
+    printf("User not found\n");
   }
 
   DRIVER driver = g_hash_table_lookup(drivers_hash_table, "000000000002");
 
   if (driver != NULL) {
     printf("Driver: %s\n", get_driver_name(driver));
+  } else {
+    printf("Driver not found\n");
   }
 
   RIDE ride = g_hash_table_lookup(rides_hash_table, "000000000001");
 
   if (ride != NULL) {
     printf("Ride: %s\n", get_ride_driver(ride));
+  } else {
+    printf("Ride not found\n");
   }
 
   fclose(users_file);

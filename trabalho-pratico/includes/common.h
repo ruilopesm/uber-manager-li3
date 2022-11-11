@@ -15,6 +15,8 @@ enum account_status { ACTIVE, INACTIVE };
 
 enum car_class { BASIC, GREEN, PREMIUM };
 
+char *create_filename(char *folder, const char *string);
+
 const char *gender_to_string(int x);
 
 const char *account_status_to_string(int x);
