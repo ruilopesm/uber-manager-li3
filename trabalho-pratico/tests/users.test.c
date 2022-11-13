@@ -7,47 +7,131 @@
 #include "../lib/greatest.h"
 #include "common.h"
 
-TEST user_insertion(void) {
-  GHashTable *hash_table =
-      g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+TEST user_username_test(void) {
+  USER user = create_user();
+  char *username = strdup("JorBranco31");
 
-  char **user_params = malloc(sizeof(char *) * MAX_USER_TOKENS);
-  for (int i = 0; i < MAX_USER_TOKENS; i++) {
-    user_params[i] = malloc(sizeof(char) * 1024);
-  }
+  set_user_username(user, username);
 
-  user_params[0] = strdup("LNascimento40");
-  user_params[1] = strdup("Luis Nascimento");
-  user_params[2] = strdup("M");
-  user_params[3] = strdup("07/01/2003");
-  user_params[4] = strdup("09/11/2020");
-  user_params[5] = strdup("cash");
-  user_params[6] = strdup("active");
+  ASSERT_STR_EQ(username, get_user_username(user));
 
-  insert_user(user_params, hash_table);
+  free(username);
 
-  USER user = g_hash_table_lookup(hash_table, "LNascimento40");
-  ASSERT(user != NULL);
+  PASS();
+}
 
-  ASSERT_STR_EQ("LNascimento40", get_user_username(user));
-  ASSERT_STR_EQ("Luis Nascimento", get_user_name(user));
+TEST user_name_test(void) {
+  USER user = create_user();
+  char *name = strdup("Jorge Branco");
+
+  set_user_name(user, name);
+
+  ASSERT_STR_EQ(name, get_user_name(user));
+
+  free(name);
+
+  PASS();
+}
+
+TEST user_gender_test(void) {
+  USER user = create_user();
+  char *gender = strdup("M");
+
+  set_user_gender(user, gender);
+
   ASSERT_ENUM_EQ(M, get_user_gender(user), gender_to_string);
 
-  struct date birth_date = get_user_birth_date(user);
-  ASSERT_EQ(7, birth_date.day);
-  ASSERT_EQ(1, birth_date.month);
-  ASSERT_EQ(2003, birth_date.year);
+  free(gender);
 
-  struct date account_creation = get_user_account_creation(user);
-  ASSERT_EQ(9, account_creation.day);
-  ASSERT_EQ(11, account_creation.month);
-  ASSERT_EQ(2020, account_creation.year);
+  PASS();
+}
+
+TEST user_birth_date_test(void) {
+  USER user = create_user();
+  char *birth_date = strdup("01/01/2002");
+
+  set_user_birth_date(user, birth_date);
+
+  ASSERT(get_user_birth_date(user).day == 1);
+  ASSERT(get_user_birth_date(user).month == 1);
+  ASSERT(get_user_birth_date(user).year == 2002);
+
+  free(birth_date);
+
+  PASS();
+}
+
+TEST user_account_creation_test(void) {
+  USER user = create_user();
+  char *account_creation = strdup("01/01/2020");
+
+  set_user_account_creation(user, account_creation);
+
+  ASSERT(get_user_account_creation(user).day == 1);
+  ASSERT(get_user_account_creation(user).month == 1);
+  ASSERT(get_user_account_creation(user).year == 2020);
+
+  free(account_creation);
+
+  PASS();
+}
+
+TEST user_pay_method_test(void) {
+  USER user = create_user();
+  char *pay_method = strdup("cash");
+
+  set_user_pay_method(user, pay_method);
 
   ASSERT_ENUM_EQ(CASH, get_user_pay_method(user), pay_method_to_string);
+
+  free(pay_method);
+
+  PASS();
+}
+
+TEST user_account_status_test(void) {
+  USER user = create_user();
+  char *account_status = strdup("active");
+
+  set_user_account_status(user, account_status);
+
   ASSERT_ENUM_EQ(ACTIVE, get_user_account_status(user),
                  account_status_to_string);
 
-  g_hash_table_destroy(hash_table);
+  free(account_status);
+
+  PASS();
+}
+
+TEST user_number_of_rides_test(void) {
+  USER user = create_user();
+  int number_of_rides = 10;
+
+  set_user_number_of_rides(user, number_of_rides);
+
+  ASSERT_EQ(number_of_rides, get_user_number_of_rides(user));
+
+  PASS();
+}
+
+TEST user_total_rating_test(void) {
+  USER user = create_user();
+  int total_rating = 10;
+
+  set_user_total_rating(user, total_rating);
+
+  ASSERT_EQ(total_rating, get_user_total_rating(user));
+
+  PASS();
+}
+
+TEST user_total_spent_test(void) {
+  USER user = create_user();
+  double total_spent = 10.0;
+
+  set_user_total_spent(user, total_spent);
+
+  ASSERT_EQ(total_spent, get_user_total_spent(user));
 
   PASS();
 }

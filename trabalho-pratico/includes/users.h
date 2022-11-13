@@ -24,7 +24,7 @@ void set_user_birth_date(USER user, char birth_date_string[]);
 
 void set_user_account_creation(USER user, char account_creation_date[]);
 
-void set_user_payment_method(USER user, char pay_method_string[]);
+void set_user_pay_method(USER user, char pay_method_string[]);
 
 void set_user_account_status(USER user, char account_status_string[]);
 

@@ -7,49 +7,157 @@
 #include "../lib/greatest.h"
 #include "common.h"
 
-TEST driver_insertion(void) {
-  GHashTable *hash_table =
-      g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+TEST driver_id_test(void) {
+  DRIVER driver = create_driver();
+  char *id = strdup("000000000003");
 
-  char **driver_params = malloc(sizeof(char *) * MAX_DRIVER_TOKENS);
-  for (int i = 0; i < MAX_DRIVER_TOKENS; i++) {
-    driver_params[i] = malloc(sizeof(char) * 1024);
-  }
+  set_driver_id(driver, id);
 
-  driver_params[0] = strdup("000000000416");
-  driver_params[1] = strdup("Duarte Ribeiro");
-  driver_params[2] = strdup("06/12/1943");
-  driver_params[3] = strdup("M");
-  driver_params[4] = strdup("premium");
-  driver_params[5] = strdup("91-CD-15");
-  driver_params[6] = strdup("Gonça City");
-  driver_params[7] = strdup("13/3/2020");
-  driver_params[8] = strdup("active");
+  ASSERT_STR_EQ(id, get_driver_id(driver));
 
-  insert_driver(driver_params, hash_table);
+  free(id);
 
-  DRIVER driver = g_hash_table_lookup(hash_table, "000000000416");
-  ASSERT(driver != NULL);
+  PASS();
+}
 
-  ASSERT_STR_EQ("000000000416", get_driver_id(driver));
+TEST driver_name_test(void) {
+  DRIVER driver = create_driver();
+  char *name = strdup("Joel Campos");
 
-  ASSERT_STR_EQ("Duarte Ribeiro", get_driver_name(driver));
-  struct date driver_birth_date = get_driver_birth_date(driver);
-  ASSERT_EQ(6, driver_birth_date.day);
-  ASSERT_EQ(12, driver_birth_date.month);
-  ASSERT_EQ(1943, driver_birth_date.year);
+  set_driver_name(driver, name);
+
+  ASSERT_STR_EQ(name, get_driver_name(driver));
+
+  free(name);
+
+  PASS();
+}
+
+TEST driver_birth_date_test(void) {
+  DRIVER driver = create_driver();
+  char *birth_date = strdup("01/01/2002");
+
+  set_driver_birth_date(driver, birth_date);
+
+  ASSERT_EQ(1, get_driver_birth_date(driver).day);
+  ASSERT_EQ(1, get_driver_birth_date(driver).month);
+  ASSERT_EQ(2002, get_driver_birth_date(driver).year);
+
+  free(birth_date);
+
+  PASS();
+}
+
+TEST driver_gender_test(void) {
+  DRIVER driver = create_driver();
+  char *gender = strdup("M");
+
+  set_driver_gender(driver, gender);
+
   ASSERT_ENUM_EQ(M, get_driver_gender(driver), gender_to_string);
-  ASSERT_ENUM_EQ(PREMIUM, get_driver_car_class(driver), car_class_to_string);
-  ASSERT_STR_EQ("91-CD-15", get_driver_license_plate(driver));
-  ASSERT_STR_EQ("Gonça City", get_driver_city(driver));
-  struct date driver_creation = get_driver_account_creation(driver);
-  ASSERT_EQ(13, driver_creation.day);
-  ASSERT_EQ(3, driver_creation.month);
-  ASSERT_EQ(2020, driver_creation.year);
+
+  free(gender);
+
+  PASS();
+}
+
+TEST driver_car_class_test(void) {
+  DRIVER driver = create_driver();
+  char *car_class = strdup("basic");
+
+  set_driver_car_class(driver, car_class);
+
+  ASSERT_ENUM_EQ(BASIC, get_driver_car_class(driver), car_class_to_string);
+
+  free(car_class);
+
+  PASS();
+}
+
+TEST driver_license_plate_test(void) {
+  DRIVER driver = create_driver();
+  char *license_plate = strdup("AA-00-AA");
+
+  set_driver_license_plate(driver, license_plate);
+
+  ASSERT_STR_EQ(license_plate, get_driver_license_plate(driver));
+
+  free(license_plate);
+
+  PASS();
+}
+
+TEST driver_city_test(void) {
+  DRIVER driver = create_driver();
+  char *city = strdup("Lisboa");
+
+  set_driver_city(driver, city);
+
+  ASSERT_STR_EQ(city, get_driver_city(driver));
+
+  free(city);
+
+  PASS();
+}
+
+TEST driver_account_creation_test(void) {
+  DRIVER driver = create_driver();
+  char *account_creation = strdup("01/01/2002");
+
+  set_driver_account_creation(driver, account_creation);
+
+  ASSERT_EQ(1, get_driver_account_creation(driver).day);
+  ASSERT_EQ(1, get_driver_account_creation(driver).month);
+  ASSERT_EQ(2002, get_driver_account_creation(driver).year);
+
+  free(account_creation);
+
+  PASS();
+}
+
+TEST driver_account_status_test(void) {
+  DRIVER driver = create_driver();
+  char *account_status = strdup("active");
+
+  set_driver_account_status(driver, account_status);
+
   ASSERT_ENUM_EQ(ACTIVE, get_driver_account_status(driver),
                  account_status_to_string);
 
-  g_hash_table_destroy(hash_table);
+  free(account_status);
+
+  PASS();
+}
+
+TEST driver_number_of_rides_test(void) {
+  DRIVER driver = create_driver();
+  int number_of_rides = 10;
+
+  set_driver_number_of_rides(driver, number_of_rides);
+
+  ASSERT_EQ(number_of_rides, get_driver_number_of_rides(driver));
+
+  PASS();
+}
+
+TEST driver_total_rating_test(void) {
+  DRIVER driver = create_driver();
+  double total_rating = 10;
+
+  set_driver_total_rating(driver, total_rating);
+
+  ASSERT_EQ(total_rating, get_driver_total_rating(driver));
+
+  PASS();
+}
+
+TEST driver_total_earned_test(void) {
+  DRIVER driver = create_driver();
+  int total_earned = 10;
+
+  set_driver_total_earned(driver, total_earned);
+
+  ASSERT_EQ(total_earned, get_driver_total_earned(driver));
 
   PASS();
 }

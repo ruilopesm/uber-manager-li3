@@ -37,7 +37,7 @@ void insert_user(char **user_params, CATALOG catalog) {
   set_user_gender(user, user_params[2]);
   set_user_birth_date(user, user_params[3]);
   set_user_account_creation(user, user_params[4]);
-  set_user_payment_method(user, user_params[5]);
+  set_user_pay_method(user, user_params[5]);
   set_user_account_status(user, user_params[6]);
   set_user_number_of_rides(user, 0);
   set_user_total_rating(user, 0.0);
@@ -94,7 +94,7 @@ void set_user_account_creation(USER user, char account_creation_date_string[]) {
   user->account_creation = account_creation;
 }
 
-void set_user_payment_method(USER user, char pay_method_string[]) {
+void set_user_pay_method(USER user, char pay_method_string[]) {
   enum pay_method pay_method;
 
   if (!strcmp(pay_method_string, "cash")) {

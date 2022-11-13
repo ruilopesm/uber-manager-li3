@@ -7,48 +7,126 @@
 #include "../lib/greatest.h"
 #include "common.h"
 
-TEST ride_insertion(void) {
-  GHashTable *hash_table =
-      g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+TEST ride_id_test(void) {
+  RIDE ride = create_ride();
+  char *id = strdup("000000000003");
 
-  char **ride_params = malloc(sizeof(char *) * MAX_RIDE_TOKENS);
-  for (int i = 0; i < MAX_RIDE_TOKENS; i++) {
-    ride_params[i] = malloc(sizeof(char) * 1024);
-  }
+  set_ride_id(ride, id);
 
-  ride_params[0] = strdup("000000000231");
-  ride_params[1] = strdup("21/11/2018");
-  ride_params[2] = strdup("000000009366");
-  ride_params[3] = strdup("EmmCarneiro48");
-  ride_params[4] = strdup("Lisboa");
-  ride_params[5] = strdup("12");
-  ride_params[6] = strdup("5");
-  ride_params[7] = strdup("3");
-  ride_params[8] = strdup("2.2");
-  ride_params[9] = strdup("Very good car");
+  ASSERT_STR_EQ(id, get_ride_id(ride));
 
-  insert_ride(ride_params, hash_table);
+  free(id);
 
-  RIDE ride = g_hash_table_lookup(hash_table, "000000000231");
-  ASSERT(ride != NULL);
+  PASS();
+}
 
-  ASSERT_STR_EQ("000000000231", get_ride_id(ride));
+TEST ride_date_test(void) {
+  RIDE ride = create_ride();
+  char *date = strdup("01/01/2002");
 
-  struct date ride_date = get_ride_date(ride);
-  ASSERT_EQ(21, ride_date.day);
-  ASSERT_EQ(11, ride_date.month);
-  ASSERT_EQ(2018, ride_date.year);
+  set_ride_date(ride, date);
 
-  ASSERT_STR_EQ("000000009366", get_ride_driver(ride));
-  ASSERT_STR_EQ("EmmCarneiro48", get_ride_user(ride));
-  ASSERT_STR_EQ("Lisboa", get_ride_city(ride));
-  ASSERT_EQ(12, get_ride_distance(ride));
-  ASSERT_EQ(5, get_ride_score_user(ride));
-  ASSERT_EQ(3, get_ride_score_driver(ride));
-  ASSERT_EQ(2.2, get_ride_tip(ride));
-  ASSERT_STR_EQ("Very good car", get_ride_comment(ride));
+  ASSERT(get_ride_date(ride).day == 1);
+  ASSERT(get_ride_date(ride).month == 1);
+  ASSERT(get_ride_date(ride).year == 2002);
 
-  g_hash_table_destroy(hash_table);
+  free(date);
+
+  PASS();
+}
+
+TEST ride_driver_test(void) {
+  RIDE ride = create_ride();
+  char *driver = strdup("000000000003");
+
+  set_ride_driver(ride, driver);
+
+  ASSERT_STR_EQ(driver, get_ride_driver(ride));
+
+  free(driver);
+
+  PASS();
+}
+
+TEST ride_user_test(void) {
+  RIDE ride = create_ride();
+  char *user = strdup("000000000003");
+
+  set_ride_user(ride, user);
+
+  ASSERT_STR_EQ(user, get_ride_user(ride));
+
+  free(user);
+
+  PASS();
+}
+
+TEST ride_city_test(void) {
+  RIDE ride = create_ride();
+  char *city = strdup("Lisboa");
+
+  set_ride_city(ride, city);
+
+  ASSERT_STR_EQ(city, get_ride_city(ride));
+
+  free(city);
+
+  PASS();
+}
+
+TEST ride_distance_test(void) {
+  RIDE ride = create_ride();
+  char *distance = strdup("10");
+
+  set_ride_distance(ride, distance);
+
+  ASSERT_EQ(10, get_ride_distance(ride));
+
+  PASS();
+}
+
+TEST ride_score_user_test(void) {
+  RIDE ride = create_ride();
+  char *score_user = strdup("4");
+
+  set_ride_score_user(ride, score_user);
+
+  ASSERT_EQ(4, get_ride_score_user(ride));
+
+  PASS();
+}
+
+TEST ride_score_driver_test(void) {
+  RIDE ride = create_ride();
+  char *score_driver = strdup("4");
+
+  set_ride_score_driver(ride, score_driver);
+
+  ASSERT_EQ(4, get_ride_score_driver(ride));
+
+  PASS();
+}
+
+TEST ride_tip_test(void) {
+  RIDE ride = create_ride();
+  char *tip = strdup("4.2");
+
+  set_ride_tip(ride, tip);
+
+  ASSERT_EQ(4.2, get_ride_tip(ride));
+
+  PASS();
+}
+
+TEST ride_comment_test(void) {
+  RIDE ride = create_ride();
+  char *comment = strdup("Muito bom");
+
+  set_ride_comment(ride, comment);
+
+  ASSERT_STR_EQ(comment, get_ride_comment(ride));
+
+  free(comment);
 
   PASS();
 }
