@@ -3,28 +3,19 @@
 
 #include <stdio.h>
 
-#define MAX_INPUT_TOKENS 2
+#include "catalog.h"
 
-char* querier(char* query);
+#define MAX_INPUT_TOKENS 4
 
-typedef char* (*function_pointer)(char** query_parameters);
+void querier(CATALOG catalog, char *query, int counter);
 
-char* get_profile_info(char** parameters);
+typedef void (*function_pointer)(CATALOG catalog, char **query_parameters,
+                                 int counter);
 
-char* list_best_rating(char** parameters);
+void query1(CATALOG catalog, char **parameters, int counter);
 
-char* list_most_travelled(char** parameters);
+void get_user_profile(CATALOG catalog, char *id, int counter);
 
-char* list_avg_trip_price_city(char** parameters);
-
-char* list_avg_trip_price_time(char** parameters);
-
-char* avg_dist_travelled_city(char** parameters);
-
-char* top_drivers_city(char** parameters);
-
-char* driver_passenger_similar(char** parameters);
-
-char* passenger_tipped_time(char** parameters);
+void get_driver_profile(CATALOG catalog, char *id, int counter);
 
 #endif

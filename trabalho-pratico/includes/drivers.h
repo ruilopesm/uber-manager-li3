@@ -3,6 +3,7 @@
 
 #include <glib.h>
 
+#include "catalog.h"
 #include "common.h"
 
 #define MAX_DRIVER_TOKENS 9
@@ -11,7 +12,7 @@ typedef struct driver *DRIVER;
 
 DRIVER create_driver(void);
 
-void insert_driver(char **driver_params, GHashTable *hash_table);
+void insert_driver(char **driver_params, CATALOG catalog);
 
 void set_driver_id(DRIVER driver, char *id_string);
 
@@ -31,6 +32,18 @@ void set_driver_account_creation(DRIVER driver, char *account_creation_string);
 
 void set_driver_account_status(DRIVER driver, char *account_status_string);
 
+void set_driver_number_of_rides(DRIVER driver, int number_of_rides);
+
+void increment_driver_number_of_rides(DRIVER driver);
+
+void set_driver_total_rating(DRIVER driver, double total_rating);
+
+void increment_driver_total_rating(DRIVER driver, double rating);
+
+void set_driver_total_earned(DRIVER driver, double total_earned);
+
+void increment_driver_total_earned(DRIVER driver, double amount);
+
 char *get_driver_id(DRIVER driver);
 
 char *get_driver_name(DRIVER driver);
@@ -48,6 +61,12 @@ char *get_driver_city(DRIVER driver);
 struct date get_driver_account_creation(DRIVER driver);
 
 enum account_status get_driver_account_status(DRIVER driver);
+
+int get_driver_number_of_rides(DRIVER driver);
+
+double get_driver_total_rating(DRIVER driver);
+
+double get_driver_total_earned(DRIVER driver);
 
 void free_driver(DRIVER driver);
 

@@ -1,6 +1,10 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <stdio.h>
+
+#define MASTER_DATE "09/10/2022"
+
 struct date {
   int day;
   int month;
@@ -24,5 +28,9 @@ const char *account_status_to_string(int x);
 const char *car_class_to_string(int x);
 
 const char *pay_method_to_string(int x);
+
+int calculate_age(struct date birth_date);
+
+int is_number(char *string);
 
 #endif

@@ -58,3 +58,33 @@ const char *car_class_to_string(int x) {
 
   return "NULL";
 }
+
+int calculate_age(struct date birth_date) {
+  int age = 0;
+
+  const char *master_date = MASTER_DATE;
+  int day, month, year;
+  sscanf(master_date, "%d/%d/%d", &day, &month, &year);
+
+  age = year - birth_date.year;
+
+  if (month < birth_date.month) {
+    age--;
+  } else if (month == birth_date.month) {
+    if (day < birth_date.day) {
+      age--;
+    }
+  }
+
+  return age;
+}
+
+int is_number(char *string) {
+  for (unsigned i = 0; i < strlen(string); i++) {
+    if (string[i] < '0' || string[i] > '9') {
+      return 0;
+    }
+  }
+
+  return 1;
+}

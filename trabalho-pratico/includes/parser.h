@@ -4,6 +4,8 @@
 #include <glib.h>
 #include <stdio.h>
 
+#include "catalog.h"
+
 #define MAX_LINE_LENGTH 1024
 
 #define MAX_USER_TOKENS 7
@@ -12,10 +14,10 @@
 
 FILE *open_file(char *filename);
 
-typedef void (*insert_function_pointer)(char **, GHashTable *);
+typedef void (*insert_function_pointer)(char **, CATALOG);
 
 void parse_file(FILE *file, int max_tokens, insert_function_pointer insert,
-                GHashTable *hash_table);
+                CATALOG catalog);
 
 char **parse_line(char *line, int token_count);
 

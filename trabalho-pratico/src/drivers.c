@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "catalog.h"
+
 struct driver {
   char *id;
   char *name;
@@ -15,6 +17,9 @@ struct driver {
   char *city;
   struct date account_creation;
   enum account_status account_status;
+  int number_of_rides;
+  double total_rating;
+  double total_earned;
 };
 
 DRIVER
@@ -28,8 +33,9 @@ create_driver(void) {
   return new_driver;
 }
 
-void insert_driver(char **driver_params, GHashTable *hash_table) {
+void insert_driver(char **driver_params, CATALOG catalog) {
   DRIVER driver = create_driver();
+  GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
 
   set_driver_id(driver, driver_params[0]);
   set_driver_name(driver, driver_params[1]);
@@ -40,8 +46,11 @@ void insert_driver(char **driver_params, GHashTable *hash_table) {
   set_driver_city(driver, driver_params[6]);
   set_driver_account_creation(driver, driver_params[7]);
   set_driver_account_status(driver, driver_params[8]);
+  set_driver_number_of_rides(driver, 0);
+  set_driver_total_rating(driver, 0.0);
+  set_driver_total_earned(driver, 0.0);
 
-  g_hash_table_insert(hash_table, driver->id, driver);
+  g_hash_table_insert(drivers_hash_table, driver->id, driver);
 }
 
 void set_driver_id(DRIVER driver, char *id_string) {
@@ -123,6 +132,30 @@ void set_driver_account_status(DRIVER driver, char *account_status_string) {
   driver->account_status = account_status;
 }
 
+void set_driver_number_of_rides(DRIVER driver, int number_of_rides) {
+  driver->number_of_rides = number_of_rides;
+}
+
+void increment_driver_number_of_rides(DRIVER driver) {
+  driver->number_of_rides++;
+}
+
+void set_driver_total_rating(DRIVER driver, double total_rating) {
+  driver->total_rating = total_rating;
+}
+
+void increment_driver_total_rating(DRIVER driver, double rating) {
+  driver->total_rating += rating;
+}
+
+void set_driver_total_earned(DRIVER driver, double total_earned) {
+  driver->total_earned = total_earned;
+}
+
+void increment_driver_total_earned(DRIVER driver, double amount) {
+  driver->total_earned += amount;
+}
+
 char *get_driver_id(DRIVER driver) {
   char *id = strdup(driver->id);
   return id;
@@ -167,6 +200,23 @@ struct date get_driver_account_creation(DRIVER driver) {
 enum account_status get_driver_account_status(DRIVER driver) {
   enum account_status status = driver->account_status;
   return status;
+}
+
+int get_driver_number_of_rides(DRIVER driver) {
+  int number_of_rides = driver->number_of_rides;
+  return number_of_rides;
+}
+
+double get_driver_total_rating(DRIVER driver) {
+  double total_rating = driver->total_rating;
+
+  return total_rating;
+}
+
+double get_driver_total_earned(DRIVER driver) {
+  double total_earned = driver->total_earned;
+
+  return total_earned;
 }
 
 void free_driver(DRIVER driver) {

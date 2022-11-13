@@ -3,6 +3,7 @@
 
 #include <glib.h>
 
+#include "catalog.h"
 #include "common.h"
 
 #define MAX_RIDE_TOKENS 10
@@ -11,7 +12,7 @@ typedef struct ride *RIDE;
 
 RIDE create_ride();
 
-void insert_ride(char **ride_params, GHashTable *hash_table);
+void insert_ride(char **ride_params, CATALOG catalog);
 
 void set_ride_id(RIDE ride, char *id_string);
 
@@ -52,6 +53,8 @@ int get_ride_score_driver(RIDE ride);
 double get_ride_tip(RIDE ride);
 
 char *get_ride_comment(RIDE ride);
+
+double calculate_ride_price(int distance, enum car_class car_class);
 
 void free_ride(RIDE ride);
 

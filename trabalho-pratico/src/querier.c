@@ -4,71 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-char* get_profile_info(char** parameter) {
-  printf("O codigo esta a funcionar :)");
-  // adicionar codigo
-  free(parameter);
+#include "catalog.h"
+#include "common.h"
+#include "drivers.h"
+#include "users.h"
 
-  return NULL;
-}
-
-char* list_best_rating(char** parameter) {
-  free(parameter);
-  return NULL;
-}
-
-char* list_most_travelled(char** parameter) {
-  // adicionar codigo
-  free(parameter);
-
-  return NULL;
-}
-
-char* list_avg_trip_price_city(char** parameter) {
-  // adicionar codigo
-  free(parameter);
-
-  return NULL;
-}
-
-char* list_avg_trip_price_time(char** parameter) {
-  // adicionar codigo
-  free(parameter);
-
-  return NULL;
-}
-
-char* avg_dist_travelled_city(char** parameter) {
-  // adicionar codigo
-  free(parameter);
-
-  return NULL;
-}
-
-char* top_drivers_city(char** parameter) {
-  // adicionar codigo
-  free(parameter);
-
-  return NULL;
-}
-
-char* driver_passenger_similar(char** parameter) {
-  // adicionar codigo
-  free(parameter);
-
-  return NULL;
-}
-
-char* passenger_tipped_time(char** parameter) {
-  // adicionar codigo
-  free(parameter);
-
-  return NULL;
-}
-
-char* querier(char* line) {
-  char** query_parameter = malloc(sizeof(char*) * 4);
-  char* token = strtok(line, " ");
+void querier(CATALOG catalog, char *line, int counter) {
+  char **query_parameter = malloc(sizeof(char *) * MAX_INPUT_TOKENS);
+  char *token = strtok(line, " ");
 
   int query_number = atoi(token);
   token = strtok(NULL, " ");
@@ -77,18 +20,89 @@ char* querier(char* line) {
   while (token) {
     query_parameter[i] = token;
 
-    printf("token: %s\n", token);
     token = strtok(NULL, " ");
     i++;
   }
 
-  static function_pointer table[] = {
-      get_profile_info,         list_best_rating,
-      list_most_travelled,      list_avg_trip_price_city,
-      list_avg_trip_price_time, avg_dist_travelled_city,
-      top_drivers_city,         driver_passenger_similar,
-      passenger_tipped_time,
-  };
+  function_pointer table[] = {query1};
 
-  return table[query_number - 1](query_parameter);
+  table[query_number - 1](catalog, query_parameter, counter);
+}
+
+void query1(CATALOG catalog, char **parameter, int counter) {
+  // Remove \n from the end of the string
+  char *id = parameter[0];
+  id[strlen(id) - 1] = '\0';
+
+  // Check whether the id is a number or not
+  int flag = is_number(id);
+
+  switch (flag) {
+    case 0:
+      get_user_profile(catalog, id, counter);
+      break;
+    case 1:
+      get_driver_profile(catalog, id, counter);
+  }
+
+  free(parameter);
+}
+
+void get_user_profile(CATALOG catalog, char *id, int counter) {
+  GHashTable *users_hash_table = get_catalog_users(catalog);
+  USER user = g_hash_table_lookup(users_hash_table, id);
+
+  char *name = get_user_name(user);
+  enum gender gender = get_user_gender(user);
+  int number_of_rides = get_user_number_of_rides(user);
+  double average_rating = get_user_total_rating(user) / number_of_rides;
+  double total_spent = get_user_total_spent(user);
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "w");
+
+  if (output_file == NULL) {
+    printf("Error opening/creating the output file\n");
+    return;
+  }
+
+  fprintf(output_file, "%s;%s;%d;%.3f;%d;%.3f\n", name,
+          gender_to_string(gender), calculate_age(get_user_birth_date(user)),
+          average_rating, number_of_rides, total_spent);
+
+  free(name);
+  free(output_filename);
+  fclose(output_file);
+}
+
+void get_driver_profile(CATALOG catalog, char *id, int counter) {
+  GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
+  DRIVER driver = g_hash_table_lookup(drivers_hash_table, id);
+
+  char *name = get_driver_name(driver);
+  enum gender gender = get_driver_gender(driver);
+  int number_of_rides = get_driver_number_of_rides(driver);
+  double average_rating = get_driver_total_rating(driver) / number_of_rides;
+  double total_earned = get_driver_total_earned(driver);
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "w");
+
+  if (output_file == NULL) {
+    printf("Error opening/creating the output file\n");
+    return;
+  }
+
+  fprintf(output_file, "%s;%s;%d;%.3f;%d;%.3f\n", name,
+          gender_to_string(gender),
+          calculate_age(get_driver_birth_date(driver)), average_rating,
+          number_of_rides, total_earned);
+
+  free(name);
+  free(output_filename);
+  fclose(output_file);
 }

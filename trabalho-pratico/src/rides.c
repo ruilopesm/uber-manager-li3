@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "catalog.h"
+#include "drivers.h"
+#include "users.h"
+
 struct ride {
   char *id;
   struct date date;
@@ -28,8 +32,9 @@ RIDE create_ride() {
   return ride;
 }
 
-void insert_ride(char **ride_params, GHashTable *hash_table) {
+void insert_ride(char **ride_params, CATALOG catalog) {
   RIDE ride = create_ride();
+  GHashTable *rides_hash_table = get_catalog_rides(catalog);
 
   set_ride_id(ride, ride_params[0]);
   set_ride_date(ride, ride_params[1]);
@@ -42,7 +47,13 @@ void insert_ride(char **ride_params, GHashTable *hash_table) {
   set_ride_tip(ride, ride_params[8]);
   set_ride_comment(ride, ride_params[9]);
 
-  g_hash_table_insert(hash_table, ride->id, ride);
+  g_hash_table_insert(rides_hash_table, ride->id, ride);
+
+  update_number_of_rides(catalog, ride->user, ride->driver);
+  update_total_rating(catalog, ride->user, ride->driver, ride->score_user,
+                      ride->score_driver);
+  update_ride_prices(catalog, ride->user, ride->driver, ride->distance,
+                     ride->tip);
 }
 
 void set_ride_id(RIDE ride, char *id_string) {
@@ -159,6 +170,24 @@ double get_ride_tip(RIDE ride) {
 char *get_ride_comment(RIDE ride) {
   char *comment_copy = strdup(ride->comment);
   return comment_copy;
+}
+
+double calculate_ride_price(int distance, enum car_class car_class) {
+  double price = 0.0;
+
+  switch (car_class) {
+    case BASIC:
+      price = 3.25 + 0.62 * distance;
+      break;
+    case GREEN:
+      price = 4.00 + 0.79 * distance;
+      break;
+    case PREMIUM:
+      price = 5.20 + 0.94 * distance;
+      break;
+  }
+
+  return price;
 }
 
 void free_ride(RIDE ride) {

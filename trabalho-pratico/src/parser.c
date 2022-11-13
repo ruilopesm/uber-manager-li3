@@ -6,12 +6,15 @@
 #include <string.h>
 
 void parse_file(FILE *file, int max_tokens, insert_function_pointer insert,
-                GHashTable *hash_table) {
+                CATALOG catalog) {
   char *line = malloc(sizeof(char) * MAX_LINE_LENGTH);
+
+  // Skip first line
+  fgets(line, MAX_LINE_LENGTH, file);
 
   while (fgets(line, MAX_LINE_LENGTH, file)) {
     char **tokens = parse_line(line, max_tokens);
-    insert(tokens, hash_table);
+    insert(tokens, catalog);
 
     free(tokens);
   }
