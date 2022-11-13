@@ -34,8 +34,12 @@ $(EXEC): $(OBJ)
 build/%.o: src/%.c
 	@$(CC) $(FLAGS) -c $< ${PKG_CONFIG} $(LIBS) $(INC) -o $@ ; echo "[Linking] $@"
 
+.PHONY: rebuild
+rebuild: clean all
+
 .PHONY: test
-test: $(EXEC_TEST)
+test: clean $(EXEC_TEST)
+	./$(EXEC_TEST)
 
 $(EXEC_TEST): $(OBJ_TEST)
 	@$(CC) $(FLAGS_TEST) $^ ${PKG_CONFIG} $(LIBS) -o $@ ; echo "[Compiling] $@"
