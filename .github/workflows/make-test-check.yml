@@ -1,0 +1,15 @@
+name: make-test
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+   testing-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Test project
+        run: cd trabalho-pratico ; make test ; ./programa-testes -v
