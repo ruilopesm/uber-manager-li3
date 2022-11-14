@@ -64,7 +64,7 @@ void get_user_profile(CATALOG catalog, char *id, int counter) {
   FILE *output_file = fopen(output_filename, "w");
 
   if (output_file == NULL) {
-    printf("Error opening/creating the output file\n");
+    printf("Error creating command%d_output.txt file\n", counter);
     return;
   }
 

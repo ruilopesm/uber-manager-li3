@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 
   if (users_file == NULL || drivers_file == NULL || rides_file == NULL ||
       queries_file == NULL) {
-    printf("Error opening files\n");
+    printf("Error opening input files\n");
     return 1;
   }
 
@@ -38,6 +38,14 @@ int main(int argc, char **argv) {
   parse_file(users_file, MAX_USER_TOKENS, insert_user, catalog);
   parse_file(drivers_file, MAX_DRIVER_TOKENS, insert_driver, catalog);
   parse_file(rides_file, MAX_RIDE_TOKENS, insert_ride, catalog);
+
+  // Create output directory
+  int ret = g_mkdir_with_parents("Resultados", 0777);
+
+  if (ret == -1) {
+    printf("Error creating output directory\n");
+    return 1;
+  }
 
   char *line = malloc(sizeof(char) * MAX_LINE_LENGTH);
   int counter = 1;
