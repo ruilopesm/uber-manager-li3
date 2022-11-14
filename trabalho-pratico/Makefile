@@ -1,12 +1,12 @@
 CC := gcc
 
 EXEC := programa-principal
-FLAGS := -Wall -Wextra -Wwrite-strings -Wno-parentheses -Wpedantic -Warray-bounds -Wno-unused-function
+FLAGS := -Wall -Wextra -Wdouble-promotion -Werror=pedantic -Werror=vla -pedantic-errors -Wfatal-errors -flto
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
-	FLAGS += -g
+	FLAGS += -O0 -g
 else
-	FLAGS += -O3
+	FLAGS += -O3 -march=native -mtune=native
 endif
 LIBS := -lm `pkg-config --libs glib-2.0`
 PKG_CONFIG := `pkg-config --cflags glib-2.0`
@@ -15,7 +15,7 @@ SRC := $(wildcard src/*.c)
 OBJ := $(SRC:src/%.c=build/%.o)
 
 EXEC_TEST := programa-testes
-FLAGS_TEST := $(FLAGS)
+FLAGS_TEST := $(FLAGS) -Wno-unused-function
 INC_TEST := $(INC) -I lib/
 SRC_TEST := $(wildcard tests/*.c)
 OBJ_TEST := $(filter-out build/main.o, $(OBJ)) $(SRC_TEST:tests/%.c=build/%.o)
