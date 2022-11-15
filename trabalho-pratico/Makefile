@@ -52,6 +52,7 @@ clean:
 	@rm -f programa-principal ; echo "[Cleaning] programa-principal"
 	@rm -f programa-testes ; echo "[Cleaning] programa-testes"
 	@rm -rf build/* ; echo "[Cleaning] build/"
+	@rm -f Resultados/* ; echo "[Cleaning] Resultados/"
 
 .PHONY: format
 format:
