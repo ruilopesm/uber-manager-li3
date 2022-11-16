@@ -45,7 +45,13 @@ void insert_driver(char **driver_params, CATALOG catalog) {
   set_driver_license_plate(driver, driver_params[5]);
   set_driver_city(driver, driver_params[6]);
   set_driver_account_creation(driver, driver_params[7]);
-  set_driver_account_status(driver, driver_params[8]);
+
+  // Since account_status is the last token, remove the \n from the end of the
+  // line
+  char *account_status_string = driver_params[8];
+  account_status_string[strlen(account_status_string) - 1] = '\0';
+  set_driver_account_status(driver, account_status_string);
+
   set_driver_number_of_rides(driver, 0);
   set_driver_total_rating(driver, 0.0);
   set_driver_total_earned(driver, 0.0);

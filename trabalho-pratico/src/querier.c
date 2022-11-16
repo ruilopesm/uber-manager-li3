@@ -68,9 +68,13 @@ void get_user_profile(CATALOG catalog, char *id, int counter) {
     return;
   }
 
-  fprintf(output_file, "%s;%s;%d;%.3f;%d;%.3f\n", name,
-          gender_to_string(gender), calculate_age(get_user_birth_date(user)),
-          average_rating, number_of_rides, total_spent);
+  enum account_status account_status = get_user_account_status(user);
+
+  if (account_status == ACTIVE) {
+    fprintf(output_file, "%s;%s;%d;%.3f;%d;%.3f\n", name,
+            gender_to_string(gender), calculate_age(get_user_birth_date(user)),
+            average_rating, number_of_rides, total_spent);
+  }
 
   free(name);
   free(output_filename);
@@ -97,10 +101,14 @@ void get_driver_profile(CATALOG catalog, char *id, int counter) {
     return;
   }
 
-  fprintf(output_file, "%s;%s;%d;%.3f;%d;%.3f\n", name,
-          gender_to_string(gender),
-          calculate_age(get_driver_birth_date(driver)), average_rating,
-          number_of_rides, total_earned);
+  enum account_status account_status = get_driver_account_status(driver);
+
+  if (account_status == ACTIVE) {
+    fprintf(output_file, "%s;%s;%d;%.3f;%d;%.3f\n", name,
+            gender_to_string(gender),
+            calculate_age(get_driver_birth_date(driver)), average_rating,
+            number_of_rides, total_earned);
+  }
 
   free(name);
   free(output_filename);
