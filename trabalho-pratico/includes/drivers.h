@@ -42,7 +42,11 @@ void increment_driver_total_rating(DRIVER driver, double rating);
 
 void set_driver_total_earned(DRIVER driver, double total_earned);
 
+void set_driver_latest_ride(DRIVER driver, const char *latest_ride_string);
+
 void increment_driver_total_earned(DRIVER driver, double amount);
+
+void update_driver_latest_ride(DRIVER driver, struct date ride_date);
 
 char *get_driver_id(DRIVER driver);
 
@@ -66,7 +70,11 @@ int get_driver_number_of_rides(DRIVER driver);
 
 double get_driver_total_rating(DRIVER driver);
 
+double get_driver_average_score(DRIVER driver);
+
 double get_driver_total_earned(DRIVER driver);
+
+struct date get_driver_latest_ride(DRIVER driver);
 
 void free_driver(DRIVER driver);
 

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "catalog.h"
 #include "common.h"
@@ -11,6 +13,9 @@
 #include "users.h"
 
 int main(int argc, char **argv) {
+  double time_spent = 0.0;
+  clock_t begin = clock();
+
   if (argc != 3) {
     printf("Usage: %s <folder> <file>\n", argv[0]);
     return 1;
@@ -24,7 +29,6 @@ int main(int argc, char **argv) {
   FILE *users_file = fopen(users_filename, "r");
   FILE *drivers_file = fopen(drivers_filename, "r");
   FILE *rides_file = fopen(rides_filename, "r");
-
   FILE *queries_file = fopen(argv[2], "r");
 
   if (users_file == NULL || drivers_file == NULL || rides_file == NULL ||
@@ -38,6 +42,8 @@ int main(int argc, char **argv) {
   parse_file(users_file, MAX_USER_TOKENS, insert_user, catalog);
   parse_file(drivers_file, MAX_DRIVER_TOKENS, insert_driver, catalog);
   parse_file(rides_file, MAX_RIDE_TOKENS, insert_ride, catalog);
+
+  catalog_sort_drivers_by_score(catalog);
 
   // Create output directory
   int ret = g_mkdir_with_parents("Resultados", 0777);
@@ -67,5 +73,8 @@ int main(int argc, char **argv) {
 
   free_catalog(catalog);
 
+  clock_t end = clock();
+  time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Elapsed time: %f seconds\n", time_spent);
   return 0;
 }

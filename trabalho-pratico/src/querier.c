@@ -1,5 +1,6 @@
 #include "querier.h"
 
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +25,7 @@ void querier(CATALOG catalog, char *line, int counter) {
     i++;
   }
 
-  function_pointer table[] = {query1};
+  function_pointer table[] = {query1, query2};
 
   table[query_number - 1](catalog, query_parameter, counter);
 }
@@ -46,6 +47,42 @@ void query1(CATALOG catalog, char **parameter, int counter) {
   }
 
   free(parameter);
+}
+
+void query2(CATALOG catalog, char **parameter, int counter) {
+  int n = atoi(parameter[0]);
+
+  GList *drivers_scores = get_catalog_drivers_scores(catalog);
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "w");
+
+  while (n > 0 && drivers_scores) {
+    DRIVER driver = (DRIVER)drivers_scores->data;
+
+    char *id = get_driver_id(driver);
+    char *name = get_driver_name(driver);
+    double total_rating = get_driver_total_rating(driver);
+    int total_rides = get_driver_number_of_rides(driver);
+    double average_rating = total_rating / total_rides;
+    enum account_status account_status = get_driver_account_status(driver);
+
+    if (account_status == ACTIVE) {
+      fprintf(output_file, "%s;%s;%.3f\n", id, name, average_rating);
+      n--;
+    }
+
+    drivers_scores = drivers_scores->next;
+
+    free(id);
+    free(name);
+  }
+
+  free(parameter);
+  free(output_filename);
+  fclose(output_file);
 }
 
 void get_user_profile(CATALOG catalog, char *id, int counter) {

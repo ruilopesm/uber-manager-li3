@@ -54,6 +54,7 @@ void insert_ride(char **ride_params, CATALOG catalog) {
                       ride->score_driver);
   update_ride_prices(catalog, ride->user, ride->driver, ride->distance,
                      ride->tip);
+  update_latest_ride(catalog, ride->driver, ride->date);
 }
 
 void set_ride_id(RIDE ride, char *id_string) {

@@ -31,6 +31,12 @@ const char *pay_method_to_string(int x);
 
 int calculate_age(struct date birth_date);
 
+int is_date_newer(struct date date1, struct date date2);
+
+int is_date_equal(struct date date1, struct date date2);
+
+int is_id_smaller(char *id1, char *id2);
+
 int is_number(char *string);
 
 #endif
