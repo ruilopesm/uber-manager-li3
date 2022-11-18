@@ -18,6 +18,8 @@ struct user {
   int number_of_rides;
   double total_rating;
   double total_spent;
+  int total_distance;
+  struct date most_recent_ride;
 };
 
 USER create_user(void) {
@@ -48,6 +50,8 @@ void insert_user(char **user_params, CATALOG catalog) {
   set_user_number_of_rides(user, 0);
   set_user_total_rating(user, 0.0);
   set_user_total_spent(user, 0.0);
+  set_user_total_distance(user, 0);
+  set_user_most_recent_ride(user, "00/00/0000");
 
   g_hash_table_insert(users_hash_table, user->username, user);
 }
@@ -148,6 +152,27 @@ void increment_user_total_spent(USER user, double price) {
   user->total_spent += price;
 }
 
+void set_user_total_distance(USER user, int total_distance) {
+  user->total_distance = total_distance;
+}
+
+void increment_user_total_distance(USER user, int distance) {
+  user->total_distance += distance;
+}
+
+void set_user_most_recent_ride(USER user, char most_recent_ride_string[]) {
+  struct date most_recent_ride;
+  int day, month, year;
+
+  sscanf(most_recent_ride_string, "%d/%d/%d", &day, &month, &year);
+
+  most_recent_ride.day = day;
+  most_recent_ride.month = month;
+  most_recent_ride.year = year;
+
+  user->most_recent_ride = most_recent_ride;
+}
+
 char *get_user_username(USER user) {
   char *username_copy = strdup(user->username);
 
@@ -206,6 +231,18 @@ double get_user_total_spent(USER user) {
   double total_spent_copy = user->total_spent;
 
   return total_spent_copy;
+}
+
+int get_user_total_distance(USER user) {
+  int total_distance_copy = user->total_distance;
+
+  return total_distance_copy;
+}
+
+struct date get_user_most_recent_ride(USER user) {
+  struct date most_recent_ride_copy = user->most_recent_ride;
+
+  return most_recent_ride_copy;
 }
 
 void free_user(USER user) {

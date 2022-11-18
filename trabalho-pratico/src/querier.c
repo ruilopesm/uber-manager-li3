@@ -25,7 +25,7 @@ void querier(CATALOG catalog, char *line, int counter) {
     i++;
   }
 
-  function_pointer table[] = {query1, query2};
+  function_pointer table[] = {query1, query2, query3};
 
   table[query_number - 1](catalog, query_parameter, counter);
 }
@@ -81,6 +81,42 @@ void query2(CATALOG catalog, char **parameter, int counter) {
   }
 
   free(parameter);
+  free(output_filename);
+  fclose(output_file);
+}
+
+void query3(CATALOG catalog, char **parameter, int counter) {
+  int n;
+  sscanf(parameter[0], "%d", &n);
+
+  int current = 0;
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "a");
+
+  GList *top_users = calculate_top_users_by_total_distance(catalog);
+  GList *iterator = top_users;
+
+  while (iterator != NULL && current < n) {
+    USER user = iterator->data;
+    char *username = get_user_username(user);
+    char *name = get_user_name(user);
+    int total_distance = get_user_total_distance(user);
+    enum account_status account_status = get_user_account_status(user);
+
+    if (account_status == ACTIVE) {
+      fprintf(output_file, "%s;%s;%d\n", username, name, total_distance);
+      current++;
+    }
+
+    iterator = iterator->next;
+
+    free(username);
+    free(name);
+  }
+
   free(output_filename);
   fclose(output_file);
 }

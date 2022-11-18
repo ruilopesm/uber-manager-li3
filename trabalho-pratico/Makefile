@@ -1,7 +1,7 @@
 CC := gcc
 
 EXEC := programa-principal
-FLAGS := -Wall -Wextra -Wdouble-promotion -Werror=pedantic -Werror=vla -pedantic-errors -Wfatal-errors 
+FLAGS := -Wall -Wextra -Wdouble-promotion -Werror=pedantic -Werror=vla -pedantic-errors -Wfatal-errors
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 	FLAGS += -O0 -g

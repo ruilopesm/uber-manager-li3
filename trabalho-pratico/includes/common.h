@@ -39,4 +39,8 @@ int is_id_smaller(char *id1, char *id2);
 
 int is_number(char *string);
 
+int compare_dates(struct date date1, struct date date2);
+
+char *date_to_string(struct date date);
+
 #endif

@@ -72,6 +72,63 @@ void update_ride_prices(CATALOG catalog, char *user_id, char *driver_id,
   increment_user_total_spent(user, ride_price + tip);
 }
 
+void update_total_distance(CATALOG catalog, char *user_id, int distance) {
+  GHashTable *users_hash_table = get_catalog_users(catalog);
+  USER user = g_hash_table_lookup(users_hash_table, user_id);
+  increment_user_total_distance(user, distance);
+}
+
+void update_user_most_recent_ride(CATALOG catalog, char *user_id,
+                                  struct date date) {
+  GHashTable *users_hash_table = get_catalog_users(catalog);
+  USER user = g_hash_table_lookup(users_hash_table, user_id);
+  struct date most_recent_ride = get_user_most_recent_ride(user);
+
+  if (compare_dates(date, most_recent_ride) == 1) {
+    set_user_most_recent_ride(user, date_to_string(date));
+  }
+}
+
+GList *calculate_top_users_by_total_distance(CATALOG catalog) {
+  GHashTable *users_hash_table = get_catalog_users(catalog);
+  GList *users = g_hash_table_get_values(users_hash_table);
+
+  users = g_list_sort(users, (GCompareFunc)compare_users_by_total_distance);
+
+  return users;
+}
+
+gint compare_users_by_total_distance(gconstpointer a, gconstpointer b) {
+  USER user_a = (USER)a;
+  USER user_b = (USER)b;
+
+  gint total_distance_a = (gint)get_user_total_distance(user_a);
+  gint total_distance_b = (gint)get_user_total_distance(user_b);
+
+  if (total_distance_a == total_distance_b) {
+    struct date most_recent_ride_a = get_user_most_recent_ride(user_a);
+    struct date most_recent_ride_b = get_user_most_recent_ride(user_b);
+
+    int result_dates = compare_dates(most_recent_ride_a, most_recent_ride_b);
+
+    if (result_dates == 0) {
+      char *username_a = get_user_username(user_a);
+      char *username_b = get_user_username(user_b);
+
+      int result_usernames = strcmp(username_a, username_b);
+
+      return (gint)result_usernames;
+
+      free(username_a);
+      free(username_b);
+    }
+
+    return (gint)result_dates * (-1);
+  }
+
+  return total_distance_b - total_distance_a;
+}
+
 void update_latest_ride(CATALOG catalog, char *driver_id,
                         struct date ride_date) {
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);

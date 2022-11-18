@@ -79,6 +79,28 @@ int calculate_age(struct date birth_date) {
   return age;
 }
 
+int compare_dates(struct date date1, struct date date2) {
+  if (date1.year > date2.year) {
+    return 1;
+  } else if (date1.year < date2.year) {
+    return -1;
+  }
+
+  if (date1.month > date2.month) {
+    return 1;
+  } else if (date1.month < date2.month) {
+    return -1;
+  }
+
+  if (date1.day > date2.day) {
+    return 1;
+  } else if (date1.day < date2.day) {
+    return -1;
+  }
+
+  return 0;
+}
+
 int is_date_newer(struct date date1, struct date date2) {
   if (date1.year > date2.year) {
     return 1;
@@ -123,4 +145,11 @@ int is_number(char *string) {
   }
 
   return 1;
+}
+
+char *date_to_string(struct date date) {
+  char *string = malloc(sizeof(char) * 11);
+  sprintf(string, "%02d/%02d/%04d", date.day, date.month, date.year);
+
+  return string;
 }
