@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "catalog.h"
 #include "common.h"
@@ -31,6 +33,9 @@ void querier(CATALOG catalog, char *line, int counter) {
 }
 
 void query1(CATALOG catalog, char **parameter, int counter) {
+  double time_spent = 0.0;
+  clock_t begin = clock();
+
   // Remove \n from the end of the string
   char *id = parameter[0];
   id[strlen(id) - 1] = '\0';
@@ -47,9 +52,16 @@ void query1(CATALOG catalog, char **parameter, int counter) {
   }
 
   free(parameter);
+
+  clock_t end = clock();
+  time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Query 1 elapsed time: %f seconds\n", time_spent);
 }
 
 void query2(CATALOG catalog, char **parameter, int counter) {
+  double time_spent = 0.0;
+  clock_t begin = clock();
+
   int n = atoi(parameter[0]);
 
   GList *drivers_scores = get_catalog_drivers_scores(catalog);
@@ -83,9 +95,16 @@ void query2(CATALOG catalog, char **parameter, int counter) {
   free(parameter);
   free(output_filename);
   fclose(output_file);
+
+  clock_t end = clock();
+  time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Query 2 elapsed time: %f seconds\n", time_spent);
 }
 
 void query3(CATALOG catalog, char **parameter, int counter) {
+  double time_spent = 0.0;
+  clock_t begin = clock();
+
   int n;
   sscanf(parameter[0], "%d", &n);
 
@@ -119,6 +138,10 @@ void query3(CATALOG catalog, char **parameter, int counter) {
 
   free(output_filename);
   fclose(output_file);
+
+  clock_t end = clock();
+  time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Query 3 elapsed time: %f seconds\n", time_spent);
 }
 
 void get_user_profile(CATALOG catalog, char *id, int counter) {
