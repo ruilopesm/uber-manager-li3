@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "catalog.h"
+#include "stats.h"
 
 struct driver {
   char *id;

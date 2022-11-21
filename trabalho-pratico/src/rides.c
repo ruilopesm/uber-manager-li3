@@ -6,6 +6,7 @@
 
 #include "catalog.h"
 #include "drivers.h"
+#include "stats.h"
 #include "users.h"
 
 struct ride {

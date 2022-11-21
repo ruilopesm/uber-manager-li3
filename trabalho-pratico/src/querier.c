@@ -10,9 +10,10 @@
 #include "catalog.h"
 #include "common.h"
 #include "drivers.h"
+#include "stats.h"
 #include "users.h"
 
-void querier(CATALOG catalog, char *line, int counter) {
+void querier(CATALOG catalog, STATS stats, char *line, int counter) {
   char **query_parameter = malloc(sizeof(char *) * MAX_INPUT_TOKENS);
   char *token = strtok(line, " ");
 
@@ -27,9 +28,7 @@ void querier(CATALOG catalog, char *line, int counter) {
     i++;
   }
 
-  function_pointer table[] = {query1};
+  function_pointer table[] = {};
 
-  table[query_number - 1](catalog, query_parameter, counter);
+  table[query_number - 1](catalog, stats, query_parameter, counter);
 }
-
-void query1(CATALOG catalog, char **parameters, int counter){}

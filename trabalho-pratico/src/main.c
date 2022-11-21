@@ -10,6 +10,7 @@
 #include "parser.h"
 #include "querier.h"
 #include "rides.h"
+#include "stats.h"
 #include "users.h"
 
 int main(int argc, char **argv) {
@@ -38,6 +39,7 @@ int main(int argc, char **argv) {
   }
 
   CATALOG catalog = create_catalog();
+  STATS stats = create_stats();
 
   parse_file(users_file, MAX_USER_TOKENS, insert_user, catalog);
   parse_file(drivers_file, MAX_DRIVER_TOKENS, insert_driver, catalog);
@@ -55,7 +57,7 @@ int main(int argc, char **argv) {
   int counter = 1;
 
   while (fgets(line, MAX_LINE_LENGTH, queries_file)) {
-    querier(catalog, line, counter);
+    querier(catalog, stats, line, counter);
     counter++;
   }
 

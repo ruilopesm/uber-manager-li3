@@ -4,14 +4,15 @@
 #include <stdio.h>
 
 #include "catalog.h"
+#include "stats.h"
 
 #define MAX_INPUT_TOKENS 4
 
-void querier(CATALOG catalog, char *query, int counter);
+void querier(CATALOG catalog, STATS stats, char *line, int counter);
 
-typedef void (*function_pointer)(CATALOG catalog, char **query_parameters,
-                                 int counter);
+typedef void (*function_pointer)(CATALOG catalog, STATS stats,
+                                 char **query_parameters, int counter);
 
-void query1(CATALOG catalog, char **parameters, int counter);
+void query1(CATALOG catalog, STATS stats, char **parameters, int counter);
 
 #endif
