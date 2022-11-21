@@ -17,10 +17,6 @@ struct driver {
   char *city;
   struct date account_creation;
   enum account_status account_status;
-  int number_of_rides;
-  double total_rating;
-  double total_earned;
-  struct date latest_ride;
 };
 
 DRIVER create_driver(void) {
@@ -52,16 +48,7 @@ void insert_driver(char **driver_params, CATALOG catalog) {
   account_status_string[strlen(account_status_string) - 1] = '\0';
   set_driver_account_status(driver, account_status_string);
 
-  set_driver_number_of_rides(driver, 0);
-  set_driver_total_rating(driver, 0.0);
-  set_driver_total_earned(driver, 0.0);
-
-  const char *date = "00/00/0000";
-  set_driver_latest_ride(driver, date);
-
   g_hash_table_insert(drivers_hash_table, driver->id, driver);
-
-  catalog_insert_driver_score(catalog, driver->id);
 }
 
 void set_driver_id(DRIVER driver, char *id_string) {
@@ -143,52 +130,6 @@ void set_driver_account_status(DRIVER driver, char *account_status_string) {
   driver->account_status = account_status;
 }
 
-void set_driver_number_of_rides(DRIVER driver, int number_of_rides) {
-  driver->number_of_rides = number_of_rides;
-}
-
-void increment_driver_number_of_rides(DRIVER driver) {
-  driver->number_of_rides++;
-}
-
-void set_driver_total_rating(DRIVER driver, double total_rating) {
-  driver->total_rating = total_rating;
-}
-
-void increment_driver_total_rating(DRIVER driver, double rating) {
-  double current_rating = driver->total_rating;
-  driver->total_rating = current_rating + rating;
-}
-
-void set_driver_total_earned(DRIVER driver, double total_earned) {
-  driver->total_earned = total_earned;
-}
-
-void set_driver_latest_ride(DRIVER driver, const char *latest_ride_string) {
-  struct date latest_ride;
-  int day, month, year;
-
-  sscanf(latest_ride_string, "%d/%d/%d", &day, &month, &year);
-
-  latest_ride.day = day;
-  latest_ride.month = month;
-  latest_ride.year = year;
-
-  driver->latest_ride = latest_ride;
-}
-
-void increment_driver_total_earned(DRIVER driver, double amount) {
-  driver->total_earned += amount;
-}
-
-void update_driver_latest_ride(DRIVER driver, struct date ride_date) {
-  struct date latest_ride = driver->latest_ride;
-
-  if (is_date_newer(ride_date, latest_ride)) {
-    driver->latest_ride = ride_date;
-  }
-}
-
 char *get_driver_id(DRIVER driver) {
   char *id = strdup(driver->id);
   return id;
@@ -233,35 +174,6 @@ struct date get_driver_account_creation(DRIVER driver) {
 enum account_status get_driver_account_status(DRIVER driver) {
   enum account_status status = driver->account_status;
   return status;
-}
-
-int get_driver_number_of_rides(DRIVER driver) {
-  int number_of_rides = driver->number_of_rides;
-  return number_of_rides;
-}
-
-double get_driver_total_rating(DRIVER driver) {
-  double total_rating = driver->total_rating;
-
-  return total_rating;
-}
-
-double get_driver_average_score(DRIVER driver) {
-  double total_rating = driver->total_rating;
-  double number_of_rides = driver->number_of_rides;
-
-  return total_rating / number_of_rides;
-}
-
-double get_driver_total_earned(DRIVER driver) {
-  double total_earned = driver->total_earned;
-
-  return total_earned;
-}
-
-struct date get_driver_latest_ride(DRIVER driver) {
-  struct date latest_ride = driver->latest_ride;
-  return latest_ride;
 }
 
 void free_driver(DRIVER driver) {

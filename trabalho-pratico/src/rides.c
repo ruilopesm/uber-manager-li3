@@ -48,17 +48,6 @@ void insert_ride(char **ride_params, CATALOG catalog) {
   set_ride_comment(ride, ride_params[9]);
 
   g_hash_table_insert(rides_hash_table, ride->id, ride);
-
-  update_number_of_rides(catalog, ride->user, ride->driver);
-  update_total_rating(catalog, ride->user, ride->driver, ride->score_user,
-                      ride->score_driver);
-  update_ride_prices(catalog, ride->user, ride->driver, ride->distance,
-                     ride->tip);
-
-  update_total_distance(catalog, ride->user, ride->distance);
-
-  update_user_most_recent_ride(catalog, ride->user, ride->date);
-  update_latest_ride(catalog, ride->driver, ride->date);
 }
 
 void set_ride_id(RIDE ride, char *id_string) {

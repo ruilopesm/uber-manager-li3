@@ -32,22 +32,6 @@ void set_driver_account_creation(DRIVER driver, char *account_creation_string);
 
 void set_driver_account_status(DRIVER driver, char *account_status_string);
 
-void set_driver_number_of_rides(DRIVER driver, int number_of_rides);
-
-void increment_driver_number_of_rides(DRIVER driver);
-
-void set_driver_total_rating(DRIVER driver, double total_rating);
-
-void increment_driver_total_rating(DRIVER driver, double rating);
-
-void set_driver_total_earned(DRIVER driver, double total_earned);
-
-void set_driver_latest_ride(DRIVER driver, const char *latest_ride_string);
-
-void increment_driver_total_earned(DRIVER driver, double amount);
-
-void update_driver_latest_ride(DRIVER driver, struct date ride_date);
-
 char *get_driver_id(DRIVER driver);
 
 char *get_driver_name(DRIVER driver);
@@ -65,16 +49,6 @@ char *get_driver_city(DRIVER driver);
 struct date get_driver_account_creation(DRIVER driver);
 
 enum account_status get_driver_account_status(DRIVER driver);
-
-int get_driver_number_of_rides(DRIVER driver);
-
-double get_driver_total_rating(DRIVER driver);
-
-double get_driver_average_score(DRIVER driver);
-
-double get_driver_total_earned(DRIVER driver);
-
-struct date get_driver_latest_ride(DRIVER driver);
 
 void free_driver(DRIVER driver);
 

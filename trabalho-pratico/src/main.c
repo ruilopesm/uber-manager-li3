@@ -43,8 +43,6 @@ int main(int argc, char **argv) {
   parse_file(drivers_file, MAX_DRIVER_TOKENS, insert_driver, catalog);
   parse_file(rides_file, MAX_RIDE_TOKENS, insert_ride, catalog);
 
-  catalog_sort_drivers_by_score(catalog);
-
   // Create output directory
   int ret = g_mkdir_with_parents("Resultados", 0777);
 

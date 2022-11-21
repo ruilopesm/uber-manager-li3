@@ -28,24 +28,6 @@ void set_user_pay_method(USER user, char pay_method_string[]);
 
 void set_user_account_status(USER user, char account_status_string[]);
 
-void set_user_number_of_rides(USER user, int number_of_rides);
-
-void increment_user_number_of_rides(USER user);
-
-void set_user_total_rating(USER user, double total_rating);
-
-void increment_user_total_rating(USER user, double rating);
-
-void set_user_total_spent(USER user, double total_spent);
-
-void increment_user_total_spent(USER user, double spent);
-
-void set_user_total_distance(USER user, int total_distance);
-
-void increment_user_total_distance(USER user, int distance);
-
-void set_user_most_recent_ride(USER user, char most_recent_ride_string[]);
-
 char *get_user_username(USER user);
 
 char *get_user_name(USER user);
@@ -59,16 +41,6 @@ struct date get_user_account_creation(USER user);
 enum pay_method get_user_pay_method(USER user);
 
 enum account_status get_user_account_status(USER user);
-
-int get_user_number_of_rides(USER user);
-
-double get_user_total_rating(USER user);
-
-double get_user_total_spent(USER user);
-
-int get_user_total_distance(USER user);
-
-struct date get_user_most_recent_ride(USER user);
 
 void free_user(USER user);
 
