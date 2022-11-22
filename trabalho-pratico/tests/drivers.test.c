@@ -128,36 +128,3 @@ TEST driver_account_status_test(void) {
 
   PASS();
 }
-
-TEST driver_number_of_rides_test(void) {
-  DRIVER driver = create_driver();
-  int number_of_rides = 10;
-
-  set_driver_number_of_rides(driver, number_of_rides);
-
-  ASSERT_EQ(number_of_rides, get_driver_number_of_rides(driver));
-
-  PASS();
-}
-
-TEST driver_total_rating_test(void) {
-  DRIVER driver = create_driver();
-  double total_rating = 10;
-
-  set_driver_total_rating(driver, total_rating);
-
-  ASSERT_EQ(total_rating, get_driver_total_rating(driver));
-
-  PASS();
-}
-
-TEST driver_total_earned_test(void) {
-  DRIVER driver = create_driver();
-  int total_earned = 10;
-
-  set_driver_total_earned(driver, total_earned);
-
-  ASSERT_EQ(total_earned, get_driver_total_earned(driver));
-
-  PASS();
-}

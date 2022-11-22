@@ -33,7 +33,7 @@ RIDE create_ride() {
   return ride;
 }
 
-void insert_ride(char **ride_params, CATALOG catalog) {
+void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
   RIDE ride = create_ride();
   GHashTable *rides_hash_table = get_catalog_rides(catalog);
 
@@ -49,6 +49,15 @@ void insert_ride(char **ride_params, CATALOG catalog) {
   set_ride_comment(ride, ride_params[9]);
 
   g_hash_table_insert(rides_hash_table, ride->id, ride);
+
+  GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
+  DRIVER driver = g_hash_table_lookup(drivers_hash_table, ride->driver);
+  enum car_class car_class = get_driver_car_class(driver);
+
+  insert_ride_stats(stats, ride->id, ride->distance, car_class);
+
+  upsert_user_stats(stats, ride->user, ride->id, ride->score_user,
+                    ride->distance, ride->tip, ride->date);
 }
 
 void set_ride_id(RIDE ride, char *id_string) {

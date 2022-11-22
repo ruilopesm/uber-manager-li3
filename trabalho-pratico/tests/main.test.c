@@ -14,9 +14,6 @@ SUITE(users) {
   RUN_TEST(user_account_creation_test);
   RUN_TEST(user_pay_method_test);
   RUN_TEST(user_account_status_test);
-  RUN_TEST(user_number_of_rides_test);
-  RUN_TEST(user_total_rating_test);
-  RUN_TEST(user_total_spent_test);
 }
 
 SUITE(drivers) {
@@ -29,9 +26,6 @@ SUITE(drivers) {
   RUN_TEST(driver_city_test);
   RUN_TEST(driver_account_creation_test);
   RUN_TEST(driver_account_status_test);
-  RUN_TEST(driver_number_of_rides_test);
-  RUN_TEST(driver_total_rating_test);
-  RUN_TEST(driver_total_earned_test);
 }
 
 SUITE(rides) {

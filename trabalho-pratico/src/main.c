@@ -41,9 +41,9 @@ int main(int argc, char **argv) {
   CATALOG catalog = create_catalog();
   STATS stats = create_stats();
 
-  parse_file(users_file, MAX_USER_TOKENS, insert_user, catalog);
-  parse_file(drivers_file, MAX_DRIVER_TOKENS, insert_driver, catalog);
-  parse_file(rides_file, MAX_RIDE_TOKENS, insert_ride, catalog);
+  parse_file(users_file, MAX_USER_TOKENS, insert_user, catalog, stats);
+  parse_file(drivers_file, MAX_DRIVER_TOKENS, insert_driver, catalog, stats);
+  parse_file(rides_file, MAX_RIDE_TOKENS, insert_ride, catalog, stats);
 
   // Create output directory
   int ret = g_mkdir_with_parents("Resultados", 0777);

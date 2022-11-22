@@ -26,7 +26,7 @@ USER create_user(void) {
   return new_user;
 }
 
-void insert_user(char **user_params, CATALOG catalog) {
+void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   GHashTable *users_hash_table = get_catalog_users(catalog);
   USER user = create_user();
 

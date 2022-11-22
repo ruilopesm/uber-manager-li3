@@ -102,36 +102,3 @@ TEST user_account_status_test(void) {
 
   PASS();
 }
-
-TEST user_number_of_rides_test(void) {
-  USER user = create_user();
-  int number_of_rides = 10;
-
-  set_user_number_of_rides(user, number_of_rides);
-
-  ASSERT_EQ(number_of_rides, get_user_number_of_rides(user));
-
-  PASS();
-}
-
-TEST user_total_rating_test(void) {
-  USER user = create_user();
-  int total_rating = 10;
-
-  set_user_total_rating(user, total_rating);
-
-  ASSERT_EQ(total_rating, get_user_total_rating(user));
-
-  PASS();
-}
-
-TEST user_total_spent_test(void) {
-  USER user = create_user();
-  double total_spent = 10.0;
-
-  set_user_total_spent(user, total_spent);
-
-  ASSERT_EQ(total_spent, get_user_total_spent(user));
-
-  PASS();
-}

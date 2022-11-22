@@ -30,7 +30,7 @@ DRIVER create_driver(void) {
   return new_driver;
 }
 
-void insert_driver(char **driver_params, CATALOG catalog) {
+void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
   DRIVER driver = create_driver();
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
 

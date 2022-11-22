@@ -5,6 +5,7 @@
 
 #include "catalog.h"
 #include "common.h"
+#include "stats.h"
 
 #define MAX_DRIVER_TOKENS 9
 
@@ -12,7 +13,7 @@ typedef struct driver *DRIVER;
 
 DRIVER create_driver(void);
 
-void insert_driver(char **driver_params, CATALOG catalog);
+void insert_driver(char **driver_params, CATALOG catalog, STATS stats);
 
 void set_driver_id(DRIVER driver, char *id_string);
 
