@@ -72,6 +72,7 @@ int main(int argc, char **argv) {
   free(rides_filename);
 
   free_catalog(catalog);
+  free_stats(stats);
 
   clock_t end = clock();
   time_spent += (double)(end - begin) / CLOCKS_PER_SEC;

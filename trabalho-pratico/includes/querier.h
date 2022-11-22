@@ -13,6 +13,7 @@ void querier(CATALOG catalog, STATS stats, char *line, int counter);
 typedef void (*function_pointer)(CATALOG catalog, STATS stats,
                                  char **query_parameters, int counter);
 
-void query3();
+void query2(CATALOG catalog, STATS stats, char **parameters, int counter);
+void query3(CATALOG catalog, STATS stats, char **parameters, int counter);
 
 #endif

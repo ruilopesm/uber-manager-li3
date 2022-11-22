@@ -56,6 +56,8 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
 
   insert_ride_stats(stats, ride->id, ride->distance, car_class);
 
+  upsert_driver_stats(stats, ride->driver, ride->id, ride->score_driver,
+                      ride->distance, ride->tip, ride->date);
   upsert_user_stats(stats, ride->user, ride->id, ride->score_user,
                     ride->distance, ride->tip, ride->date);
 }

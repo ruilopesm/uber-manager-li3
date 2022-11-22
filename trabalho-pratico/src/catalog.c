@@ -12,7 +12,6 @@ struct catalog {
   GHashTable *users;
   GHashTable *drivers;
   GHashTable *rides;
-  GList *drivers_score;
 };
 
 CATALOG create_catalog(void) {
@@ -36,7 +35,6 @@ void free_catalog(CATALOG catalog) {
   g_hash_table_destroy(catalog->users);
   g_hash_table_destroy(catalog->drivers);
   g_hash_table_destroy(catalog->rides);
-  g_list_free(catalog->drivers_score);
 
   free(catalog);
 }
