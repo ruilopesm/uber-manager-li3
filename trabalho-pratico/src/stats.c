@@ -30,7 +30,7 @@ struct driver_stats {
   char *driver_id;
   int number_of_rides;
   double total_rating;
-  int total_earned;
+  double total_earned;
   struct date latest_ride;
 };
 
@@ -54,6 +54,10 @@ STATS create_stats(void) {
   return new_stats;
 }
 
+GHashTable *get_users_stats(STATS stats) { return stats->users_stats; }
+
+GHashTable *get_drivers_stats(STATS stats) { return stats->drivers_stats; }
+
 GList *get_top_drivers_by_average_score(STATS stats) {
   return stats->top_drivers_by_average_score;
 }
@@ -63,7 +67,7 @@ GList *get_top_users_by_total_distance(STATS stats) {
 }
 
 USER_STATS create_user_stats(char *username, int number_of_rides,
-                             int total_rating, int total_spent,
+                             double total_rating, double total_spent,
                              int total_distance, struct date latest_ride) {
   USER_STATS user_stats = malloc(sizeof(struct user_stats));
 
@@ -78,7 +82,7 @@ USER_STATS create_user_stats(char *username, int number_of_rides,
 }
 
 DRIVER_STATS create_driver_stats(char *driver_id, int number_of_rides,
-                                 int total_rating, int total_earned,
+                                 double total_rating, double total_earned,
                                  struct date latest_ride) {
   DRIVER_STATS driver_stats = malloc(sizeof(struct driver_stats));
 
@@ -97,6 +101,41 @@ char *get_user_stats_username(USER_STATS user_stats) {
 
 int get_user_stats_total_distance(USER_STATS user_stats) {
   return user_stats->total_distance;
+}
+
+int get_user_stats_number_of_rides(USER_STATS user_stats) {
+  return user_stats->number_of_rides;
+}
+
+double get_user_stats_total_rating(USER_STATS user_stats) {
+  return user_stats->total_rating;
+}
+
+double get_user_stats_total_spent(USER_STATS user_stats) {
+  return user_stats->total_spent;
+}
+
+int get_driver_status_number_of_rides(DRIVER_STATS driver_stats) {
+  return driver_stats->number_of_rides;
+}
+
+double get_driver_status_total_rating(DRIVER_STATS driver_stats) {
+  return driver_stats->total_rating;
+}
+
+double get_driver_status_total_earned(DRIVER_STATS driver_stats) {
+  return driver_stats->total_earned;
+}
+
+char *get_driver_stats_driver_id(DRIVER_STATS driver) {
+  return strdup(driver->driver_id);
+}
+
+double get_driver_stats_average_score(DRIVER_STATS driver_stats) {
+  double total_rating = driver_stats->total_rating;
+  double total_rides = driver_stats->number_of_rides;
+
+  return total_rating / total_rides;
 }
 
 void upsert_user_stats(STATS stats, char *username, char *ride_id,
@@ -191,17 +230,6 @@ gint compare_users_stats_by_total_distance(gconstpointer a, gconstpointer b) {
   }
 
   return user_stats_b->total_distance - user_stats_a->total_distance;
-}
-
-char *get_driver_stats_driver_id(DRIVER_STATS driver) {
-  return strdup(driver->driver_id);
-}
-
-double get_driver_stats_average_score(DRIVER_STATS driver_stats) {
-  double total_rating = driver_stats->total_rating;
-  double total_rides = driver_stats->number_of_rides;
-
-  return total_rating / total_rides;
 }
 
 void calculate_top_drivers_by_average_score(STATS stats) {

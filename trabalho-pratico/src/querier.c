@@ -28,9 +28,33 @@ void querier(CATALOG catalog, STATS stats, char *line, int counter) {
     i++;
   }
 
-  function_pointer table[] = {query2, query3};
+  function_pointer table[] = {query1, query2, query3};
 
   table[query_number - 1](catalog, stats, query_parameter, counter);
+}
+
+void query1(CATALOG catalog, STATS stats, char **parameter, int counter) {
+  double time_spent = 0.0;
+  clock_t begin = clock();
+
+  char *id = parameter[0];
+  id[strlen(id) - 1] = '\0';
+
+  int flag = is_number(id);
+
+  switch (flag) {
+    case 0:
+      get_user_profile(catalog, stats, id, counter);
+      break;
+    case 1:
+      get_driver_profile(catalog, stats, id, counter);
+  }
+
+  free(parameter);
+
+  clock_t end = clock();
+  time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("Query 1 elapsed time: %f seconds\n", time_spent);
 }
 
 void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
@@ -82,7 +106,7 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  printf("Execution time of query 2: %lf seconds\n", time_spent);
+  printf("Query 2 elapsed time: %f seconds\n", time_spent);
 }
 
 void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
@@ -134,5 +158,82 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  printf("Execution time of query 3: %lf seconds\n", time_spent);
+  printf("Query 3 elapsed time: %f seconds\n", time_spent);
+}
+
+void get_user_profile(CATALOG catalog, STATS stats, char *id, int counter) {
+  GHashTable *users_hash_table = get_catalog_users(catalog);
+  USER user = g_hash_table_lookup(users_hash_table, id);
+
+  char *name = get_user_name(user);
+  enum gender gender = get_user_gender(user);
+
+  GHashTable *users_stats_hash_table = get_users_stats(stats);
+  USER_STATS user_stats = g_hash_table_lookup(users_stats_hash_table, id);
+
+  int number_of_rides = get_user_stats_number_of_rides(user_stats);
+  double average_rating =
+      get_user_stats_total_rating(user_stats) / number_of_rides;
+  double total_spent = get_user_stats_total_spent(user_stats);
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "w");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
+  enum account_status account_status = get_user_account_status(user);
+
+  if (account_status == ACTIVE) {
+    fprintf(output_file, "%s;%s;%d;%.3f;%d;%.3f\n", name,
+            gender_to_string(gender), calculate_age(get_user_birth_date(user)),
+            average_rating, number_of_rides, total_spent);
+  }
+
+  free(name);
+  free(output_filename);
+  fclose(output_file);
+}
+
+void get_driver_profile(CATALOG catalog, STATS stats, char *id, int counter) {
+  GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
+  DRIVER driver = g_hash_table_lookup(drivers_hash_table, id);
+
+  char *name = get_driver_name(driver);
+  enum gender gender = get_driver_gender(driver);
+
+  GHashTable *drivers_stats_hash_table = get_drivers_stats(stats);
+  DRIVER_STATS driver_stats = g_hash_table_lookup(drivers_stats_hash_table, id);
+
+  int number_of_rides = get_driver_status_number_of_rides(driver_stats);
+  double average_rating =
+      get_driver_status_total_rating(driver_stats) / number_of_rides;
+  double total_earned = get_driver_status_total_earned(driver_stats);
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "w");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
+  enum account_status account_status = get_driver_account_status(driver);
+
+  if (account_status == ACTIVE) {
+    fprintf(output_file, "%s;%s;%d;%.3f;%d;%.3f\n", name,
+            gender_to_string(gender),
+            calculate_age(get_driver_birth_date(driver)), average_rating,
+            number_of_rides, total_earned);
+  }
+
+  free(name);
+  free(output_filename);
+  fclose(output_file);
 }
