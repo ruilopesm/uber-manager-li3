@@ -54,10 +54,10 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
   DRIVER driver = g_hash_table_lookup(drivers_hash_table, ride->driver);
   enum car_class car_class = get_driver_car_class(driver);
 
-  insert_ride_stats(stats, ride->id, ride->distance, car_class);
+  insert_ride_stats(stats, ride->id, ride->distance, car_class, ride->city);
 
   upsert_driver_stats(stats, ride->driver, ride->id, ride->score_driver,
-                      ride->distance, ride->tip, ride->date);
+                      ride->tip, ride->date);
   upsert_user_stats(stats, ride->user, ride->id, ride->score_user,
                     ride->distance, ride->tip, ride->date);
 }

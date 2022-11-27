@@ -46,13 +46,19 @@ void upsert_user_stats(STATS stats, char *username, char *ride_id,
                        struct date date);
 
 void upsert_driver_stats(STATS stats, char *driver_id, char *ride_id,
-                         double rating, int distance, double tip,
-                         struct date date);
+                         double rating, double tip, struct date date);
 
-RIDE_STATS create_ride_stats(STATS stats, char *ride_id, double price);
+RIDE_STATS create_ride_stats(STATS stats, char *ride_id, double price,
+                             char *city);
 
 void insert_ride_stats(STATS stats, char *ride_id, int distance,
-                       enum car_class car_class);
+                       enum car_class car_class, char *city);
+
+GHashTable *get_rides_stats(STATS stats);
+
+char *get_ride_stats_city(RIDE_STATS ride_stats);
+
+double get_ride_stats_price(RIDE_STATS ride_stats);
 
 int get_driver_status_number_of_rides(DRIVER_STATS driver_stats);
 

@@ -28,13 +28,12 @@ void querier(CATALOG catalog, STATS stats, char *line, int counter) {
     i++;
   }
 
-  function_pointer table[] = {query1, query2, query3};
+  function_pointer table[] = {query1, query2, query3, query4};
 
   table[query_number - 1](catalog, stats, query_parameter, counter);
 }
 
 void query1(CATALOG catalog, STATS stats, char **parameter, int counter) {
-  double time_spent = 0.0;
   clock_t begin = clock();
 
   char *id = parameter[0];
@@ -53,7 +52,7 @@ void query1(CATALOG catalog, STATS stats, char **parameter, int counter) {
   free(parameter);
 
   clock_t end = clock();
-  time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   printf("Query 1 elapsed time: %f seconds\n", time_spent);
 }
 
@@ -67,6 +66,11 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
 
   FILE *output_file = fopen(output_filename, "a");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
 
   GList *top_drivers = get_top_drivers_by_average_score(stats);
 
@@ -120,6 +124,11 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
   FILE *output_file = fopen(output_filename, "a");
 
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
   GList *top_users = get_top_users_by_total_distance(stats);
 
   if (top_users == NULL) {
@@ -159,6 +168,55 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
   printf("Query 3 elapsed time: %f seconds\n", time_spent);
+}
+
+void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
+  clock_t begin = clock();
+
+  char *chosen = parameter[0];
+  chosen[strlen(chosen) - 1] = '\0';
+
+  int total = 0;
+  double total_price = 0.0;
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "a");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
+  GHashTable *rides_stats = get_rides_stats(stats);
+  GList *rides = g_hash_table_get_values(rides_stats);
+  GList *iterator = rides;
+
+  while (iterator != NULL) {
+    RIDE_STATS ride_stats = iterator->data;
+    char *city = get_ride_stats_city(ride_stats);
+
+    if (!strcmp(city, chosen)) {
+      total_price += get_ride_stats_price(ride_stats);
+      total++;
+    }
+
+    iterator = iterator->next;
+
+    free(city);
+  }
+
+  fprintf(output_file, "%.3f\n", total_price / total);
+
+  free(parameter);
+  free(output_filename);
+  fclose(output_file);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+  printf("Query 4 elapsed time: %f seconds\n", time_spent);
 }
 
 void get_user_profile(CATALOG catalog, STATS stats, char *id, int counter) {

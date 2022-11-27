@@ -37,6 +37,7 @@ struct driver_stats {
 struct ride_stats {
   char *ride_id;
   double price;
+  char *city;
 };
 
 STATS create_stats(void) {
@@ -57,6 +58,8 @@ STATS create_stats(void) {
 GHashTable *get_users_stats(STATS stats) { return stats->users_stats; }
 
 GHashTable *get_drivers_stats(STATS stats) { return stats->drivers_stats; }
+
+GHashTable *get_rides_stats(STATS stats) { return stats->rides_stats; }
 
 GList *get_top_drivers_by_average_score(STATS stats) {
   return stats->top_drivers_by_average_score;
@@ -162,8 +165,7 @@ void upsert_user_stats(STATS stats, char *username, char *ride_id,
 }
 
 void upsert_driver_stats(STATS stats, char *driver_id, char *ride_id,
-                         double rating, int distance, double tip,
-                         struct date date) {
+                         double rating, double tip, struct date date) {
   DRIVER_STATS driver_stats =
       g_hash_table_lookup(stats->drivers_stats, driver_id);
   RIDE_STATS ride_stats = g_hash_table_lookup(stats->rides_stats, ride_id);
@@ -184,20 +186,28 @@ void upsert_driver_stats(STATS stats, char *driver_id, char *ride_id,
   }
 }
 
-RIDE_STATS create_ride_stats(STATS stats, char *ride_id, double price) {
+RIDE_STATS create_ride_stats(STATS stats, char *ride_id, double price,
+                             char *city) {
   RIDE_STATS ride_stats = malloc(sizeof(struct ride_stats));
 
   ride_stats->ride_id = strdup(ride_id);
   ride_stats->price = price;
+  ride_stats->city = strdup(city);
 
   return ride_stats;
 }
 
+char *get_ride_stats_city(RIDE_STATS ride_stats) {
+  return strdup(ride_stats->city);
+}
+
+double get_ride_stats_price(RIDE_STATS ride_stats) { return ride_stats->price; }
+
 void insert_ride_stats(STATS stats, char *ride_id, int distance,
-                       enum car_class car_class) {
+                       enum car_class car_class, char *city) {
   double price = calculate_ride_price(distance, car_class);
 
-  RIDE_STATS ride_stats = create_ride_stats(stats, ride_id, price);
+  RIDE_STATS ride_stats = create_ride_stats(stats, ride_id, price, city);
 
   g_hash_table_insert(stats->rides_stats, ride_id, ride_stats);
 }
