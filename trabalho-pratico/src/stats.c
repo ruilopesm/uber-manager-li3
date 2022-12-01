@@ -2,6 +2,7 @@
 
 #include <glib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "catalog.h"
 #include "common.h"
@@ -44,11 +45,11 @@ STATS create_stats(void) {
   STATS new_stats = malloc(sizeof(struct stats));
 
   new_stats->users_stats = g_hash_table_new_full(
-      g_str_hash, g_str_equal, NULL, (GDestroyNotify)free_user_stats);
+      g_str_hash, g_str_equal, free, (GDestroyNotify)free_user_stats);
   new_stats->drivers_stats = g_hash_table_new_full(
-      g_str_hash, g_str_equal, NULL, (GDestroyNotify)free_driver_stats);
+      g_str_hash, g_str_equal, free, (GDestroyNotify)free_driver_stats);
   new_stats->rides_stats = g_hash_table_new_full(
-      g_str_hash, g_str_equal, NULL, (GDestroyNotify)free_ride_stats);
+      g_str_hash, g_str_equal, free, (GDestroyNotify)free_ride_stats);
   new_stats->top_drivers_by_average_score = NULL;
   new_stats->top_users_by_total_distance = NULL;
 
@@ -99,7 +100,7 @@ DRIVER_STATS create_driver_stats(char *driver_id, int number_of_rides,
 }
 
 char *get_user_stats_username(USER_STATS user_stats) {
-  return user_stats->username;
+  return strdup(user_stats->username);
 }
 
 int get_user_stats_total_distance(USER_STATS user_stats) {
@@ -151,7 +152,7 @@ void upsert_user_stats(STATS stats, char *username, char *ride_id,
   if (user_stats == NULL) {
     USER_STATS new_user_stats =
         create_user_stats(username, 1, rating, price + tip, distance, date);
-    g_hash_table_insert(stats->users_stats, username, new_user_stats);
+    g_hash_table_insert(stats->users_stats, strdup(username), new_user_stats);
   } else {
     user_stats->number_of_rides++;
     user_stats->total_rating += rating;
@@ -174,7 +175,8 @@ void upsert_driver_stats(STATS stats, char *driver_id, char *ride_id,
   if (driver_stats == NULL) {
     DRIVER_STATS new_driver_stats =
         create_driver_stats(driver_id, 1, rating, price + tip, date);
-    g_hash_table_insert(stats->drivers_stats, driver_id, new_driver_stats);
+    g_hash_table_insert(stats->drivers_stats, strdup(driver_id),
+                        new_driver_stats);
   } else {
     driver_stats->number_of_rides++;
     driver_stats->total_rating += rating;
@@ -209,7 +211,7 @@ void insert_ride_stats(STATS stats, char *ride_id, int distance,
 
   RIDE_STATS ride_stats = create_ride_stats(stats, ride_id, price, city);
 
-  g_hash_table_insert(stats->rides_stats, ride_id, ride_stats);
+  g_hash_table_insert(stats->rides_stats, strdup(ride_id), ride_stats);
 }
 
 void calculate_top_users_by_total_distance(STATS stats) {
@@ -280,12 +282,25 @@ gint compare_drivers_by_average_score(gconstpointer a, gconstpointer b) {
 void free_stats(STATS stats) {
   g_hash_table_destroy(stats->users_stats);
   g_hash_table_destroy(stats->drivers_stats);
+  g_hash_table_destroy(stats->rides_stats);
+  g_list_free(stats->top_users_by_total_distance);
+  g_list_free(stats->top_drivers_by_average_score);
 
   free(stats);
 }
 
-void free_user_stats(USER_STATS user) { free(user); }
+void free_user_stats(USER_STATS user) {
+  free(user->username);
+  free(user);
+}
 
-void free_driver_stats(DRIVER_STATS driver) { free(driver); }
+void free_driver_stats(DRIVER_STATS driver) {
+  free(driver->driver_id);
+  free(driver);
+}
 
-void free_ride_stats(RIDE_STATS ride_stats) { free(ride_stats); }
+void free_ride_stats(RIDE_STATS ride) {
+  free(ride->ride_id);
+  free(ride->city);
+  free(ride);
+}

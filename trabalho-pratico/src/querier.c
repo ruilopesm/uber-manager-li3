@@ -207,6 +207,8 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
     free(city);
   }
 
+  g_list_free(rides);
+
   fprintf(output_file, "%.3f\n", total_price / total);
 
   free(parameter);

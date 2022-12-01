@@ -84,6 +84,6 @@ void free_user_stats(USER_STATS user);
 
 void free_driver_stats(DRIVER_STATS driver);
 
-void free_ride_stats(RIDE_STATS ride_stats);
+void free_ride_stats(RIDE_STATS ride);
 
 #endif

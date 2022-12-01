@@ -14,7 +14,6 @@
 #include "users.h"
 
 int main(int argc, char **argv) {
-  double time_spent = 0.0;
   clock_t begin = clock();
 
   if (argc != 3) {
@@ -66,6 +65,7 @@ int main(int argc, char **argv) {
   fclose(users_file);
   fclose(drivers_file);
   fclose(rides_file);
+  fclose(queries_file);
 
   free(users_filename);
   free(drivers_filename);
@@ -75,7 +75,8 @@ int main(int argc, char **argv) {
   free_stats(stats);
 
   clock_t end = clock();
-  time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   printf("Elapsed time: %f seconds\n", time_spent);
+
   return 0;
 }
