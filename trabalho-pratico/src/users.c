@@ -16,6 +16,11 @@ struct user {
   struct date account_creation;
   enum pay_method pay_method;
   enum account_status account_status;
+  int number_of_rides;
+  double total_rating;
+  double total_spent;
+  int total_distance;
+  struct date latest_ride;
 };
 
 USER create_user(void) {
@@ -26,7 +31,7 @@ USER create_user(void) {
   return new_user;
 }
 
-void insert_user(char **user_params, CATALOG catalog, STATS stats) {
+void insert_user(char **user_params, CATALOG catalog) {
   GHashTable *users_hash_table = get_catalog_users(catalog);
   USER user = create_user();
 
@@ -42,6 +47,12 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   char *account_status_string = user_params[6];
   account_status_string[strlen(account_status_string) - 1] = '\0';
   set_user_account_status(user, account_status_string);
+
+  set_user_number_of_rides(user, 0);
+  set_user_total_rating(user, 0.0);
+  set_user_total_spent(user, 0.0);
+  set_user_total_distance(user, 0);
+  set_user_latest_ride(user, "00/00/0000");
 
   g_hash_table_insert(users_hash_table, user->username, user);
 }
@@ -120,6 +131,35 @@ void set_user_account_status(USER user, char account_status_string[]) {
   user->account_status = account_status;
 }
 
+void set_user_number_of_rides(USER user, int number_of_rides) {
+  user->number_of_rides = number_of_rides;
+}
+
+void set_user_total_rating(USER user, double total_rating) {
+  user->total_rating = total_rating;
+}
+
+void set_user_total_spent(USER user, double total_spent) {
+  user->total_spent = total_spent;
+}
+
+void set_user_total_distance(USER user, int total_distance) {
+  user->total_distance = total_distance;
+}
+
+void set_user_latest_ride(USER user, char *latest_ride_date_string) {
+  struct date latest_ride;
+  int day, month, year;
+
+  sscanf(latest_ride_date_string, "%d/%d/%d", &day, &month, &year);
+
+  latest_ride.day = day;
+  latest_ride.month = month;
+  latest_ride.year = year;
+
+  user->latest_ride = latest_ride;
+}
+
 char *get_user_username(USER user) {
   char *username_copy = strdup(user->username);
 
@@ -160,6 +200,36 @@ enum account_status get_user_account_status(USER user) {
   enum account_status account_status_copy = user->account_status;
 
   return account_status_copy;
+}
+
+int get_user_number_of_rides(USER user) {
+  int number_of_rides_copy = user->number_of_rides;
+
+  return number_of_rides_copy;
+}
+
+double get_user_total_rating(USER user) {
+  double total_rating_copy = user->total_rating;
+
+  return total_rating_copy;
+}
+
+double get_user_total_spent(USER user) {
+  double total_spent_copy = user->total_spent;
+
+  return total_spent_copy;
+}
+
+int get_user_total_distance(USER user) {
+  int total_distance_copy = user->total_distance;
+
+  return total_distance_copy;
+}
+
+struct date get_user_latest_ride(USER user) {
+  struct date latest_ride_copy = user->latest_ride;
+
+  return latest_ride_copy;
 }
 
 void free_user(USER user) {

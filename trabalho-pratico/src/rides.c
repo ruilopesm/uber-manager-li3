@@ -20,6 +20,7 @@ struct ride {
   int score_driver;
   double tip;
   char *comment;
+  double price;
 };
 
 RIDE create_ride() {
@@ -33,7 +34,7 @@ RIDE create_ride() {
   return ride;
 }
 
-void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
+void insert_ride(char **ride_params, CATALOG catalog) {
   RIDE ride = create_ride();
   GHashTable *rides_hash_table = get_catalog_rides(catalog);
 
@@ -46,20 +47,25 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
   set_ride_score_user(ride, ride_params[6]);
   set_ride_score_driver(ride, ride_params[7]);
   set_ride_tip(ride, ride_params[8]);
-  set_ride_comment(ride, ride_params[9]);
 
-  g_hash_table_insert(rides_hash_table, ride->id, ride);
+  // Since comment is the last token, remove the \n from the end of the line
+  char *comment_string = ride_params[9];
+  comment_string[strlen(comment_string) - 1] = '\0';
+  set_ride_comment(ride, comment_string);
 
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
   DRIVER driver = g_hash_table_lookup(drivers_hash_table, ride->driver);
   enum car_class car_class = get_driver_car_class(driver);
 
-  insert_ride_stats(stats, ride->id, ride->distance, car_class, ride->city);
+  double price = calculate_ride_price(ride->distance, car_class);
+  set_ride_price(ride, price);
 
-  upsert_driver_stats(stats, ride->driver, ride->id, ride->score_driver,
+  g_hash_table_insert(rides_hash_table, ride->id, ride);
+
+  update_user_stats(catalog, ride->user, ride->distance, ride->score_user,
+                    ride->price, ride->tip, ride->date);
+  update_driver_stats(catalog, ride->driver, ride->score_driver, ride->price,
                       ride->tip, ride->date);
-  upsert_user_stats(stats, ride->user, ride->id, ride->score_user,
-                    ride->distance, ride->tip, ride->date);
 }
 
 void set_ride_id(RIDE ride, char *id_string) {
@@ -131,6 +137,8 @@ void set_ride_comment(RIDE ride, char *comment_string) {
   ride->comment = strdup(comment_string);
 }
 
+void set_ride_price(RIDE ride, double price) { ride->price = price; }
+
 char *get_ride_id(RIDE ride) { return strdup(ride->id); }
 
 struct date get_ride_date(RIDE ride) {
@@ -176,6 +184,11 @@ double get_ride_tip(RIDE ride) {
 char *get_ride_comment(RIDE ride) {
   char *comment_copy = strdup(ride->comment);
   return comment_copy;
+}
+
+double get_ride_price(RIDE ride) {
+  double price_copy = ride->price;
+  return price_copy;
 }
 
 double calculate_ride_price(int distance, enum car_class car_class) {

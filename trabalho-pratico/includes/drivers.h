@@ -13,7 +13,7 @@ typedef struct driver *DRIVER;
 
 DRIVER create_driver(void);
 
-void insert_driver(char **driver_params, CATALOG catalog, STATS stats);
+void insert_driver(char **driver_params, CATALOG catalog);
 
 void set_driver_id(DRIVER driver, char *id_string);
 
@@ -33,6 +33,14 @@ void set_driver_account_creation(DRIVER driver, char *account_creation_string);
 
 void set_driver_account_status(DRIVER driver, char *account_status_string);
 
+void set_driver_number_of_rides(DRIVER driver, int number_of_rides);
+
+void set_driver_total_rating(DRIVER driver, double total_rating);
+
+void set_driver_total_earned(DRIVER driver, double total_earned);
+
+void set_driver_latest_ride(DRIVER driver, char *latest_ride_string);
+
 char *get_driver_id(DRIVER driver);
 
 char *get_driver_name(DRIVER driver);
@@ -50,6 +58,14 @@ char *get_driver_city(DRIVER driver);
 struct date get_driver_account_creation(DRIVER driver);
 
 enum account_status get_driver_account_status(DRIVER driver);
+
+int get_driver_number_of_rides(DRIVER driver);
+
+double get_driver_total_rating(DRIVER driver);
+
+double get_driver_total_earned(DRIVER driver);
+
+struct date get_driver_latest_ride(DRIVER driver);
 
 void free_driver(DRIVER driver);
 

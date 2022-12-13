@@ -10,6 +10,7 @@
 #include "catalog.h"
 #include "common.h"
 #include "drivers.h"
+#include "rides.h"
 #include "stats.h"
 #include "users.h"
 
@@ -43,10 +44,10 @@ void query1(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
   switch (flag) {
     case 0:
-      get_user_profile(catalog, stats, id, counter);
+      get_user_profile(catalog, id, counter);
       break;
     case 1:
-      get_driver_profile(catalog, stats, id, counter);
+      get_driver_profile(catalog, id, counter);
   }
 
   free(parameter);
@@ -54,6 +55,9 @@ void query1(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   printf("Query 1 elapsed time: %f seconds\n", time_spent);
+
+  // Since stats is not used in this query, we can ignore the warning
+  (void)stats;
 }
 
 void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
@@ -75,25 +79,25 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
   GList *top_drivers = get_top_drivers_by_average_score(stats);
 
   if (top_drivers == NULL) {
-    calculate_top_drivers_by_average_score(stats);
+    calculate_top_drivers_by_average_score(stats, catalog);
     top_drivers = get_top_drivers_by_average_score(stats);
   }
 
   GList *iterator = top_drivers;
 
   while (iterator != NULL && n > 0) {
-    DRIVER_STATS driver_stats = iterator->data;
-    char *driver_id = get_driver_stats_driver_id(driver_stats);
-
-    GHashTable *drivers = get_catalog_drivers(catalog);
-    DRIVER driver = g_hash_table_lookup(drivers, driver_id);
+    DRIVER driver = iterator->data;
+    char *driver_id = get_driver_id(driver);
     char *name = get_driver_name(driver);
 
-    double average_rating = get_driver_stats_average_score(driver_stats);
+    double total_rating = get_driver_total_rating(driver);
+    int number_of_rides = get_driver_number_of_rides(driver);
+    double average_score = (double)(total_rating / number_of_rides);
+
     enum account_status account_status = get_driver_account_status(driver);
 
     if (account_status == ACTIVE) {
-      fprintf(output_file, "%s;%s;%.3f\n", driver_id, name, average_rating);
+      fprintf(output_file, "%s;%s;%.3f\n", driver_id, name, average_score);
       n--;
     }
 
@@ -132,21 +136,18 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
   GList *top_users = get_top_users_by_total_distance(stats);
 
   if (top_users == NULL) {
-    calculate_top_users_by_total_distance(stats);
+    calculate_top_users_by_total_distance(stats, catalog);
     top_users = get_top_users_by_total_distance(stats);
   }
 
   GList *iterator = top_users;
 
   while (iterator != NULL && n > 0) {
-    USER_STATS user_stats = iterator->data;
-    char *username = get_user_stats_username(user_stats);
-
-    GHashTable *users = get_catalog_users(catalog);
-    USER user = g_hash_table_lookup(users, username);
+    USER user = iterator->data;
+    char *username = get_user_username(user);
     char *name = get_user_name(user);
 
-    int total_distance = get_user_stats_total_distance(user_stats);
+    int total_distance = get_user_total_distance(user);
     enum account_status account_status = get_user_account_status(user);
 
     if (account_status == ACTIVE) {
@@ -189,16 +190,16 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
-  GHashTable *rides_stats = get_rides_stats(stats);
-  GList *rides = g_hash_table_get_values(rides_stats);
+  GHashTable *rides_hash_table = get_catalog_rides(catalog);
+  GList *rides = g_hash_table_get_values(rides_hash_table);
   GList *iterator = rides;
 
   while (iterator != NULL) {
-    RIDE_STATS ride_stats = iterator->data;
-    char *city = get_ride_stats_city(ride_stats);
+    RIDE ride = iterator->data;
+    char *city = get_ride_city(ride);
 
     if (!strcmp(city, chosen)) {
-      total_price += get_ride_stats_price(ride_stats);
+      total_price += get_ride_price(ride);
       total++;
     }
 
@@ -219,22 +220,23 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
   printf("Query 4 elapsed time: %f seconds\n", time_spent);
+
+  // Since catalog is not used in this query, we can safely ignore the warning
+  (void)stats;
 }
 
-void get_user_profile(CATALOG catalog, STATS stats, char *id, int counter) {
+void get_user_profile(CATALOG catalog, char *id, int counter) {
   GHashTable *users_hash_table = get_catalog_users(catalog);
   USER user = g_hash_table_lookup(users_hash_table, id);
 
   char *name = get_user_name(user);
   enum gender gender = get_user_gender(user);
 
-  GHashTable *users_stats_hash_table = get_users_stats(stats);
-  USER_STATS user_stats = g_hash_table_lookup(users_stats_hash_table, id);
-
-  int number_of_rides = get_user_stats_number_of_rides(user_stats);
+  int number_of_rides = get_user_number_of_rides(user);
   double average_rating =
-      get_user_stats_total_rating(user_stats) / number_of_rides;
-  double total_spent = get_user_stats_total_spent(user_stats);
+      (double)(get_user_total_rating(user) / number_of_rides);
+
+  double total_spent = get_user_total_spent(user);
 
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
@@ -259,20 +261,18 @@ void get_user_profile(CATALOG catalog, STATS stats, char *id, int counter) {
   fclose(output_file);
 }
 
-void get_driver_profile(CATALOG catalog, STATS stats, char *id, int counter) {
+void get_driver_profile(CATALOG catalog, char *id, int counter) {
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
   DRIVER driver = g_hash_table_lookup(drivers_hash_table, id);
 
   char *name = get_driver_name(driver);
   enum gender gender = get_driver_gender(driver);
 
-  GHashTable *drivers_stats_hash_table = get_drivers_stats(stats);
-  DRIVER_STATS driver_stats = g_hash_table_lookup(drivers_stats_hash_table, id);
-
-  int number_of_rides = get_driver_status_number_of_rides(driver_stats);
+  int number_of_rides = get_driver_number_of_rides(driver);
   double average_rating =
-      get_driver_status_total_rating(driver_stats) / number_of_rides;
-  double total_earned = get_driver_status_total_earned(driver_stats);
+      (double)(get_driver_total_rating(driver) / number_of_rides);
+
+  double total_earned = get_driver_total_earned(driver);
 
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);

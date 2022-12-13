@@ -21,8 +21,8 @@ void query3(CATALOG catalog, STATS stats, char **parameters, int counter);
 
 void query4(CATALOG catalog, STATS stats, char **parameters, int counter);
 
-void get_user_profile(CATALOG catalog, STATS stats, char *id, int counter);
+void get_user_profile(CATALOG catalog, char *id, int counter);
 
-void get_driver_profile(CATALOG catalog, STATS stats, char *id, int counter);
+void get_driver_profile(CATALOG catalog, char *id, int counter);
 
 #endif

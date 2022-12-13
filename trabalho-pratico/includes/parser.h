@@ -15,10 +15,10 @@
 
 FILE *open_file(char *filename);
 
-typedef void (*insert_function_pointer)(char **, CATALOG, STATS);
+typedef void (*insert_function_pointer)(char **, CATALOG);
 
 void parse_file(FILE *file, int max_tokens, insert_function_pointer insert,
-                CATALOG catalog, STATS stats);
+                CATALOG catalog);
 
 char **parse_line(char *line, int token_count);
 
