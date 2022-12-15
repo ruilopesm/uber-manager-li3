@@ -6,7 +6,7 @@ DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 	FLAGS += -O0 -g
 else
-	FLAGS += -O3 -march=native -mtune=native -flto
+	FLAGS += -O3
 endif
 LIBS := -lm `pkg-config --libs glib-2.0`
 PKG_CONFIG := `pkg-config --cflags glib-2.0`
