@@ -29,7 +29,8 @@ void querier(CATALOG catalog, STATS stats, char *line, int counter) {
     i++;
   }
 
-  function_pointer table[] = {query1, query2, query3, query4};
+  function_pointer table[] = {query1, query2, query3, query4, query5,
+                              query6, query7, query8, query9};
 
   table[query_number - 1](catalog, stats, query_parameter, counter);
 }
@@ -225,19 +226,147 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
   (void)stats;
 }
 
+void query5(CATALOG catalog, STATS stats, char **parameter, int counter) {
+  clock_t begin = clock();
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "a");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
+  free(parameter);
+  free(output_filename);
+  fclose(output_file);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+  printf("Query 5 elapsed time: %f seconds\n", time_spent);
+
+  (void)catalog;
+  (void)stats;
+  (void)parameter;
+  (void)counter;
+}
+
+void query6(CATALOG catalog, STATS stats, char **parameter, int counter) {
+  clock_t begin = clock();
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "a");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
+  free(parameter);
+  free(output_filename);
+  fclose(output_file);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+  printf("Query 6 elapsed time: %f seconds\n", time_spent);
+
+  (void)catalog;
+  (void)stats;
+  (void)parameter;
+  (void)counter;
+}
+
+void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
+  clock_t begin = clock();
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "a");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
+  free(parameter);
+  free(output_filename);
+  fclose(output_file);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+  printf("Query 7 elapsed time: %f seconds\n", time_spent);
+
+  (void)catalog;
+  (void)stats;
+  (void)parameter;
+  (void)counter;
+}
+
+void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
+  clock_t begin = clock();
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "a");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
+  free(parameter);
+  free(output_filename);
+  fclose(output_file);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+  printf("Query 8 elapsed time: %f seconds\n", time_spent);
+
+  (void)catalog;
+  (void)stats;
+  (void)parameter;
+  (void)counter;
+}
+
+void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
+  clock_t begin = clock();
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "a");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
+  free(parameter);
+  free(output_filename);
+  fclose(output_file);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+  printf("Query 9 elapsed time: %f seconds\n", time_spent);
+
+  (void)catalog;
+  (void)stats;
+  (void)parameter;
+  (void)counter;
+}
+
 void get_user_profile(CATALOG catalog, char *id, int counter) {
-  GHashTable *users_hash_table = get_catalog_users(catalog);
-  USER user = g_hash_table_lookup(users_hash_table, id);
-
-  char *name = get_user_name(user);
-  enum gender gender = get_user_gender(user);
-
-  int number_of_rides = get_user_number_of_rides(user);
-  double average_rating =
-      (double)(get_user_total_rating(user) / number_of_rides);
-
-  double total_spent = get_user_total_spent(user);
-
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
 
@@ -248,6 +377,24 @@ void get_user_profile(CATALOG catalog, char *id, int counter) {
     return;
   }
 
+  GHashTable *users_hash_table = get_catalog_users(catalog);
+  USER user = g_hash_table_lookup(users_hash_table, id);
+
+  if (user == NULL) {
+    free(output_filename);
+    fclose(output_file);
+    printf("User with id %s does not exist\n", id);
+    return;
+  }
+
+  char *name = get_user_name(user);
+  enum gender gender = get_user_gender(user);
+
+  int number_of_rides = get_user_number_of_rides(user);
+  double average_rating =
+      (double)(get_user_total_rating(user) / number_of_rides);
+
+  double total_spent = get_user_total_spent(user);
   enum account_status account_status = get_user_account_status(user);
 
   if (account_status == ACTIVE) {
@@ -262,8 +409,24 @@ void get_user_profile(CATALOG catalog, char *id, int counter) {
 }
 
 void get_driver_profile(CATALOG catalog, char *id, int counter) {
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+  FILE *output_file = fopen(output_filename, "w");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
   DRIVER driver = g_hash_table_lookup(drivers_hash_table, id);
+
+  if (driver == NULL) {
+    free(output_filename);
+    fclose(output_file);
+    printf("Driver with id %s does not exist\n", id);
+    return;
+  }
 
   char *name = get_driver_name(driver);
   enum gender gender = get_driver_gender(driver);
@@ -273,17 +436,6 @@ void get_driver_profile(CATALOG catalog, char *id, int counter) {
       (double)(get_driver_total_rating(driver) / number_of_rides);
 
   double total_earned = get_driver_total_earned(driver);
-
-  char *output_filename = malloc(sizeof(char) * 256);
-  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
-
-  FILE *output_file = fopen(output_filename, "w");
-
-  if (output_file == NULL) {
-    printf("Error creating command%d_output.txt file\n", counter);
-    return;
-  }
-
   enum account_status account_status = get_driver_account_status(driver);
 
   if (account_status == ACTIVE) {
