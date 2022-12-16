@@ -11,17 +11,17 @@
 struct driver {
   char *id;
   char *name;
-  struct date birth_date;
-  enum gender gender;
-  enum car_class car_class;
   char *license_plate;
   char *city;
-  struct date account_creation;
-  enum account_status account_status;
-  int number_of_rides;
-  double total_rating;
   double total_earned;
+  double total_rating;
+  struct date birth_date;
+  struct date account_creation;
   struct date latest_ride;
+  int number_of_rides;
+  enum car_class car_class : 2;
+  enum gender gender : 1;
+  enum account_status account_status : 1;
 };
 
 DRIVER create_driver(void) {

@@ -11,16 +11,16 @@
 struct user {
   char *username;
   char *name;
-  enum gender gender;
-  struct date birth_date;
-  struct date account_creation;
-  enum pay_method pay_method;
-  enum account_status account_status;
-  int number_of_rides;
   double total_rating;
   double total_spent;
-  int total_distance;
+  struct date birth_date;
+  struct date account_creation;
   struct date latest_ride;
+  int number_of_rides;
+  int total_distance;
+  enum pay_method pay_method : 2;
+  enum gender gender : 1;
+  enum account_status account_status : 1;
 };
 
 USER create_user(void) {

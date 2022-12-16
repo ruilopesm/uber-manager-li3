@@ -11,16 +11,16 @@
 
 struct ride {
   char *id;
-  struct date date;
   char *driver;
   char *user;
   char *city;
+  char *comment;
+  double tip;
+  double price;
+  struct date date;
   int distance;
   int score_user;
   int score_driver;
-  double tip;
-  char *comment;
-  double price;
 };
 
 RIDE create_ride() {
