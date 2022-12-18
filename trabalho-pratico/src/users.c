@@ -31,7 +31,7 @@ USER create_user(void) {
   return new_user;
 }
 
-void insert_user(char **user_params, CATALOG catalog) {
+void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   GHashTable *users_hash_table = get_catalog_users(catalog);
   USER user = create_user();
 
@@ -55,6 +55,7 @@ void insert_user(char **user_params, CATALOG catalog) {
   set_user_latest_ride(user, "00/00/0000");
 
   g_hash_table_insert(users_hash_table, user->username, user);
+  (void)stats;  // To avoid the "unused variable" warning
 }
 
 void set_user_username(USER user, char username_string[]) {

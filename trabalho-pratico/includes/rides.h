@@ -13,7 +13,7 @@ typedef struct ride *RIDE;
 
 RIDE create_ride();
 
-void insert_ride(char **ride_params, CATALOG catalog);
+void insert_ride(char **ride_params, CATALOG catalog, STATS stats);
 
 void set_ride_id(RIDE ride, char *id_string);
 

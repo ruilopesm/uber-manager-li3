@@ -25,6 +25,19 @@ void query5(CATALOG catalog, STATS stats, char **parameters, int counter);
 
 void query6(CATALOG catalog, STATS stats, char **parameters, int counter);
 
+void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
+              int query6_determiner);
+
+void get_starting_date_position(GArray *rides_by_date, int *starting_position,
+                                struct date lower_limit,
+                                struct date upper_limit);
+
+double calculate_avg_price(GArray *rides_by_date, GHashTable *drivers_hash,
+                           int starting_position, struct date upper_limit);
+
+double calculate_avg_distance(GArray *rides_by_date, int starting_position,
+                              struct date upper_limit, char *city);
+
 void query7(CATALOG catalog, STATS stats, char **parameters, int counter);
 
 void query8(CATALOG catalog, STATS stats, char **parameters, int counter);

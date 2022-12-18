@@ -4,6 +4,8 @@
 #include <stdio.h>
 
 #define MASTER_DATE "09/10/2022"
+#define MASTER_DATE_DATE \
+  (struct date) { 9, 10, 2022 }
 
 struct date {
   int day;
@@ -42,5 +44,11 @@ int is_number(char *string);
 int compare_dates(struct date date1, struct date date2);
 
 char *date_to_string(struct date date);
+
+struct date increment_date(struct date date);
+
+int maximum_day(struct date date);
+
+struct date date_string_to_struct(char *date_string);
 
 #endif

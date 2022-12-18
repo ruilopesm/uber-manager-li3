@@ -79,28 +79,6 @@ int calculate_age(struct date birth_date) {
   return age;
 }
 
-int compare_dates(struct date date1, struct date date2) {
-  if (date1.year > date2.year) {
-    return 1;
-  } else if (date1.year < date2.year) {
-    return -1;
-  }
-
-  if (date1.month > date2.month) {
-    return 1;
-  } else if (date1.month < date2.month) {
-    return -1;
-  }
-
-  if (date1.day > date2.day) {
-    return 1;
-  } else if (date1.day < date2.day) {
-    return -1;
-  }
-
-  return 0;
-}
-
 int is_date_newer(struct date date1, struct date date2) {
   if (date1.year > date2.year) {
     return 1;
@@ -152,4 +130,70 @@ char *date_to_string(struct date date) {
   sprintf(string, "%02d/%02d/%04d", date.day, date.month, date.year);
 
   return string;
+}
+
+// If the first date is later, returns a positive number, if it's sooner,
+// returns a negative one, if the dates are the same returns 0
+int compare_dates(struct date date1, struct date date2) {
+  int temp =
+      date1.year - date2.year;  // If temp is positive, date1 is later than
+                                // date2, if it's negative the reverse is true
+                                // and if it's 0 the years are the same
+  // Compare if the year is the same, if so compare months in the same way
+  if (temp)
+    return temp;  // If temp is 0 the years are the same and therefore moves on
+                  // to the next criteria, else returns temp
+  temp = date1.month - date2.month;
+  if (temp) return temp;
+  return date1.day - date2.day;  // If the dates are the same year and month the
+                                 // result is decided by the day differential
+}
+
+// Moves the date to the next day
+struct date increment_date(struct date date) {
+  if (maximum_day(date)) {
+    date.day = 1;
+    if (date.month == 12) {
+      date.year++;
+      date.month = 1;
+    } else
+      date.month++;
+  } else
+    date.day++;
+  return date;
+}
+
+// Returns 1 if the maximum day of that month has been reached, 0 if not
+int maximum_day(struct date date) {
+  return date.day ==
+         31 - (!((date.month % 7) % 2)) + (date.month == 7) -
+             (date.month == 2) -
+             (date.month == 2) *
+                 ((date.year % 4) || (!(date.year % 100) && (date.year % 400)));
+}
+
+struct date date_string_to_struct(char *date_string) {
+  char day[3];
+  day[0] = date_string[0];
+  day[1] = date_string[1];
+  day[2] = '\0';
+
+  char month[3];
+  month[0] = date_string[3];
+  month[1] = date_string[4];
+  month[2] = '\0';
+
+  char year[5];
+  year[0] = date_string[6];
+  year[1] = date_string[7];
+  year[2] = date_string[8];
+  year[3] = date_string[9];
+  year[4] = '\0';
+
+  struct date date;
+  date.day = atoi(day);
+  date.month = atoi(month);
+  date.year = atoi(year);
+
+  return date;
 }

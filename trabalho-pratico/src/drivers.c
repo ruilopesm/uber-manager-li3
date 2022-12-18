@@ -34,7 +34,7 @@ DRIVER create_driver(void) {
   return new_driver;
 }
 
-void insert_driver(char **driver_params, CATALOG catalog) {
+void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
   DRIVER driver = create_driver();
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
 
@@ -59,6 +59,7 @@ void insert_driver(char **driver_params, CATALOG catalog) {
   set_driver_latest_ride(driver, "00/00/0000");
 
   g_hash_table_insert(drivers_hash_table, driver->id, driver);
+  (void)stats;  // To avoid the "unused variable" warning
 }
 
 void set_driver_id(DRIVER driver, char *id_string) {

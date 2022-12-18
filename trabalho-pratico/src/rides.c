@@ -34,7 +34,7 @@ RIDE create_ride() {
   return ride;
 }
 
-void insert_ride(char **ride_params, CATALOG catalog) {
+void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
   RIDE ride = create_ride();
   GHashTable *rides_hash_table = get_catalog_rides(catalog);
 
@@ -61,6 +61,8 @@ void insert_ride(char **ride_params, CATALOG catalog) {
   set_ride_price(ride, price);
 
   g_hash_table_insert(rides_hash_table, ride->id, ride);
+
+  insert_ride_by_date(ride, stats);
 
   update_user_stats(catalog, ride->user, ride->distance, ride->score_user,
                     ride->price, ride->tip, ride->date);
