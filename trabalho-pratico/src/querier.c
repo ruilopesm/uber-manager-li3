@@ -55,7 +55,7 @@ void query1(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-  printf("Query 1 elapsed time: %f seconds\n", time_spent);
+  printf("%d: Query 1 elapsed time: %f seconds\n", counter, time_spent);
 
   // Since stats is not used in this query, we can ignore the warning
   (void)stats;
@@ -115,7 +115,7 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  printf("Query 2 elapsed time: %f seconds\n", time_spent);
+  printf("%d: Query 2 elapsed time: %f seconds\n", counter, time_spent);
 }
 
 void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
@@ -169,7 +169,7 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  printf("Query 3 elapsed time: %f seconds\n", time_spent);
+  printf("%d: Query 3 elapsed time: %f seconds\n", counter, time_spent);
 }
 
 void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
@@ -220,7 +220,7 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  printf("Query 4 elapsed time: %f seconds\n", time_spent);
+  printf("%d: Query 4 elapsed time: %f seconds\n", counter, time_spent);
 
   // Since catalog is not used in this query, we can safely ignore the warning
   (void)stats;
@@ -303,9 +303,9 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
   if (!query6_determiner)
-    printf("Query 5 elapsed time: %f seconds\n", time_spent);
+    printf("%d: Query 5 elapsed time: %f seconds\n", counter, time_spent);
   else
-    printf("Query 6 elapsed time: %f seconds\n", time_spent);
+    printf("%d: Query 6 elapsed time: %f seconds\n", counter, time_spent);
 }
 
 void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
@@ -369,7 +369,7 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  printf("Query 7 elapsed time: %f seconds\n", time_spent);
+  printf("%d: Query 7 elapsed time: %f seconds\n", counter, time_spent);
 }
 
 // Finds the position of the array whose date is closest to the lower limit of
@@ -535,7 +535,7 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  printf("Query 8 elapsed time: %f seconds\n", time_spent);
+  printf("%d: Query 8 elapsed time: %f seconds\n", counter, time_spent);
 
   (void)catalog;
   (void)stats;
@@ -563,7 +563,7 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  printf("Query 9 elapsed time: %f seconds\n", time_spent);
+  printf("%d: Query 9 elapsed time: %f seconds\n", counter, time_spent);
 
   (void)catalog;
   (void)stats;
