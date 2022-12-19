@@ -14,7 +14,6 @@ struct ride {
   char *driver;
   char *user;
   char *city;
-  char *comment;
   double tip;
   double price;
   struct date date;
@@ -29,7 +28,6 @@ RIDE create_ride() {
   ride->driver = NULL;
   ride->user = NULL;
   ride->city = NULL;
-  ride->comment = NULL;
 
   return ride;
 }
@@ -47,11 +45,6 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
   set_ride_score_user(ride, ride_params[6]);
   set_ride_score_driver(ride, ride_params[7]);
   set_ride_tip(ride, ride_params[8]);
-
-  // Since comment is the last token, remove the \n from the end of the line
-  char *comment_string = ride_params[9];
-  comment_string[strlen(comment_string) - 1] = '\0';
-  set_ride_comment(ride, comment_string);
 
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
   DRIVER driver = g_hash_table_lookup(drivers_hash_table, ride->driver);
@@ -79,29 +72,16 @@ void set_ride_id(RIDE ride, char *id_string) {
 }
 
 void set_ride_date(RIDE ride, char *date_string) {
-  char day[3];
-  day[0] = date_string[0];
-  day[1] = date_string[1];
-  day[2] = '\0';
+  struct date ride_date;
+  int day, month, year;
 
-  char month[3];
-  month[0] = date_string[3];
-  month[1] = date_string[4];
-  month[2] = '\0';
+  sscanf(date_string, "%d/%d/%d", &day, &month, &year);
 
-  char year[5];
-  year[0] = date_string[6];
-  year[1] = date_string[7];
-  year[2] = date_string[8];
-  year[3] = date_string[9];
-  year[4] = '\0';
+  ride_date.day = day;
+  ride_date.month = month;
+  ride_date.year = year;
 
-  struct date date;
-  date.day = atoi(day);
-  date.month = atoi(month);
-  date.year = atoi(year);
-
-  ride->date = date;
+  ride->date = ride_date;
 }
 
 void set_ride_driver(RIDE ride, char *driver_string) {
@@ -134,10 +114,6 @@ void set_ride_score_driver(RIDE ride, char *score_driver_string) {
 void set_ride_tip(RIDE ride, char *tip_string) {
   char *ptr;
   ride->tip = strtod(tip_string, &ptr);
-}
-
-void set_ride_comment(RIDE ride, char *comment_string) {
-  ride->comment = strdup(comment_string);
 }
 
 void set_ride_price(RIDE ride, double price) { ride->price = price; }
@@ -184,11 +160,6 @@ double get_ride_tip(RIDE ride) {
   return tip_copy;
 }
 
-char *get_ride_comment(RIDE ride) {
-  char *comment_copy = strdup(ride->comment);
-  return comment_copy;
-}
-
 double get_ride_price(RIDE ride) {
   double price_copy = ride->price;
   return price_copy;
@@ -216,6 +187,5 @@ void free_ride(RIDE ride) {
   free(ride->driver);
   free(ride->user);
   free(ride->city);
-  free(ride->comment);
   free(ride);
 }

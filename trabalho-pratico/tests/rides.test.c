@@ -117,16 +117,3 @@ TEST ride_tip_test(void) {
 
   PASS();
 }
-
-TEST ride_comment_test(void) {
-  RIDE ride = create_ride();
-  char *comment = strdup("Muito bom");
-
-  set_ride_comment(ride, comment);
-
-  ASSERT_STR_EQ(comment, get_ride_comment(ride));
-
-  free(comment);
-
-  PASS();
-}

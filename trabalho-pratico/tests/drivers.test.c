@@ -74,32 +74,6 @@ TEST driver_car_class_test(void) {
   PASS();
 }
 
-TEST driver_license_plate_test(void) {
-  DRIVER driver = create_driver();
-  char *license_plate = strdup("AA-00-AA");
-
-  set_driver_license_plate(driver, license_plate);
-
-  ASSERT_STR_EQ(license_plate, get_driver_license_plate(driver));
-
-  free(license_plate);
-
-  PASS();
-}
-
-TEST driver_city_test(void) {
-  DRIVER driver = create_driver();
-  char *city = strdup("Lisboa");
-
-  set_driver_city(driver, city);
-
-  ASSERT_STR_EQ(city, get_driver_city(driver));
-
-  free(city);
-
-  PASS();
-}
-
 TEST driver_account_creation_test(void) {
   DRIVER driver = create_driver();
   char *account_creation = strdup("01/01/2002");

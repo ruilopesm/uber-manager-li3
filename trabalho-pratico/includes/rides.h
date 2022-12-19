@@ -33,8 +33,6 @@ void set_ride_score_driver(RIDE ride, char *score_driver_string);
 
 void set_ride_tip(RIDE ride, char *tip_string);
 
-void set_ride_comment(RIDE ride, char *comment_string);
-
 void set_ride_price(RIDE ride, double price);
 
 char *get_ride_id(RIDE ride);
@@ -54,8 +52,6 @@ int get_ride_score_user(RIDE ride);
 int get_ride_score_driver(RIDE ride);
 
 double get_ride_tip(RIDE ride);
-
-char *get_ride_comment(RIDE ride);
 
 double get_ride_price(RIDE ride);
 

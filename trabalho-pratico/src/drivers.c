@@ -11,8 +11,6 @@
 struct driver {
   char *id;
   char *name;
-  char *license_plate;
-  char *city;
   double total_earned;
   double total_rating;
   struct date birth_date;
@@ -28,8 +26,6 @@ DRIVER create_driver(void) {
   DRIVER new_driver = malloc(sizeof(struct driver));
   new_driver->id = NULL;
   new_driver->name = NULL;
-  new_driver->license_plate = NULL;
-  new_driver->city = NULL;
 
   return new_driver;
 }
@@ -43,8 +39,6 @@ void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
   set_driver_birth_date(driver, driver_params[2]);
   set_driver_gender(driver, driver_params[3]);
   set_driver_car_class(driver, driver_params[4]);
-  set_driver_license_plate(driver, driver_params[5]);
-  set_driver_city(driver, driver_params[6]);
   set_driver_account_creation(driver, driver_params[7]);
 
   // Since account_status is the last token, remove the \n from the end of the
@@ -108,14 +102,6 @@ void set_driver_car_class(DRIVER driver, char *car_class_string) {
   }
 
   driver->car_class = car_class;
-}
-
-void set_driver_license_plate(DRIVER driver, char *license_plate_string) {
-  driver->license_plate = strdup(license_plate_string);
-}
-
-void set_driver_city(DRIVER driver, char *city_string) {
-  driver->city = strdup(city_string);
 }
 
 void set_driver_account_creation(DRIVER driver, char *account_creation_string) {
@@ -194,16 +180,6 @@ enum car_class get_driver_car_class(DRIVER driver) {
   return car_class;
 }
 
-char *get_driver_license_plate(DRIVER driver) {
-  char *license_plate = strdup(driver->license_plate);
-  return license_plate;
-}
-
-char *get_driver_city(DRIVER driver) {
-  char *city = strdup(driver->city);
-  return city;
-}
-
 struct date get_driver_account_creation(DRIVER driver) {
   struct date account_creation = driver->account_creation;
   return account_creation;
@@ -236,7 +212,6 @@ struct date get_driver_latest_ride(DRIVER driver) {
 
 void free_driver(DRIVER driver) {
   free(driver->name);
-  free(driver->license_plate);
-  free(driver->city);
+  ;
   free(driver);
 }

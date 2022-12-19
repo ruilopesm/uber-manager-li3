@@ -59,17 +59,17 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   (void)stats;  // To avoid the "unused variable" warning
 }
 
-void set_user_username(USER user, char username_string[]) {
+void set_user_username(USER user, char *username_string) {
   char *username = strdup(username_string);
   user->username = username;
 }
 
-void set_user_name(USER user, char name_string[]) {
+void set_user_name(USER user, char *name_string) {
   char *name = strdup(name_string);
   user->name = name;
 }
 
-void set_user_gender(USER user, char gender_string[]) {
+void set_user_gender(USER user, char *gender_string) {
   enum gender gender;
 
   if (!strcmp(gender_string, "M")) {
@@ -81,7 +81,7 @@ void set_user_gender(USER user, char gender_string[]) {
   user->gender = gender;
 }
 
-void set_user_birth_date(USER user, char birth_date_string[]) {
+void set_user_birth_date(USER user, char *birth_date_string) {
   struct date birth_date;
   int day, month, year;
 
@@ -94,7 +94,7 @@ void set_user_birth_date(USER user, char birth_date_string[]) {
   user->birth_date = birth_date;
 }
 
-void set_user_account_creation(USER user, char account_creation_date_string[]) {
+void set_user_account_creation(USER user, char *account_creation_date_string) {
   struct date account_creation;
   int day, month, year;
 
@@ -107,7 +107,7 @@ void set_user_account_creation(USER user, char account_creation_date_string[]) {
   user->account_creation = account_creation;
 }
 
-void set_user_pay_method(USER user, char pay_method_string[]) {
+void set_user_pay_method(USER user, char *pay_method_string) {
   enum pay_method pay_method;
 
   if (!strcmp(pay_method_string, "cash")) {
@@ -121,7 +121,7 @@ void set_user_pay_method(USER user, char pay_method_string[]) {
   user->pay_method = pay_method;
 }
 
-void set_user_account_status(USER user, char account_status_string[]) {
+void set_user_account_status(USER user, char *account_status_string) {
   enum account_status account_status;
 
   if (!strcmp(account_status_string, "active")) {
