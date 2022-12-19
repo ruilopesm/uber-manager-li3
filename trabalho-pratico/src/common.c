@@ -132,6 +132,24 @@ char *date_to_string(struct date date) {
   return string;
 }
 
+// function that return a duplicate version of the string without spaces and
+// '\n' characters
+char *strip(char *string) {
+  char *stripped = malloc(sizeof(char) * (strlen(string) + 1));
+  int j = 0;
+
+  for (unsigned i = 0; i < strlen(string); i++) {
+    if (string[i] != ' ' && string[i] != '\n') {
+      stripped[j] = string[i];
+      j++;
+    }
+  }
+
+  stripped[j] = '\0';
+
+  return stripped;
+}
+
 // If the first date is later, returns a positive number, if it's sooner,
 // returns a negative one, if the dates are the same returns 0
 int compare_dates(struct date date1, struct date date2) {
@@ -196,4 +214,11 @@ struct date date_string_to_struct(char *date_string) {
   date.year = atoi(year);
 
   return date;
+}
+
+gint compare_strings(gconstpointer a, gconstpointer b, gpointer data) {
+  gint result = strcmp(a, b);
+  return result;
+
+  (void)data;
 }

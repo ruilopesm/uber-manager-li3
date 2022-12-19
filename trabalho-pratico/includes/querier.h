@@ -21,6 +21,10 @@ void query3(CATALOG catalog, STATS stats, char **parameters, int counter);
 
 void query4(CATALOG catalog, STATS stats, char **parameters, int counter);
 
+void query7(CATALOG catalog, STATS stats, char **parameter, int counter);
+
+gboolean tree_to_array(gpointer key, gpointer value, gpointer user_data);
+
 void query5(CATALOG catalog, STATS stats, char **parameters, int counter);
 
 void query6(CATALOG catalog, STATS stats, char **parameters, int counter);

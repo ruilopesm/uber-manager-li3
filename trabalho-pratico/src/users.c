@@ -55,6 +55,7 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   set_user_latest_ride(user, "00/00/0000");
 
   g_hash_table_insert(users_hash_table, user->username, user);
+
   (void)stats;  // To avoid the "unused variable" warning
 }
 

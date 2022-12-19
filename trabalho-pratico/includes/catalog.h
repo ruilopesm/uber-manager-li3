@@ -15,6 +15,9 @@ GHashTable *get_catalog_drivers(CATALOG catalog);
 
 GHashTable *get_catalog_rides(CATALOG catalog);
 
+char *get_catalog_driver_name(CATALOG catalog, char *driver_id);
+
+enum account_status get_catalog_driver_status(CATALOG catalog, char *driver_id);
 void free_catalog(CATALOG catalog);
 
 #endif

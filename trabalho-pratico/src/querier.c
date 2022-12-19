@@ -226,6 +226,14 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
   (void)stats;
 }
 
+gboolean tree_to_array(gpointer key, gpointer value, gpointer user_data) {
+  GPtrArray *array = (GPtrArray *)user_data;
+  g_ptr_array_add(array, value);
+  return FALSE;
+
+  (void)key;
+}
+
 void query5(CATALOG catalog, STATS stats, char **parameter, int counter) {
   query5_6(catalog, stats, parameter, counter, 0);
 }
@@ -298,6 +306,70 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
     printf("Query 5 elapsed time: %f seconds\n", time_spent);
   else
     printf("Query 6 elapsed time: %f seconds\n", time_spent);
+}
+
+void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
+  clock_t begin = clock();
+
+  int n;
+  sscanf(parameter[0], "%d", &n);
+  char *city = strip(parameter[1]);
+
+  char *output_filename = malloc(sizeof(char) * 256);
+  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
+
+  FILE *output_file = fopen(output_filename, "a");
+
+  if (output_file == NULL) {
+    printf("Error creating command%d_output.txt file\n", counter);
+    return;
+  }
+
+  GTree *city_drivers_tree = get_city_driver_stats(stats, city);
+  if (city_drivers_tree == NULL) {
+    return;
+  }
+
+  GPtrArray *city_drivers_array = g_ptr_array_new();
+  g_tree_foreach(city_drivers_tree, (GTraverseFunc)tree_to_array,
+                 city_drivers_array);
+  g_ptr_array_sort(city_drivers_array, compare_driver_stats_by_rating);
+
+  int i = 0;
+  while (n > 0 && i < (int)city_drivers_array->len) {
+    CITY_DRIVER_STATS city_driver_stats =
+        g_ptr_array_index(city_drivers_array, i);
+    char *driver_id = get_city_driver_stats_id(city_driver_stats);
+
+    if (get_catalog_driver_status(catalog, driver_id) == ACTIVE) {
+      char *driver_name = get_catalog_driver_name(catalog, driver_id);
+
+      double driver_rating =
+          get_city_driver_stats_total_rating(city_driver_stats);
+      int driver_number_of_rides =
+          get_city_driver_stats_total_rides(city_driver_stats);
+      double driver_average_score = driver_rating / driver_number_of_rides;
+
+      fprintf(output_file, "%s;%s;%.3f\n", driver_id, driver_name,
+              driver_average_score);
+
+      free(driver_name);
+      free(driver_id);
+      n--;
+    }
+    i++;
+  }
+
+  g_ptr_array_free(city_drivers_array, TRUE);
+  free(parameter);
+  free(city);
+  free(output_filename);
+  fclose(output_file);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+  printf("Query 7 elapsed time: %f seconds\n", time_spent);
 }
 
 // Finds the position of the array whose date is closest to the lower limit of
@@ -441,34 +513,6 @@ double calculate_avg_distance(GArray *rides_by_date, int starting_position,
   return (total /
           ((double)rides_counter));  // The average is then calculated and
                                      // returned using the accumulators
-}
-
-void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
-  clock_t begin = clock();
-
-  char *output_filename = malloc(sizeof(char) * 256);
-  sprintf(output_filename, "Resultados/command%d_output.txt", counter);
-
-  FILE *output_file = fopen(output_filename, "a");
-
-  if (output_file == NULL) {
-    printf("Error creating command%d_output.txt file\n", counter);
-    return;
-  }
-
-  free(parameter);
-  free(output_filename);
-  fclose(output_file);
-
-  clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-
-  printf("Query 7 elapsed time: %f seconds\n", time_spent);
-
-  (void)catalog;
-  (void)stats;
-  (void)parameter;
-  (void)counter;
 }
 
 void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {

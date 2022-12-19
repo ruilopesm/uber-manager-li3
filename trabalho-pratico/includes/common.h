@@ -1,6 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <glib.h>
 #include <stdio.h>
 
 #define MASTER_DATE "09/10/2022"
@@ -44,6 +45,10 @@ int is_number(char *string);
 int compare_dates(struct date date1, struct date date2);
 
 char *date_to_string(struct date date);
+
+char *strip(char *string);
+
+gint compare_strings(gconstpointer a, gconstpointer b, gpointer data);
 
 struct date increment_date(struct date date);
 

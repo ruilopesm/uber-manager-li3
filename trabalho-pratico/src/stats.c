@@ -12,9 +12,16 @@
 #include "users.h"
 
 struct stats {
+  GHashTable *city_drivers;
   GList *top_drivers_by_average_score;
   GList *top_users_by_total_distance;
   GArray *rides_by_date;
+};
+
+struct city_driver_stats {
+  char *id;
+  double total_rating;
+  int total_rides;
 };
 
 STATS create_stats(void) {
@@ -22,9 +29,29 @@ STATS create_stats(void) {
 
   new_stats->top_drivers_by_average_score = NULL;
   new_stats->top_users_by_total_distance = NULL;
+  new_stats->city_drivers =
+      g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
   new_stats->rides_by_date = g_array_sized_new(1, 1, sizeof(GArray *), 3000);
 
   return new_stats;
+}
+
+CITY_DRIVER_STATS create_city_driver_stats(char *id, double total_rating,
+                                           int total_rides) {
+  CITY_DRIVER_STATS new_city_driver_stats =
+      malloc(sizeof(struct city_driver_stats));
+
+  new_city_driver_stats->id = id;
+  new_city_driver_stats->total_rating = total_rating;
+  new_city_driver_stats->total_rides = total_rides;
+
+  return new_city_driver_stats;
+}
+
+void update_city_driver_stats(CITY_DRIVER_STATS city_driver_stats,
+                              double rating) {
+  city_driver_stats->total_rating += rating;
+  city_driver_stats->total_rides++;
 }
 
 GList *get_top_drivers_by_average_score(STATS stats) {
@@ -33,6 +60,23 @@ GList *get_top_drivers_by_average_score(STATS stats) {
 
 GList *get_top_users_by_total_distance(STATS stats) {
   return stats->top_users_by_total_distance;
+}
+
+GTree *get_city_driver_stats(STATS stats, char *city) {
+  return g_hash_table_lookup(stats->city_drivers, city);
+}
+
+double get_city_driver_stats_total_rating(CITY_DRIVER_STATS city_driver_stats) {
+  return city_driver_stats->total_rating;
+}
+
+int get_city_driver_stats_total_rides(CITY_DRIVER_STATS city_driver_stats) {
+  return city_driver_stats->total_rides;
+}
+
+char *get_city_driver_stats_id(CITY_DRIVER_STATS city_driver_stats) {
+  char *id = strdup(city_driver_stats->id);
+  return id;
 }
 
 GArray *get_rides_by_date(STATS stats) { return stats->rides_by_date; }
@@ -69,6 +113,30 @@ void update_driver_stats(CATALOG catalog, char *driver_id, double rating,
     char *date_string = date_to_string(date);
     set_driver_latest_ride(driver, date_string);
     free(date_string);
+  }
+}
+
+void upsert_city_driver_stats(STATS stats, char *city, char *driver_id,
+                              double driver_score) {
+  GTree *city_drivers = g_hash_table_lookup(stats->city_drivers, city);
+
+  if (city_drivers == NULL) {
+    city_drivers =
+        g_tree_new_full((GCompareDataFunc)compare_strings, NULL, free,
+                        (GDestroyNotify)free_city_driver_stats);
+    g_tree_insert(city_drivers, driver_id,
+                  create_city_driver_stats(driver_id, driver_score, 1));
+    g_hash_table_insert(stats->city_drivers, strdup(city), city_drivers);
+  } else {
+    CITY_DRIVER_STATS city_driver_stats =
+        g_tree_lookup(city_drivers, driver_id);
+
+    if (city_driver_stats == NULL) {
+      g_tree_insert(city_drivers, driver_id,
+                    create_city_driver_stats(driver_id, driver_score, 1));
+    } else {
+      update_city_driver_stats(city_driver_stats, driver_score);
+    }
   }
 }
 
@@ -109,6 +177,35 @@ gint compare_users_by_total_distance(gconstpointer a, gconstpointer b) {
   }
 
   return total_distance_b - total_distance_a;
+}
+
+gint compare_driver_stats_by_rating(gconstpointer a, gconstpointer b) {
+  CITY_DRIVER_STATS *driver_stats_a = (CITY_DRIVER_STATS *)a;
+  CITY_DRIVER_STATS *driver_stats_b = (CITY_DRIVER_STATS *)b;
+
+  int total_distance_a = get_city_driver_stats_total_rides(*driver_stats_a);
+  int total_distance_b = get_city_driver_stats_total_rides(*driver_stats_b);
+
+  double total_score_a = get_city_driver_stats_total_rating(*driver_stats_a);
+  double total_score_b = get_city_driver_stats_total_rating(*driver_stats_b);
+
+  double average_score_a = total_score_a / total_distance_a;
+  double average_score_b = total_score_b / total_distance_b;
+
+  if (average_score_a < average_score_b) {
+    return 1;
+  } else if (average_score_a > average_score_b) {
+    return -1;
+  } else {
+    char *driver_a_id = get_city_driver_stats_id(*driver_stats_a);
+    char *driver_b_id = get_city_driver_stats_id(*driver_stats_b);
+
+    if (is_id_smaller(driver_a_id, driver_b_id)) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }
 }
 
 void calculate_top_drivers_by_average_score(STATS stats, CATALOG catalog) {
@@ -154,6 +251,18 @@ gint compare_drivers_by_average_score(gconstpointer a, gconstpointer b) {
   }
 
   return a_score > b_score ? -1 : 1;
+}
+
+gint compare_city_driver_stats_by_id(gconstpointer a, gconstpointer b) {
+  char *city_driver_stats_a = (char *)a;
+  char *city_driver_stats_b = (char *)b;
+
+  return strcmp(city_driver_stats_a, city_driver_stats_b);
+}
+
+void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats) {
+  /* free(city_driver_stats->id); */
+  free(city_driver_stats);
 }
 
 // Inserts a ride on the rides by date stats
@@ -222,6 +331,7 @@ int compare_dates_wrapper_array_date(gconstpointer array_constpointer,
 void free_stats(STATS stats) {
   g_list_free(stats->top_users_by_total_distance);
   g_list_free(stats->top_drivers_by_average_score);
+  g_hash_table_destroy(stats->city_drivers);
   g_array_free(stats->rides_by_date, 1);
 
   free(stats);

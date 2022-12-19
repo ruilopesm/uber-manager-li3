@@ -68,6 +68,7 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
                     ride->price, ride->tip, ride->date);
   update_driver_stats(catalog, ride->driver, ride->score_driver, ride->price,
                       ride->tip, ride->date);
+  upsert_city_driver_stats(stats, ride->city, ride->driver, ride->score_driver);
 }
 
 void set_ride_id(RIDE ride, char *id_string) {
