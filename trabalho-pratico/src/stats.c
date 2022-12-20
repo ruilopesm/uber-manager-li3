@@ -22,6 +22,7 @@ struct city_driver_stats {
   char *id;
   double total_rating;
   int total_rides;
+  double total_spent;
 };
 
 STATS create_stats(void) {
@@ -37,21 +38,24 @@ STATS create_stats(void) {
 }
 
 CITY_DRIVER_STATS create_city_driver_stats(char *id, double total_rating,
-                                           int total_rides) {
+                                           int total_rides,
+                                           double total_spent) {
   CITY_DRIVER_STATS new_city_driver_stats =
       malloc(sizeof(struct city_driver_stats));
 
   new_city_driver_stats->id = id;
   new_city_driver_stats->total_rating = total_rating;
   new_city_driver_stats->total_rides = total_rides;
+  new_city_driver_stats->total_spent = total_spent;
 
   return new_city_driver_stats;
 }
 
 void update_city_driver_stats(CITY_DRIVER_STATS city_driver_stats,
-                              double rating) {
+                              double rating, double ride_price) {
   city_driver_stats->total_rating += rating;
   city_driver_stats->total_rides++;
+  city_driver_stats->total_spent += ride_price;
 }
 
 GList *get_top_drivers_by_average_score(STATS stats) {
@@ -77,6 +81,10 @@ int get_city_driver_stats_total_rides(CITY_DRIVER_STATS city_driver_stats) {
 char *get_city_driver_stats_id(CITY_DRIVER_STATS city_driver_stats) {
   char *id = strdup(city_driver_stats->id);
   return id;
+}
+
+double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats) {
+  return city_driver_stats->total_spent;
 }
 
 GArray *get_rides_by_date(STATS stats) { return stats->rides_by_date; }
@@ -117,25 +125,27 @@ void update_driver_stats(CATALOG catalog, char *driver_id, double rating,
 }
 
 void upsert_city_driver_stats(STATS stats, char *city, char *driver_id,
-                              double driver_score) {
+                              double driver_score, double ride_price) {
   GTree *city_drivers = g_hash_table_lookup(stats->city_drivers, city);
 
   if (city_drivers == NULL) {
     city_drivers =
         g_tree_new_full((GCompareDataFunc)compare_strings, NULL, free,
                         (GDestroyNotify)free_city_driver_stats);
-    g_tree_insert(city_drivers, driver_id,
-                  create_city_driver_stats(driver_id, driver_score, 1));
+    g_tree_insert(
+        city_drivers, driver_id,
+        create_city_driver_stats(driver_id, driver_score, 1, ride_price));
     g_hash_table_insert(stats->city_drivers, strdup(city), city_drivers);
   } else {
     CITY_DRIVER_STATS city_driver_stats =
         g_tree_lookup(city_drivers, driver_id);
 
     if (city_driver_stats == NULL) {
-      g_tree_insert(city_drivers, driver_id,
-                    create_city_driver_stats(driver_id, driver_score, 1));
+      g_tree_insert(
+          city_drivers, driver_id,
+          create_city_driver_stats(driver_id, driver_score, 1, ride_price));
     } else {
-      update_city_driver_stats(city_driver_stats, driver_score);
+      update_city_driver_stats(city_driver_stats, driver_score, ride_price);
     }
   }
 }

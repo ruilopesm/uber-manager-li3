@@ -36,12 +36,6 @@ char *get_catalog_driver_name(CATALOG catalog, char *driver_id) {
   return get_driver_name(driver);
 }
 
-enum account_status get_catalog_driver_status(CATALOG catalog,
-                                              char *driver_id) {
-  DRIVER driver = g_hash_table_lookup(catalog->drivers, driver_id);
-  return get_driver_account_status(driver);
-}
-
 void free_catalog(CATALOG catalog) {
   g_hash_table_destroy(catalog->users);
   g_hash_table_destroy(catalog->drivers);

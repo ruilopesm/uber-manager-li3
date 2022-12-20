@@ -175,11 +175,8 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
 void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t begin = clock();
 
-  char *chosen = parameter[0];
-  chosen[strlen(chosen) - 1] = '\0';
-
-  int total = 0;
-  double total_price = 0.0;
+  char *city = parameter[0];
+  city[strlen(city) - 1] = '\0';
 
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
@@ -191,28 +188,25 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
-  GHashTable *rides_hash_table = get_catalog_rides(catalog);
-  GList *rides = g_hash_table_get_values(rides_hash_table);
-  GList *iterator = rides;
+  // in order to fit every parameter in the g_tree_foreach function, we need to
+  // utilize a struct that contains those parameters
+  struct query4_utils *utils = malloc(sizeof(struct query4_utils));
+  utils->catalog = catalog;
+  utils->total_spent = 0;
+  utils->total_rides = 0;
 
-  while (iterator != NULL) {
-    RIDE ride = iterator->data;
-    char *city = get_ride_city(ride);
+  GTree *city_drivers_tree = get_city_driver_stats(stats, city);
 
-    if (!strcmp(city, chosen)) {
-      total_price += get_ride_price(ride);
-      total++;
-    }
+  if (city_drivers_tree != NULL) {
+    g_tree_foreach(city_drivers_tree, (GTraverseFunc)count_city_total_spent,
+                   utils);
 
-    iterator = iterator->next;
+    double result = utils->total_spent / utils->total_rides;
 
-    free(city);
+    fprintf(output_file, "%.3f\n", result);
   }
 
-  g_list_free(rides);
-
-  fprintf(output_file, "%.3f\n", total_price / total);
-
+  free(utils);
   free(parameter);
   free(output_filename);
   fclose(output_file);
@@ -226,6 +220,27 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
   (void)stats;
 }
 
+gboolean count_city_total_spent(gpointer key, gpointer value,
+                                gpointer user_data) {
+  struct query4_utils *utils = (struct query4_utils *)user_data;
+
+  CITY_DRIVER_STATS city_driver_stats = (CITY_DRIVER_STATS)value;
+
+  char *driver_id = get_city_driver_stats_id(city_driver_stats);
+
+  GHashTable *drivers = get_catalog_drivers(utils->catalog);
+  DRIVER driver = g_hash_table_lookup(drivers, driver_id);
+  enum account_status status = get_driver_account_status(driver);
+
+  if (status == ACTIVE) {
+    utils->total_spent += get_city_driver_stats_total_spent(city_driver_stats);
+    utils->total_rides += get_city_driver_stats_total_rides(city_driver_stats);
+  }
+
+  return FALSE;
+
+  (void)key;
+}
 gboolean tree_to_array(gpointer key, gpointer value, gpointer user_data) {
   GPtrArray *array = (GPtrArray *)user_data;
   g_ptr_array_add(array, value);
@@ -341,13 +356,20 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
         g_ptr_array_index(city_drivers_array, i);
     char *driver_id = get_city_driver_stats_id(city_driver_stats);
 
-    if (get_catalog_driver_status(catalog, driver_id) == ACTIVE) {
+    GHashTable *drivers = get_catalog_drivers(catalog);
+    DRIVER driver = g_hash_table_lookup(drivers, driver_id);
+    enum account_status status = get_driver_account_status(driver);
+
+    /* if (get_catalog_driver_status(catalog, driver_id) == ACTIVE) { */
+    if (status == ACTIVE) {
       char *driver_name = get_catalog_driver_name(catalog, driver_id);
 
       double driver_rating =
           get_city_driver_stats_total_rating(city_driver_stats);
+
       int driver_number_of_rides =
           get_city_driver_stats_total_rides(city_driver_stats);
+
       double driver_average_score = driver_rating / driver_number_of_rides;
 
       fprintf(output_file, "%s;%s;%.3f\n", driver_id, driver_name,

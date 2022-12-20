@@ -21,10 +21,10 @@ typedef struct ride *RIDE;  // To not cause conflicts
 STATS create_stats(void);
 
 CITY_DRIVER_STATS create_city_driver_stats(char *id, double total_rating,
-                                           int total_rides);
+                                           int total_rides, double ride_price);
 
 void update_city_driver_stats(CITY_DRIVER_STATS city_driver_stats,
-                              double rating);
+                              double rating, double spent);
 
 GList *get_top_drivers_by_average_score(STATS stats);
 
@@ -38,6 +38,8 @@ int get_city_driver_stats_total_rides(CITY_DRIVER_STATS city_driver_stats);
 
 char *get_city_driver_stats_id(CITY_DRIVER_STATS city_driver_stats);
 
+double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats);
+
 GArray *get_rides_by_date(STATS stats);
 
 void update_user_stats(CATALOG catalog, char *username, int distance,
@@ -48,7 +50,7 @@ void update_driver_stats(CATALOG catalog, char *driver_id, double rating,
                          double price, double tip, struct date date);
 
 void upsert_city_driver_stats(STATS stats, char *city, char *driver_id,
-                              double driver_score);
+                              double driver_score, double ride_price);
 
 void calculate_top_users_by_total_distance(STATS stats, CATALOG catalog);
 
