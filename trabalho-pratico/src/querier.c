@@ -298,10 +298,7 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
     return;
   }
 
-  if (average)
-    fprintf(output_file, "%.3f\n", average);
-  else
-    fprintf(output_file, "\n");
+  if (average) fprintf(output_file, "%.3f\n", average);
   free(parameters);
   free(output_filename);
   fclose(output_file);
@@ -467,9 +464,12 @@ double calculate_avg_price(GArray *rides_by_date, GHashTable *drivers_hash,
                 // can be bound checked in the next iteration
     }
   }
-  return (total /
-          ((double)rides_counter));  // The average is then calculated and
-                                     // returned using the accumulators
+  if (rides_counter)
+    return (total /
+            ((double)rides_counter));  // The average is then calculated and
+                                       // returned using the accumulators
+  else
+    return 0;
 }
 
 double calculate_avg_distance(GArray *rides_by_date, int starting_position,
@@ -523,9 +523,12 @@ double calculate_avg_distance(GArray *rides_by_date, int starting_position,
                 // can be bound checked in the next iteration
     }
   }
-  return (total /
-          ((double)rides_counter));  // The average is then calculated and
-                                     // returned using the accumulators
+  if (rides_counter)
+    return (total /
+            ((double)rides_counter));  // The average is then calculated and
+                                       // returned using the accumulators
+  else
+    return 0;
 }
 
 void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
