@@ -216,7 +216,7 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
   printf("%d: Query 4 elapsed time: %f seconds\n", counter, time_spent);
 
-  // Since catalog is not used in this query, we can safely ignore the warning
+  // Since stats is not used in this query, we can safely ignore the warning
   (void)stats;
 }
 
@@ -226,16 +226,8 @@ gboolean count_city_total_spent(gpointer key, gpointer value,
 
   CITY_DRIVER_STATS city_driver_stats = (CITY_DRIVER_STATS)value;
 
-  char *driver_id = get_city_driver_stats_id(city_driver_stats);
-
-  GHashTable *drivers = get_catalog_drivers(utils->catalog);
-  DRIVER driver = g_hash_table_lookup(drivers, driver_id);
-  enum account_status status = get_driver_account_status(driver);
-
-  if (status == ACTIVE) {
-    utils->total_spent += get_city_driver_stats_total_spent(city_driver_stats);
-    utils->total_rides += get_city_driver_stats_total_rides(city_driver_stats);
-  }
+  utils->total_spent += get_city_driver_stats_total_spent(city_driver_stats);
+  utils->total_rides += get_city_driver_stats_total_rides(city_driver_stats);
 
   return FALSE;
 
@@ -360,7 +352,6 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
     DRIVER driver = g_hash_table_lookup(drivers, driver_id);
     enum account_status status = get_driver_account_status(driver);
 
-    /* if (get_catalog_driver_status(catalog, driver_id) == ACTIVE) { */
     if (status == ACTIVE) {
       char *driver_name = get_catalog_driver_name(catalog, driver_id);
 
