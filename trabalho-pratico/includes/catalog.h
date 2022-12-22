@@ -3,7 +3,7 @@
 
 #include <glib.h>
 
-#include "common.h"
+#include "utils.h"
 
 typedef struct catalog *CATALOG;
 

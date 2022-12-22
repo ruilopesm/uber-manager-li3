@@ -5,11 +5,11 @@
 #include <stdlib.h>
 
 #include "catalog.h"
-#include "common.h"
 #include "drivers.h"
 #include "rides.h"
 #include "stats.h"
 #include "users.h"
+#include "utils.h"
 
 struct stats {
   GHashTable *city_drivers;

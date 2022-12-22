@@ -5,13 +5,13 @@
 #include <unistd.h>
 
 #include "catalog.h"
-#include "common.h"
 #include "drivers.h"
 #include "parser.h"
 #include "querier.h"
 #include "rides.h"
 #include "stats.h"
 #include "users.h"
+#include "utils.h"
 
 int main(int argc, char **argv) {
   clock_t begin = clock();

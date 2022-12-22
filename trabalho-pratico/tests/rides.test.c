@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "../lib/greatest.h"
-#include "common.h"
+#include "utils.h"
 
 TEST ride_id_test(void) {
   RIDE ride = create_ride();

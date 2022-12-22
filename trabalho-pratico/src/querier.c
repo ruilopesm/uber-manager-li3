@@ -8,11 +8,11 @@
 #include <unistd.h>
 
 #include "catalog.h"
-#include "common.h"
 #include "drivers.h"
 #include "rides.h"
 #include "stats.h"
 #include "users.h"
+#include "utils.h"
 
 void querier(CATALOG catalog, STATS stats, char *line, int counter) {
   char **query_parameter = malloc(sizeof(char *) * MAX_INPUT_TOKENS);

@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "../lib/greatest.h"
-#include "common.h"
+#include "utils.h"
 
 TEST driver_id_test(void) {
   DRIVER driver = create_driver();

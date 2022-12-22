@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "../lib/greatest.h"
-#include "common.h"
+#include "utils.h"
 
 TEST user_username_test(void) {
   USER user = create_user();

@@ -4,7 +4,7 @@
 #include <glib.h>
 
 #include "catalog.h"
-#include "common.h"
+#include "utils.h"
 
 typedef struct stats *STATS;
 

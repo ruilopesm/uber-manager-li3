@@ -3,10 +3,10 @@
 #include <glib.h>
 #include <stdio.h>
 
-#include "common.h"
 #include "drivers.h"
 #include "rides.h"
 #include "users.h"
+#include "utils.h"
 
 struct catalog {
   GHashTable *users;
