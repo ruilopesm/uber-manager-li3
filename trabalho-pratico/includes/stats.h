@@ -40,7 +40,7 @@ char *get_city_driver_stats_id(CITY_DRIVER_STATS city_driver_stats);
 
 double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats);
 
-GArray *get_rides_by_date(STATS stats);
+GHashTable *get_rides_by_date(STATS stats);
 
 void update_user_stats(CATALOG catalog, char *username, int distance,
                        double rating, double price, double tip,
@@ -70,8 +70,8 @@ void insert_ride_by_date(RIDE ride, STATS stats);
 
 struct date get_day_of_array(GArray *rides_by_date, int index);
 
-int compare_dates_wrapper_array_date(gconstpointer array_constpointer,
-                                     gconstpointer date_constpointer);
+int compare_dates_wrapper_dates(gconstpointer hash_date_constpointer,
+                                gconstpointer date_constpointer);
 
 void free_stats(STATS stats);
 

@@ -222,3 +222,19 @@ gint compare_strings(gconstpointer a, gconstpointer b, gpointer data) {
 
   (void)data;
 }
+
+int date_struct_to_int(struct date date) {
+  int date_int = 0;
+  date_int = date.year * 10000;
+  date_int += date.month * 100;
+  date_int += date.day;
+  return date_int;
+}
+
+struct date date_int_to_struct(int date) {
+  struct date date_struct;
+  date_struct.year = date / 10000;
+  date_struct.month = (date % 10000) / 100;
+  date_struct.day = date % 100;
+  return date_struct;
+}

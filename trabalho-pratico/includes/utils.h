@@ -56,4 +56,8 @@ int maximum_day(struct date date);
 
 struct date date_string_to_struct(char *date_string);
 
+struct date date_int_to_struct(int date);
+
+int date_struct_to_int(struct date date);
+
 #endif
