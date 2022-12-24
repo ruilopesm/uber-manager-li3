@@ -358,17 +358,17 @@ double calculate_avg_distance(GHashTable *rides_by_date,
 
   for (temp_date = lower_limit; compare_dates(upper_limit, temp_date) >= 0;
        temp_date = increment_date(
-           temp_date)) {  // If the date searched for already surpasses theupper
-                          // limit the cycle is stopped
+           temp_date)) {  // If the date searched for already surpasses the
+                          // upper limit the cycle is stopped
     int temp_date_int = date_struct_to_int(temp_date);
     GArray *rides_of_the_day =
         g_hash_table_lookup(rides_by_date, &temp_date_int);
     if (rides_of_the_day) {
       int number_of_rides = rides_of_the_day->len;
       for (int j = 0; j < number_of_rides; j++) {
-        temp_ride =
-            g_array_index(rides_of_the_day, RIDE,
-                          j);  // Ride which we are calculating the total cost
+        temp_ride = g_array_index(
+            rides_of_the_day, RIDE,
+            j);  // Ride which we are calculating the total distance
         if (temp_ride == NULL)
           break;  // Make sure there is something in that array position
         char *ride_city = get_ride_city(temp_ride);
@@ -493,6 +493,35 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
 void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t begin = clock();
 
+  GHashTable *rides_by_date = get_rides_by_date(stats);
+
+  // The array where rides will be ordered is created
+  GArray *rides_in_range = g_array_new(1, 1, sizeof(RIDE));
+  struct date lower_limit = date_string_to_struct(parameter[0]);
+  struct date upper_limit = date_string_to_struct(parameter[1]);
+  RIDE temp_ride = NULL;
+  int number_of_rides = 0;
+
+  for (struct date temp_date = lower_limit;
+       compare_dates(upper_limit, temp_date) >= 0;
+       temp_date = increment_date(temp_date)) {
+    int temp_date_int = date_struct_to_int(temp_date);
+    // Tries to find if there are rides in that specific day
+    GArray *rides_of_the_day =
+        g_hash_table_lookup(rides_by_date, &temp_date_int);
+    if (rides_of_the_day) {
+      number_of_rides = rides_of_the_day->len;
+      for (int i = 0; i < number_of_rides; i++) {
+        temp_ride = g_array_index(rides_of_the_day, RIDE, i);
+        // Make sure there is something in that array position
+        if (temp_ride == NULL) break;
+        // The ride is inserted into the temporary structure
+        g_array_append_val(rides_in_range, temp_ride);
+      }
+    }
+  }
+  g_array_sort(rides_in_range, sort_query9_by_distance);
+
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
 
@@ -503,9 +532,20 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
+  number_of_rides = rides_in_range->len - 1;
+  while (number_of_rides >= 0) {
+    temp_ride = g_array_index(rides_in_range, RIDE, number_of_rides);
+    fprintf(output_file, "%s;%s;%d;%s;%.3f\n", get_ride_id(temp_ride),
+            date_to_string(get_ride_date(temp_ride)),
+            get_ride_distance(temp_ride), get_ride_city(temp_ride),
+            get_ride_tip(temp_ride));
+    number_of_rides--;
+  }
+
   free(parameter);
   free(output_filename);
   fclose(output_file);
+  g_array_free(rides_in_range, 1);
 
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
@@ -516,6 +556,24 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
   (void)stats;
   (void)parameter;
   (void)counter;
+}
+
+gint sort_query9_by_distance(gconstpointer ride1_constpointer,
+                             gconstpointer ride2_constpointer) {
+  int temp = 0;
+  RIDE ride1 = *(RIDE *)(ride1_constpointer);
+  RIDE ride2 = *(RIDE *)(ride2_constpointer);
+  int ride1_distance = get_ride_distance(ride1);
+  int ride2_distance = get_ride_distance(ride2);
+  temp = ride1_distance - ride2_distance;
+  if (temp) return temp;
+  struct date ride1_date = get_ride_date(ride1);
+  struct date ride2_date = get_ride_date(ride2);
+  temp = compare_dates(ride1_date, ride2_date);
+  if (temp) return temp;
+  char *ride1_id = get_ride_id(ride1);
+  char *ride2_id = get_ride_id(ride2);
+  return strcmp(ride1_id, ride2_id);
 }
 
 void get_user_profile(CATALOG catalog, char *id, int counter) {

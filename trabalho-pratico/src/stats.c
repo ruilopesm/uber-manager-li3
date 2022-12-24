@@ -32,8 +32,8 @@ STATS create_stats(void) {
   new_stats->top_users_by_total_distance = NULL;
   new_stats->city_drivers =
       g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
-  new_stats->rides_by_date = g_hash_table_new_full(
-      g_int_hash, compare_dates_wrapper_dates, free, NULL);
+  new_stats->rides_by_date =
+      g_hash_table_new_full(g_int_hash, g_int_equal, free, NULL);
 
   return new_stats;
 }
@@ -301,15 +301,6 @@ void insert_ride_by_date(RIDE ride, STATS stats) {
                         new_day);  // The new day with the ride is inserted
                                    // ordered by date into the hash table
   }
-}
-
-// Wrapper to compare dates between two dates
-int compare_dates_wrapper_dates(gconstpointer hash_date_constpointer,
-                                gconstpointer date_constpointer) {
-  int *hash_date = (int *)(hash_date_constpointer);
-  struct date *date = (struct date *)(date_constpointer);
-  return (compare_dates(date_int_to_struct(*hash_date),
-                        *date));  // The dates are then compared
 }
 
 void free_stats(STATS stats) {

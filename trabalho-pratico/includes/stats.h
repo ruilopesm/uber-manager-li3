@@ -70,9 +70,6 @@ void insert_ride_by_date(RIDE ride, STATS stats);
 
 struct date get_day_of_array(GArray *rides_by_date, int index);
 
-int compare_dates_wrapper_dates(gconstpointer hash_date_constpointer,
-                                gconstpointer date_constpointer);
-
 void free_stats(STATS stats);
 
 #endif
