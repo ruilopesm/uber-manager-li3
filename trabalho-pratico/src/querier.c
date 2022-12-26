@@ -465,6 +465,12 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
 void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t begin = clock();
 
+  char *gender = parameter[0];
+  enum gender given_gender = string_to_gender(gender);
+
+  int age;
+  sscanf(parameter[1], "%d", &age);
+
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
 
@@ -473,6 +479,80 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
   if (output_file == NULL) {
     printf("Error creating command%d_output.txt file\n", counter);
     return;
+  }
+
+  static int males_sorted = 0;
+  static int females_sorted = 0;
+
+  GArray *top_rides = NULL;
+
+  if (given_gender == M) {
+    top_rides = get_male_rides_by_age(stats);
+
+    if (!males_sorted) {
+      calculate_rides_by_age(get_male_rides_by_age(stats));
+      top_rides = get_male_rides_by_age(stats);
+
+      males_sorted = 1;
+    }
+  } else {
+    top_rides = get_female_rides_by_age(stats);
+
+    if (!females_sorted) {
+      calculate_rides_by_age(get_female_rides_by_age(stats));
+      top_rides = get_female_rides_by_age(stats);
+
+      females_sorted = 1;
+    }
+  }
+
+  for (int i = top_rides->len - 1; i >= 0; i--) {
+    RIDE_GENDER_STATS current_ride =
+        g_array_index(top_rides, RIDE_GENDER_STATS, i);
+    char *ride_id = get_ride_gender_stats_id(current_ride);
+
+    int driver_age = calculate_age(
+        get_ride_gender_stats_driver_account_creation(current_ride));
+
+    if (driver_age < age) {
+      break;
+    }
+
+    int user_age = calculate_age(
+        get_ride_gender_stats_user_account_creation(current_ride));
+
+    if (user_age < age) {
+      continue;
+    }
+
+    GHashTable *rides = get_catalog_rides(catalog);
+    RIDE current_ride_catalog = g_hash_table_lookup(rides, ride_id);
+
+    char *username = get_ride_user(current_ride_catalog);
+    USER current_user =
+        g_hash_table_lookup(get_catalog_users(catalog), username);
+
+    char *driver_id = get_ride_driver(current_ride_catalog);
+    DRIVER current_driver =
+        g_hash_table_lookup(get_catalog_drivers(catalog), driver_id);
+
+    enum account_status driver_account_status =
+        get_driver_account_status(current_driver);
+    enum account_status user_account_status =
+        get_user_account_status(current_user);
+
+    if (driver_account_status == ACTIVE && user_account_status == ACTIVE) {
+      char *driver_name = get_driver_name(current_driver);
+      char *name = get_user_name(current_user);
+
+      fprintf(output_file, "%s;%s;%s;%s\n", driver_id, driver_name, username,
+              name);
+
+      free(driver_name);
+      free(name);
+    }
+
+    free(ride_id);
   }
 
   free(parameter);

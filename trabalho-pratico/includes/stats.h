@@ -16,6 +16,8 @@ typedef struct ride_stats *RIDE_STATS;
 
 typedef struct city_driver_stats *CITY_DRIVER_STATS;
 
+typedef struct ride_gender_stats *RIDE_GENDER_STATS;
+
 typedef struct ride *RIDE;  // To not cause conflicts
 
 STATS create_stats(void);
@@ -42,6 +44,10 @@ double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats);
 
 GHashTable *get_rides_by_date(STATS stats);
 
+GArray *get_male_rides_by_age(STATS stats);
+
+GArray *get_female_rides_by_age(STATS stats);
+
 void update_user_stats(CATALOG catalog, char *username, int distance,
                        double rating, double price, double tip,
                        struct date date);
@@ -51,6 +57,20 @@ void update_driver_stats(CATALOG catalog, char *driver_id, double rating,
 
 void upsert_city_driver_stats(STATS stats, char *city, char *driver_id,
                               double driver_score, double ride_price);
+
+void update_genders_rides_by_age(CATALOG catalog, STATS stats, char *ride_id,
+                                 char *driver_id, char *username);
+
+char *get_ride_gender_stats_id(RIDE_GENDER_STATS ride);
+
+struct date get_ride_gender_stats_driver_account_creation(
+    RIDE_GENDER_STATS ride);
+
+struct date get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride);
+
+void calculate_rides_by_age(GArray *rides_by_age);
+
+gint compare_rides_by_age(gconstpointer a, gconstpointer b);
 
 void calculate_top_users_by_total_distance(STATS stats, CATALOG catalog);
 

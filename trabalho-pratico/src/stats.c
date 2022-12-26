@@ -16,6 +16,8 @@ struct stats {
   GList *top_drivers_by_average_score;
   GList *top_users_by_total_distance;
   GHashTable *rides_by_date;
+  GArray *male_rides_by_age;
+  GArray *female_rides_by_age;
 };
 
 struct city_driver_stats {
@@ -23,6 +25,12 @@ struct city_driver_stats {
   double total_rating;
   int total_rides;
   double total_spent;
+};
+
+struct ride_gender_stats {
+  char *id;
+  struct date driver_account_creation;
+  struct date user_account_creation;
 };
 
 STATS create_stats(void) {
@@ -34,6 +42,8 @@ STATS create_stats(void) {
       g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
   new_stats->rides_by_date =
       g_hash_table_new_full(g_int_hash, g_int_equal, free, NULL);
+  new_stats->male_rides_by_age = g_array_new(1, 1, sizeof(RIDE_GENDER_STATS));
+  new_stats->female_rides_by_age = g_array_new(1, 1, sizeof(RIDE_GENDER_STATS));
 
   return new_stats;
 }
@@ -89,6 +99,12 @@ double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats) {
 }
 
 GHashTable *get_rides_by_date(STATS stats) { return stats->rides_by_date; }
+
+GArray *get_male_rides_by_age(STATS stats) { return stats->male_rides_by_age; }
+
+GArray *get_female_rides_by_age(STATS stats) {
+  return stats->female_rides_by_age;
+}
 
 void update_user_stats(CATALOG catalog, char *username, int distance,
                        double rating, double price, double tip,
@@ -149,6 +165,91 @@ void upsert_city_driver_stats(STATS stats, char *city, char *driver_id,
       update_city_driver_stats(city_driver_stats, driver_score, ride_price);
     }
   }
+}
+
+RIDE_GENDER_STATS create_ride_gender_stats(char *ride_id,
+                                           struct date driver_account_creation,
+                                           struct date user_account_creation) {
+  RIDE_GENDER_STATS new = malloc(sizeof(struct ride_gender_stats));
+
+  new->id = ride_id;
+  new->driver_account_creation = driver_account_creation;
+  new->user_account_creation = user_account_creation;
+
+  return new;
+}
+
+char *get_ride_gender_stats_id(RIDE_GENDER_STATS ride) {
+  return strdup(ride->id);
+}
+
+struct date get_ride_gender_stats_driver_account_creation(
+    RIDE_GENDER_STATS ride) {
+  return ride->driver_account_creation;
+}
+
+struct date get_ride_gender_stats_user_account_creation(
+    RIDE_GENDER_STATS ride) {
+  return ride->user_account_creation;
+}
+
+void update_genders_rides_by_age(CATALOG catalog, STATS stats, char *ride_id,
+                                 char *driver_id, char *username) {
+  GArray *male_rides_by_age = get_male_rides_by_age(stats);
+  GArray *female_rides_by_age = get_female_rides_by_age(stats);
+
+  USER user = g_hash_table_lookup(get_catalog_users(catalog), username);
+  enum gender user_gender = get_user_gender(user);
+  struct date user_account_creation = get_user_account_creation(user);
+
+  DRIVER driver = g_hash_table_lookup(get_catalog_drivers(catalog), driver_id);
+  enum gender driver_gender = get_driver_gender(driver);
+  struct date driver_account_creation = get_driver_account_creation(driver);
+
+  RIDE_GENDER_STATS to_insert = create_ride_gender_stats(
+      ride_id, driver_account_creation, user_account_creation);
+
+  if (user_gender == driver_gender) {
+    if (user_gender == M) {
+      g_array_append_val(male_rides_by_age, to_insert);
+    } else {
+      g_array_append_val(female_rides_by_age, to_insert);
+    }
+  }
+}
+
+void calculate_rides_by_age(GArray *rides_by_age) {
+  g_array_sort(rides_by_age, (GCompareFunc)compare_rides_by_age);
+}
+
+gint compare_rides_by_age(gconstpointer a, gconstpointer b) {
+  RIDE_GENDER_STATS ride_a = *(RIDE_GENDER_STATS *)a;
+  RIDE_GENDER_STATS ride_b = *(RIDE_GENDER_STATS *)b;
+
+  struct date driver_account_creation_a = ride_a->driver_account_creation;
+  struct date driver_account_creation_b = ride_b->driver_account_creation;
+
+  int result_dates =
+      compare_dates(driver_account_creation_a, driver_account_creation_b);
+
+  if (result_dates == 0) {
+    struct date user_account_creation_a = ride_a->user_account_creation;
+    struct date user_account_creation_b = ride_b->user_account_creation;
+
+    int result_dates =
+        compare_dates(user_account_creation_a, user_account_creation_b);
+
+    if (result_dates == 0) {
+      char *ride_id_a = ride_a->id;
+      char *ride_id_b = ride_b->id;
+
+      return strcmp(ride_id_a, ride_id_b) * (-1);
+    }
+
+    return result_dates * (-1);
+  }
+
+  return result_dates * (-1);
 }
 
 void calculate_top_users_by_total_distance(STATS stats, CATALOG catalog) {
@@ -308,6 +409,8 @@ void free_stats(STATS stats) {
   g_list_free(stats->top_drivers_by_average_score);
   g_hash_table_destroy(stats->city_drivers);
   g_hash_table_destroy(stats->rides_by_date);
+  g_array_free(stats->male_rides_by_age, 1);
+  g_array_free(stats->female_rides_by_age, 1);
 
   free(stats);
 }

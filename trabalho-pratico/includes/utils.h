@@ -60,4 +60,6 @@ struct date date_int_to_struct(int date);
 
 int date_struct_to_int(struct date date);
 
+enum gender string_to_gender(char *gender);
+
 #endif

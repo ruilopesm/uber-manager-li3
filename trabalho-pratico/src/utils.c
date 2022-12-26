@@ -238,3 +238,11 @@ struct date date_int_to_struct(int date) {
   date_struct.day = date % 100;
   return date_struct;
 }
+
+enum gender string_to_gender(char *gender) {
+  if (!strcmp(gender, "M")) {
+    return M;
+  } else {
+    return F;
+  }
+}
