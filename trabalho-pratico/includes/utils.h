@@ -5,14 +5,6 @@
 #include <stdio.h>
 
 #define MASTER_DATE "09/10/2022"
-#define MASTER_DATE_DATE \
-  (struct date) { 9, 10, 2022 }
-
-struct date {
-  int day;
-  int month;
-  int year;
-};
 
 enum gender { M, F };
 
@@ -32,33 +24,29 @@ const char *car_class_to_string(int x);
 
 const char *pay_method_to_string(int x);
 
-int calculate_age(struct date birth_date);
+int calculate_age(int birth_date);
 
-int is_date_newer(struct date date1, struct date date2);
+int is_date_newer(int date1, int date2);
 
-int is_date_equal(struct date date1, struct date date2);
+int is_date_equal(int date1, int date2);
 
 int is_id_smaller(char *id1, char *id2);
 
 int is_number(char *string);
 
-int compare_dates(struct date date1, struct date date2);
-
-char *date_to_string(struct date date);
+char *date_to_string(int date);
 
 char *strip(char *string);
 
+void edit_strip(char *string);
+
 gint compare_strings(gconstpointer a, gconstpointer b, gpointer data);
 
-struct date increment_date(struct date date);
+int increment_date(int date);
 
-int maximum_day(struct date date);
+int maximum_day(int date_day, int date_month, int date_year);
 
-struct date date_string_to_struct(char *date_string);
-
-struct date date_int_to_struct(int date);
-
-int date_struct_to_int(struct date date);
+int date_string_to_int(char *date_string);
 
 enum gender string_to_gender(char *gender);
 

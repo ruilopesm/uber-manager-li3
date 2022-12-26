@@ -49,11 +49,10 @@ GArray *get_male_rides_by_age(STATS stats);
 GArray *get_female_rides_by_age(STATS stats);
 
 void update_user_stats(CATALOG catalog, char *username, int distance,
-                       double rating, double price, double tip,
-                       struct date date);
+                       double rating, double price, double tip, int date);
 
 void update_driver_stats(CATALOG catalog, char *driver_id, double rating,
-                         double price, double tip, struct date date);
+                         double price, double tip, int date);
 
 void upsert_city_driver_stats(STATS stats, char *city, char *driver_id,
                               double driver_score, double ride_price);
@@ -63,10 +62,9 @@ void update_genders_rides_by_age(CATALOG catalog, STATS stats, char *ride_id,
 
 char *get_ride_gender_stats_id(RIDE_GENDER_STATS ride);
 
-struct date get_ride_gender_stats_driver_account_creation(
-    RIDE_GENDER_STATS ride);
+int get_ride_gender_stats_driver_account_creation(RIDE_GENDER_STATS ride);
 
-struct date get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride);
+int get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride);
 
 void calculate_rides_by_age(GArray *rides_by_age);
 
@@ -87,8 +85,6 @@ gint compare_driver_stats_by_rating(gconstpointer a, gconstpointer b);
 void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats);
 
 void insert_ride_by_date(RIDE ride, STATS stats);
-
-struct date get_day_of_array(GArray *rides_by_date, int index);
 
 void free_stats(STATS stats);
 

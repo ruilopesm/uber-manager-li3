@@ -15,6 +15,7 @@
 #include "utils.h"
 
 void querier(CATALOG catalog, STATS stats, char *line, int counter) {
+  edit_strip(line);
   char **query_parameter = malloc(sizeof(char *) * MAX_INPUT_TOKENS);
   char *token = strtok(line, " ");
 
@@ -259,13 +260,13 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
   char *city = NULL;
   if (query6_determiner)
     city = parameters[0];  // if we are calculating query6, the city has value
-  struct date lower_limit = date_string_to_struct(
+  int lower_limit = date_string_to_int(
       parameters[0 + query6_determiner]);  // Earliest date at which rides are
                                            // considered, if query6_determiner
                                            // is true we add its value (1) due
                                            // to the additional first parameter
                                            // in query6, which is the city
-  struct date upper_limit = date_string_to_struct(
+  int upper_limit = date_string_to_int(
       parameters[1 + query6_determiner]);  // Latest date at which rides are
                                            // considered
   if (query6_determiner)
@@ -301,22 +302,20 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
 
 // Calculates the average price or distance
 double calculate_avg_price(GHashTable *rides_by_date, GHashTable *drivers_hash,
-                           struct date lower_limit, struct date upper_limit) {
+                           int lower_limit, int upper_limit) {
   double total = 0.f;     // Price accumulator
   int rides_counter = 0;  // Rides Accumulator
-  struct date temp_date;
+  int temp_date;
   RIDE temp_ride = NULL;
   enum car_class
       temp_car_class;  // Temporary variables used to fetch the car class of the
                        // driver and calculate the price charged
 
-  for (temp_date = lower_limit; compare_dates(upper_limit, temp_date) >= 0;
+  for (temp_date = lower_limit; upper_limit >= temp_date;
        temp_date = increment_date(
            temp_date)) {  // If the date searched for already surpasses theupper
                           // limit the cycle is stopped
-    int temp_date_int = date_struct_to_int(temp_date);
-    GArray *rides_of_the_day =
-        g_hash_table_lookup(rides_by_date, &temp_date_int);
+    GArray *rides_of_the_day = g_hash_table_lookup(rides_by_date, &temp_date);
     if (rides_of_the_day) {
       int number_of_rides = rides_of_the_day->len;
       for (int j = 0; j < number_of_rides; j++) {
@@ -348,21 +347,18 @@ double calculate_avg_price(GHashTable *rides_by_date, GHashTable *drivers_hash,
     return 0;
 }
 
-double calculate_avg_distance(GHashTable *rides_by_date,
-                              struct date lower_limit, struct date upper_limit,
-                              char *city) {
+double calculate_avg_distance(GHashTable *rides_by_date, int lower_limit,
+                              int upper_limit, char *city) {
   double total = 0.f;     // Distance accumulator
   int rides_counter = 0;  // Rides Accumulator
-  struct date temp_date;
+  int temp_date;
   RIDE temp_ride = NULL;
 
-  for (temp_date = lower_limit; compare_dates(upper_limit, temp_date) >= 0;
+  for (temp_date = lower_limit; upper_limit >= temp_date;
        temp_date = increment_date(
            temp_date)) {  // If the date searched for already surpasses the
                           // upper limit the cycle is stopped
-    int temp_date_int = date_struct_to_int(temp_date);
-    GArray *rides_of_the_day =
-        g_hash_table_lookup(rides_by_date, &temp_date_int);
+    GArray *rides_of_the_day = g_hash_table_lookup(rides_by_date, &temp_date);
     if (rides_of_the_day) {
       int number_of_rides = rides_of_the_day->len;
       for (int j = 0; j < number_of_rides; j++) {
@@ -577,18 +573,15 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
   // The array where rides will be ordered is created
   GArray *rides_in_range = g_array_new(1, 1, sizeof(RIDE));
-  struct date lower_limit = date_string_to_struct(parameter[0]);
-  struct date upper_limit = date_string_to_struct(parameter[1]);
+  int lower_limit = date_string_to_int(parameter[0]);
+  int upper_limit = date_string_to_int(parameter[1]);
   RIDE temp_ride = NULL;
   int number_of_rides = 0;
 
-  for (struct date temp_date = lower_limit;
-       compare_dates(upper_limit, temp_date) >= 0;
+  for (int temp_date = lower_limit; upper_limit >= temp_date;
        temp_date = increment_date(temp_date)) {
-    int temp_date_int = date_struct_to_int(temp_date);
     // Tries to find if there are rides in that specific day
-    GArray *rides_of_the_day =
-        g_hash_table_lookup(rides_by_date, &temp_date_int);
+    GArray *rides_of_the_day = g_hash_table_lookup(rides_by_date, &temp_date);
     if (rides_of_the_day) {
       number_of_rides = rides_of_the_day->len;
       for (int i = 0; i < number_of_rides; i++) {
@@ -647,9 +640,9 @@ gint sort_query9_by_distance(gconstpointer ride1_constpointer,
   int ride2_distance = get_ride_distance(ride2);
   temp = ride1_distance - ride2_distance;
   if (temp) return temp;
-  struct date ride1_date = get_ride_date(ride1);
-  struct date ride2_date = get_ride_date(ride2);
-  temp = compare_dates(ride1_date, ride2_date);
+  int ride1_date = get_ride_date(ride1);
+  int ride2_date = get_ride_date(ride2);
+  temp = ride1_date - ride2_date;
   if (temp) return temp;
   char *ride1_id = get_ride_id(ride1);
   char *ride2_id = get_ride_id(ride2);

@@ -37,7 +37,7 @@ void set_ride_price(RIDE ride, double price);
 
 char *get_ride_id(RIDE ride);
 
-struct date get_ride_date(RIDE ride);
+int get_ride_date(RIDE ride);
 
 char *get_ride_driver(RIDE ride);
 

@@ -59,49 +59,27 @@ const char *car_class_to_string(int x) {
   return "NULL";
 }
 
-int calculate_age(struct date birth_date) {
+int calculate_age(int birth_date) {
   int age = 0;
+  int birth_date_year = birth_date / 10000;
+  int birth_date_month = (birth_date % 10000) / 100;
+  int birth_date_day = birth_date % 100;
 
   const char *master_date = MASTER_DATE;
   int day, month, year;
   sscanf(master_date, "%d/%d/%d", &day, &month, &year);
 
-  age = year - birth_date.year;
+  age = year - birth_date_year;
 
-  if (month < birth_date.month) {
+  if (month < birth_date_month) {
     age--;
-  } else if (month == birth_date.month) {
-    if (day < birth_date.day) {
+  } else if (month == birth_date_month) {
+    if (day < birth_date_day) {
       age--;
     }
   }
 
   return age;
-}
-
-int is_date_newer(struct date date1, struct date date2) {
-  if (date1.year > date2.year) {
-    return 1;
-  } else if (date1.year == date2.year) {
-    if (date1.month > date2.month) {
-      return 1;
-    } else if (date1.month == date2.month) {
-      if (date1.day > date2.day) {
-        return 1;
-      }
-    }
-  }
-
-  return 0;
-}
-
-int is_date_equal(struct date date1, struct date date2) {
-  if (date1.year == date2.year && date1.month == date2.month &&
-      date1.day == date2.day) {
-    return 1;
-  }
-
-  return 0;
 }
 
 int is_id_smaller(char *id1, char *id2) {
@@ -125,9 +103,15 @@ int is_number(char *string) {
   return 1;
 }
 
-char *date_to_string(struct date date) {
+char *date_to_string(int date) {
   char *string = malloc(sizeof(char) * 11);
-  sprintf(string, "%02d/%02d/%04d", date.day, date.month, date.year);
+  int date_year = date / 10000;
+  int date_month = (date % 10000) / 100;
+  int date_day = date % 100;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-overflow"
+  sprintf(string, "%02d/%02d/%04d", date_day, date_month, date_year);
+#pragma GCC diagnostic pop
 
   return string;
 }
@@ -139,7 +123,7 @@ char *strip(char *string) {
   int j = 0;
 
   for (unsigned i = 0; i < strlen(string); i++) {
-    if (string[i] != ' ' && string[i] != '\n') {
+    if (string[i] != ' ' && string[i] != '\n' && string[i] != '\r') {
       stripped[j] = string[i];
       j++;
     }
@@ -150,70 +134,64 @@ char *strip(char *string) {
   return stripped;
 }
 
-// If the first date is later, returns a positive number, if it's sooner,
-// returns a negative one, if the dates are the same returns 0
-int compare_dates(struct date date1, struct date date2) {
-  int temp =
-      date1.year - date2.year;  // If temp is positive, date1 is later than
-                                // date2, if it's negative the reverse is true
-                                // and if it's 0 the years are the same
-  // Compare if the year is the same, if so compare months in the same way
-  if (temp)
-    return temp;  // If temp is 0 the years are the same and therefore moves on
-                  // to the next criteria, else returns temp
-  temp = date1.month - date2.month;
-  if (temp) return temp;
-  return date1.day - date2.day;  // If the dates are the same year and month the
-                                 // result is decided by the day differential
+// function that edits the string to remove spaces and '\n' characters
+void edit_strip(char *string) {
+  int j = 0;
+  unsigned i;
+
+  for (i = 0; string[i] != '\0'; i++) {
+    if (string[i] != '\n' && string[i] != '\r' && string[i] != '\t' &&
+        string[i] != '\v' && string[i] != '\f') {
+      string[i - j] = string[i];
+    } else
+      j++;
+  }
+  string[i - j + 1] = '\0';
 }
 
 // Moves the date to the next day
-struct date increment_date(struct date date) {
-  if (maximum_day(date)) {
-    date.day = 1;
-    if (date.month == 12) {
-      date.year++;
-      date.month = 1;
+int increment_date(int date) {
+  int date_year = date / 10000;
+  int date_month = (date % 10000) / 100;
+  int date_day = date % 100;
+  if (maximum_day(date_day, date_month, date_year)) {
+    date_day = 1;
+    if (date_month == 12) {
+      date_year++;
+      date_month = 1;
     } else
-      date.month++;
+      date_month++;
   } else
-    date.day++;
+    date_day++;
+  date = date_year * 10000 + date_month * 100 + date_day;
   return date;
 }
 
 // Returns 1 if the maximum day of that month has been reached, 0 if not
-int maximum_day(struct date date) {
-  return date.day ==
-         31 - (!((date.month % 7) % 2)) + (date.month == 7) -
-             (date.month == 2) -
-             (date.month == 2) *
-                 ((date.year % 4) || (!(date.year % 100) && (date.year % 400)));
+int maximum_day(int date_day, int date_month, int date_year) {
+  return date_day ==
+         31 - (!((date_month % 7) % 2)) + (date_month == 7) -
+             (date_month == 2) -
+             (date_month == 2) *
+                 ((date_year % 4) || (!(date_year % 100) && (date_year % 400)));
 }
 
-struct date date_string_to_struct(char *date_string) {
-  char day[3];
-  day[0] = date_string[0];
-  day[1] = date_string[1];
-  day[2] = '\0';
+int date_string_to_int(char *date_string) {
+  char date[9];
+  date[0] = date_string[6];
+  date[1] = date_string[7];
+  date[2] = date_string[8];
+  date[3] = date_string[9];
+  date[4] = date_string[3];
+  date[5] = date_string[4];
+  date[6] = date_string[0];
+  date[7] = date_string[1];
+  date[8] = '\0';
 
-  char month[3];
-  month[0] = date_string[3];
-  month[1] = date_string[4];
-  month[2] = '\0';
+  int date_int;
+  date_int = atoi(date);
 
-  char year[5];
-  year[0] = date_string[6];
-  year[1] = date_string[7];
-  year[2] = date_string[8];
-  year[3] = date_string[9];
-  year[4] = '\0';
-
-  struct date date;
-  date.day = atoi(day);
-  date.month = atoi(month);
-  date.year = atoi(year);
-
-  return date;
+  return date_int;
 }
 
 gint compare_strings(gconstpointer a, gconstpointer b, gpointer data) {
@@ -221,22 +199,6 @@ gint compare_strings(gconstpointer a, gconstpointer b, gpointer data) {
   return result;
 
   (void)data;
-}
-
-int date_struct_to_int(struct date date) {
-  int date_int = 0;
-  date_int = date.year * 10000;
-  date_int += date.month * 100;
-  date_int += date.day;
-  return date_int;
-}
-
-struct date date_int_to_struct(int date) {
-  struct date date_struct;
-  date_struct.year = date / 10000;
-  date_struct.month = (date % 10000) / 100;
-  date_struct.day = date % 100;
-  return date_struct;
 }
 
 enum gender string_to_gender(char *gender) {

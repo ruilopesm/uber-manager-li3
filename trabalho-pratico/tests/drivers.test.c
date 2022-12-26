@@ -39,9 +39,7 @@ TEST driver_birth_date_test(void) {
 
   set_driver_birth_date(driver, birth_date);
 
-  ASSERT_EQ(1, get_driver_birth_date(driver).day);
-  ASSERT_EQ(1, get_driver_birth_date(driver).month);
-  ASSERT_EQ(2002, get_driver_birth_date(driver).year);
+  ASSERT_EQ(20020101, get_driver_birth_date(driver));
 
   free(birth_date);
 
@@ -80,9 +78,7 @@ TEST driver_account_creation_test(void) {
 
   set_driver_account_creation(driver, account_creation);
 
-  ASSERT_EQ(1, get_driver_account_creation(driver).day);
-  ASSERT_EQ(1, get_driver_account_creation(driver).month);
-  ASSERT_EQ(2002, get_driver_account_creation(driver).year);
+  ASSERT_EQ(20020101, get_driver_account_creation(driver));
 
   free(account_creation);
 

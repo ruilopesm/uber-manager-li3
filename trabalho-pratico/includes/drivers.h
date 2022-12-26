@@ -41,13 +41,13 @@ char *get_driver_id(DRIVER driver);
 
 char *get_driver_name(DRIVER driver);
 
-struct date get_driver_birth_date(DRIVER driver);
+int get_driver_birth_date(DRIVER driver);
 
 enum gender get_driver_gender(DRIVER driver);
 
 enum car_class get_driver_car_class(DRIVER driver);
 
-struct date get_driver_account_creation(DRIVER driver);
+int get_driver_account_creation(DRIVER driver);
 
 enum account_status get_driver_account_status(DRIVER driver);
 
@@ -57,7 +57,7 @@ double get_driver_total_rating(DRIVER driver);
 
 double get_driver_total_earned(DRIVER driver);
 
-struct date get_driver_latest_ride(DRIVER driver);
+int get_driver_latest_ride(DRIVER driver);
 
 void free_driver(DRIVER driver);
 

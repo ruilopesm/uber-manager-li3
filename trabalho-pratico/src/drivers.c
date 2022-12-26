@@ -13,9 +13,9 @@ struct driver {
   char *name;
   double total_earned;
   double total_rating;
-  struct date birth_date;
-  struct date account_creation;
-  struct date latest_ride;
+  int birth_date;
+  int account_creation;
+  int latest_ride;
   int number_of_rides;
   enum car_class car_class : 2;
   enum gender gender : 1;
@@ -66,14 +66,14 @@ void set_driver_name(DRIVER driver, char *name_string) {
 }
 
 void set_driver_birth_date(DRIVER driver, char *birth_date_string) {
-  struct date birth_date;
+  int birth_date = 0;
   int day, month, year;
 
   sscanf(birth_date_string, "%d/%d/%d", &day, &month, &year);
 
-  birth_date.day = day;
-  birth_date.month = month;
-  birth_date.year = year;
+  birth_date = day;
+  birth_date += month * 100;
+  birth_date += year * 10000;
 
   driver->birth_date = birth_date;
 }
@@ -105,16 +105,16 @@ void set_driver_car_class(DRIVER driver, char *car_class_string) {
 }
 
 void set_driver_account_creation(DRIVER driver, char *account_creation_string) {
-  struct date account_creation_date;
+  int account_creation = 0;
   int day, month, year;
 
   sscanf(account_creation_string, "%d/%d/%d", &day, &month, &year);
 
-  account_creation_date.day = day;
-  account_creation_date.month = month;
-  account_creation_date.year = year;
+  account_creation = day;
+  account_creation += month * 100;
+  account_creation += year * 10000;
 
-  driver->account_creation = account_creation_date;
+  driver->account_creation = account_creation;
 }
 
 void set_driver_account_status(DRIVER driver, char *account_status_string) {
@@ -142,16 +142,16 @@ void set_driver_total_earned(DRIVER driver, double total_earned) {
 }
 
 void set_driver_latest_ride(DRIVER driver, char *latest_ride_string) {
-  struct date latest_ride_date;
+  int latest_ride = 0;
   int day, month, year;
 
   sscanf(latest_ride_string, "%d/%d/%d", &day, &month, &year);
 
-  latest_ride_date.day = day;
-  latest_ride_date.month = month;
-  latest_ride_date.year = year;
+  latest_ride = day;
+  latest_ride += month * 100;
+  latest_ride += year * 10000;
 
-  driver->latest_ride = latest_ride_date;
+  driver->latest_ride = latest_ride;
 }
 
 char *get_driver_id(DRIVER driver) {
@@ -164,8 +164,8 @@ char *get_driver_name(DRIVER driver) {
   return driver_name;
 }
 
-struct date get_driver_birth_date(DRIVER driver) {
-  struct date date = driver->birth_date;
+int get_driver_birth_date(DRIVER driver) {
+  int date = driver->birth_date;
   return date;
 }
 
@@ -180,8 +180,8 @@ enum car_class get_driver_car_class(DRIVER driver) {
   return car_class;
 }
 
-struct date get_driver_account_creation(DRIVER driver) {
-  struct date account_creation = driver->account_creation;
+int get_driver_account_creation(DRIVER driver) {
+  int account_creation = driver->account_creation;
   return account_creation;
 }
 
@@ -205,8 +205,8 @@ double get_driver_total_earned(DRIVER driver) {
   return total_earned;
 }
 
-struct date get_driver_latest_ride(DRIVER driver) {
-  struct date latest_ride = driver->latest_ride;
+int get_driver_latest_ride(DRIVER driver) {
+  int latest_ride = driver->latest_ride;
   return latest_ride;
 }
 

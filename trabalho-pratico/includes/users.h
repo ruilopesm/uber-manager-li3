@@ -45,9 +45,9 @@ char *get_user_name(USER user);
 
 enum gender get_user_gender(USER user);
 
-struct date get_user_birth_date(USER user);
+int get_user_birth_date(USER user);
 
-struct date get_user_account_creation(USER user);
+int get_user_account_creation(USER user);
 
 enum pay_method get_user_pay_method(USER user);
 
@@ -61,7 +61,7 @@ double get_user_total_spent(USER user);
 
 int get_user_total_distance(USER user);
 
-struct date get_user_latest_ride(USER user);
+int get_user_latest_ride(USER user);
 
 void free_user(USER user);
 

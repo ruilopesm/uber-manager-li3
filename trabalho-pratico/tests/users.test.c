@@ -52,9 +52,7 @@ TEST user_birth_date_test(void) {
 
   set_user_birth_date(user, birth_date);
 
-  ASSERT(get_user_birth_date(user).day == 1);
-  ASSERT(get_user_birth_date(user).month == 1);
-  ASSERT(get_user_birth_date(user).year == 2002);
+  ASSERT(get_user_birth_date(user) == 20020101);
 
   free(birth_date);
 
@@ -67,9 +65,7 @@ TEST user_account_creation_test(void) {
 
   set_user_account_creation(user, account_creation);
 
-  ASSERT(get_user_account_creation(user).day == 1);
-  ASSERT(get_user_account_creation(user).month == 1);
-  ASSERT(get_user_account_creation(user).year == 2020);
+  ASSERT(get_user_account_creation(user) == 20200101);
 
   free(account_creation);
 

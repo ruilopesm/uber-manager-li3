@@ -13,9 +13,9 @@ struct user {
   char *name;
   double total_rating;
   double total_spent;
-  struct date birth_date;
-  struct date account_creation;
-  struct date latest_ride;
+  int birth_date;
+  int account_creation;
+  int latest_ride;
   int number_of_rides;
   int total_distance;
   enum pay_method pay_method : 2;
@@ -82,27 +82,27 @@ void set_user_gender(USER user, char *gender_string) {
 }
 
 void set_user_birth_date(USER user, char *birth_date_string) {
-  struct date birth_date;
+  int birth_date = 0;
   int day, month, year;
 
   sscanf(birth_date_string, "%d/%d/%d", &day, &month, &year);
 
-  birth_date.day = day;
-  birth_date.month = month;
-  birth_date.year = year;
+  birth_date = day;
+  birth_date += month * 100;
+  birth_date += year * 10000;
 
   user->birth_date = birth_date;
 }
 
 void set_user_account_creation(USER user, char *account_creation_date_string) {
-  struct date account_creation;
+  int account_creation = 0;
   int day, month, year;
 
   sscanf(account_creation_date_string, "%d/%d/%d", &day, &month, &year);
 
-  account_creation.day = day;
-  account_creation.month = month;
-  account_creation.year = year;
+  account_creation = day;
+  account_creation += month * 100;
+  account_creation += year * 10000;
 
   user->account_creation = account_creation;
 }
@@ -150,14 +150,14 @@ void set_user_total_distance(USER user, int total_distance) {
 }
 
 void set_user_latest_ride(USER user, char *latest_ride_date_string) {
-  struct date latest_ride;
+  int latest_ride = 0;
   int day, month, year;
 
   sscanf(latest_ride_date_string, "%d/%d/%d", &day, &month, &year);
 
-  latest_ride.day = day;
-  latest_ride.month = month;
-  latest_ride.year = year;
+  latest_ride = day;
+  latest_ride += month * 100;
+  latest_ride += year * 10000;
 
   user->latest_ride = latest_ride;
 }
@@ -180,14 +180,14 @@ enum gender get_user_gender(USER user) {
   return gender_copy;
 }
 
-struct date get_user_birth_date(USER user) {
-  struct date birth_date_copy = user->birth_date;
+int get_user_birth_date(USER user) {
+  int birth_date_copy = user->birth_date;
 
   return birth_date_copy;
 }
 
-struct date get_user_account_creation(USER user) {
-  struct date account_creation_copy = user->account_creation;
+int get_user_account_creation(USER user) {
+  int account_creation_copy = user->account_creation;
 
   return account_creation_copy;
 }
@@ -228,8 +228,8 @@ int get_user_total_distance(USER user) {
   return total_distance_copy;
 }
 
-struct date get_user_latest_ride(USER user) {
-  struct date latest_ride_copy = user->latest_ride;
+int get_user_latest_ride(USER user) {
+  int latest_ride_copy = user->latest_ride;
 
   return latest_ride_copy;
 }

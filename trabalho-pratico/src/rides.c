@@ -16,7 +16,7 @@ struct ride {
   char *city;
   double tip;
   double price;
-  struct date date;
+  int date;
   int distance;
   int score_user;
   int score_driver;
@@ -76,16 +76,16 @@ void set_ride_id(RIDE ride, char *id_string) {
 }
 
 void set_ride_date(RIDE ride, char *date_string) {
-  struct date ride_date;
+  int date;
   int day, month, year;
 
   sscanf(date_string, "%d/%d/%d", &day, &month, &year);
 
-  ride_date.day = day;
-  ride_date.month = month;
-  ride_date.year = year;
+  date = day;
+  date += month * 100;
+  date += year * 10000;
 
-  ride->date = ride_date;
+  ride->date = date;
 }
 
 void set_ride_driver(RIDE ride, char *driver_string) {
@@ -124,8 +124,8 @@ void set_ride_price(RIDE ride, double price) { ride->price = price; }
 
 char *get_ride_id(RIDE ride) { return strdup(ride->id); }
 
-struct date get_ride_date(RIDE ride) {
-  struct date date_copy = ride->date;
+int get_ride_date(RIDE ride) {
+  int date_copy = ride->date;
   return date_copy;
 }
 

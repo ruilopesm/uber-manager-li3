@@ -29,8 +29,8 @@ struct city_driver_stats {
 
 struct ride_gender_stats {
   char *id;
-  struct date driver_account_creation;
-  struct date user_account_creation;
+  int driver_account_creation;
+  int user_account_creation;
 };
 
 STATS create_stats(void) {
@@ -107,8 +107,7 @@ GArray *get_female_rides_by_age(STATS stats) {
 }
 
 void update_user_stats(CATALOG catalog, char *username, int distance,
-                       double rating, double price, double tip,
-                       struct date date) {
+                       double rating, double price, double tip, int date) {
   GHashTable *users = get_catalog_users(catalog);
   USER user = g_hash_table_lookup(users, username);
 
@@ -117,7 +116,7 @@ void update_user_stats(CATALOG catalog, char *username, int distance,
   set_user_total_spent(user, get_user_total_spent(user) + price + tip);
   set_user_total_distance(user, get_user_total_distance(user) + distance);
 
-  if (compare_dates(date, get_user_latest_ride(user)) > 0) {
+  if ((date - get_user_latest_ride(user)) > 0) {
     char *date_string = date_to_string(date);
     set_user_latest_ride(user, date_string);
     free(date_string);
@@ -125,7 +124,7 @@ void update_user_stats(CATALOG catalog, char *username, int distance,
 }
 
 void update_driver_stats(CATALOG catalog, char *driver_id, double rating,
-                         double price, double tip, struct date date) {
+                         double price, double tip, int date) {
   GHashTable *drivers = get_catalog_drivers(catalog);
   DRIVER driver = g_hash_table_lookup(drivers, driver_id);
 
@@ -134,7 +133,7 @@ void update_driver_stats(CATALOG catalog, char *driver_id, double rating,
   set_driver_total_earned(driver,
                           get_driver_total_earned(driver) + price + tip);
 
-  if (compare_dates(date, get_driver_latest_ride(driver)) > 0) {
+  if ((date - get_driver_latest_ride(driver)) > 0) {
     char *date_string = date_to_string(date);
     set_driver_latest_ride(driver, date_string);
     free(date_string);
@@ -168,8 +167,8 @@ void upsert_city_driver_stats(STATS stats, char *city, char *driver_id,
 }
 
 RIDE_GENDER_STATS create_ride_gender_stats(char *ride_id,
-                                           struct date driver_account_creation,
-                                           struct date user_account_creation) {
+                                           int driver_account_creation,
+                                           int user_account_creation) {
   RIDE_GENDER_STATS new = malloc(sizeof(struct ride_gender_stats));
 
   new->id = ride_id;
@@ -183,13 +182,11 @@ char *get_ride_gender_stats_id(RIDE_GENDER_STATS ride) {
   return strdup(ride->id);
 }
 
-struct date get_ride_gender_stats_driver_account_creation(
-    RIDE_GENDER_STATS ride) {
+int get_ride_gender_stats_driver_account_creation(RIDE_GENDER_STATS ride) {
   return ride->driver_account_creation;
 }
 
-struct date get_ride_gender_stats_user_account_creation(
-    RIDE_GENDER_STATS ride) {
+int get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride) {
   return ride->user_account_creation;
 }
 
@@ -200,11 +197,11 @@ void update_genders_rides_by_age(CATALOG catalog, STATS stats, char *ride_id,
 
   USER user = g_hash_table_lookup(get_catalog_users(catalog), username);
   enum gender user_gender = get_user_gender(user);
-  struct date user_account_creation = get_user_account_creation(user);
+  int user_account_creation = get_user_account_creation(user);
 
   DRIVER driver = g_hash_table_lookup(get_catalog_drivers(catalog), driver_id);
   enum gender driver_gender = get_driver_gender(driver);
-  struct date driver_account_creation = get_driver_account_creation(driver);
+  int driver_account_creation = get_driver_account_creation(driver);
 
   RIDE_GENDER_STATS to_insert = create_ride_gender_stats(
       ride_id, driver_account_creation, user_account_creation);
@@ -226,18 +223,16 @@ gint compare_rides_by_age(gconstpointer a, gconstpointer b) {
   RIDE_GENDER_STATS ride_a = *(RIDE_GENDER_STATS *)a;
   RIDE_GENDER_STATS ride_b = *(RIDE_GENDER_STATS *)b;
 
-  struct date driver_account_creation_a = ride_a->driver_account_creation;
-  struct date driver_account_creation_b = ride_b->driver_account_creation;
+  int driver_account_creation_a = ride_a->driver_account_creation;
+  int driver_account_creation_b = ride_b->driver_account_creation;
 
-  int result_dates =
-      compare_dates(driver_account_creation_a, driver_account_creation_b);
+  int result_dates = driver_account_creation_a - driver_account_creation_b;
 
   if (result_dates == 0) {
-    struct date user_account_creation_a = ride_a->user_account_creation;
-    struct date user_account_creation_b = ride_b->user_account_creation;
+    int user_account_creation_a = ride_a->user_account_creation;
+    int user_account_creation_b = ride_b->user_account_creation;
 
-    int result_dates =
-        compare_dates(user_account_creation_a, user_account_creation_b);
+    int result_dates = user_account_creation_a - user_account_creation_b;
 
     if (result_dates == 0) {
       char *ride_id_a = ride_a->id;
@@ -268,10 +263,10 @@ gint compare_users_by_total_distance(gconstpointer a, gconstpointer b) {
   int total_distance_b = get_user_total_distance(user_b);
 
   if (total_distance_a == total_distance_b) {
-    struct date most_recent_ride_a = get_user_latest_ride(user_a);
-    struct date most_recent_ride_b = get_user_latest_ride(user_b);
+    int most_recent_ride_a = get_user_latest_ride(user_a);
+    int most_recent_ride_b = get_user_latest_ride(user_b);
 
-    int result_dates = compare_dates(most_recent_ride_a, most_recent_ride_b);
+    int result_dates = most_recent_ride_a - most_recent_ride_b;
 
     if (result_dates == 0) {
       char *username_a = get_user_username(user_a);
@@ -342,10 +337,10 @@ gint compare_drivers_by_average_score(gconstpointer a, gconstpointer b) {
   double b_score = (double)(b_total_rating / b_number_of_rides);
 
   if (a_score == b_score) {
-    struct date most_recent_ride_a = get_driver_latest_ride(driver_a);
-    struct date most_recent_ride_b = get_driver_latest_ride(driver_b);
+    int most_recent_ride_a = get_driver_latest_ride(driver_a);
+    int most_recent_ride_b = get_driver_latest_ride(driver_b);
 
-    int result_dates = compare_dates(most_recent_ride_a, most_recent_ride_b);
+    int result_dates = most_recent_ride_a - most_recent_ride_b;
 
     if (result_dates == 0) {
       char *driver_id_a = get_driver_id(driver_a);
@@ -380,19 +375,18 @@ void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats) {
 // Inserts a ride on the rides by date stats
 void insert_ride_by_date(RIDE ride, STATS stats) {
   GHashTable *rides_by_date = get_rides_by_date(stats);
-  struct date ride_date = get_ride_date(ride);
-  int ride_date_int = date_struct_to_int(ride_date);
+  int ride_date = get_ride_date(ride);
   GArray *rides_of_the_day = NULL;
   rides_of_the_day = g_hash_table_lookup(
-      rides_by_date, &ride_date_int);  // Tries to find if there are any rides
-                                       // already inserted with the same day
+      rides_by_date, &ride_date);  // Tries to find if there are any rides
+                                   // already inserted with the same day
   if (rides_of_the_day) {
     g_array_append_val(rides_of_the_day,
                        ride);  // The ride is then added to the array that has
                                // all the rides made in the same day
   } else {
-    int *date = g_malloc(sizeof(struct date));
-    *date = date_struct_to_int(ride_date);
+    int *date = g_malloc(sizeof(int));
+    *date = ride_date;
     GArray *new_day = g_array_new(
         1, 1, sizeof(RIDE));  // If no rides made on the same day were added
                               // yet, we create a new array to store all the

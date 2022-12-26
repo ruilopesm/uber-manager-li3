@@ -26,9 +26,7 @@ TEST ride_date_test(void) {
 
   set_ride_date(ride, date);
 
-  ASSERT(get_ride_date(ride).day == 1);
-  ASSERT(get_ride_date(ride).month == 1);
-  ASSERT(get_ride_date(ride).year == 2002);
+  ASSERT(get_ride_date(ride) == 20020101);
 
   free(date);
 
