@@ -196,7 +196,7 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
   utils->total_spent = 0;
   utils->total_rides = 0;
 
-  GTree *city_drivers_tree = get_city_driver_stats(stats, city);
+  GTree *city_drivers_tree = get_city_stats_tree(stats, city);
 
   if (city_drivers_tree != NULL) {
     g_tree_foreach(city_drivers_tree, (GTraverseFunc)count_city_total_spent,
@@ -405,15 +405,21 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
-  GTree *city_drivers_tree = get_city_driver_stats(stats, city);
+  GTree *city_drivers_tree = get_city_stats_tree(stats, city);
   if (city_drivers_tree == NULL) {
     return;
   }
 
-  GPtrArray *city_drivers_array = g_ptr_array_new();
-  g_tree_foreach(city_drivers_tree, (GTraverseFunc)tree_to_array,
-                 city_drivers_array);
-  g_ptr_array_sort(city_drivers_array, compare_driver_stats_by_rating);
+  GPtrArray *city_drivers_array = get_city_stats_array(stats, city);
+  if (city_drivers_array == NULL) {
+    city_drivers_array = g_ptr_array_new();
+
+    g_tree_foreach(city_drivers_tree, (GTraverseFunc)tree_to_array,
+                   city_drivers_array);
+    g_ptr_array_sort(city_drivers_array, compare_driver_stats_by_rating);
+
+    set_city_drivers_array(stats, city, city_drivers_array);
+  }
 
   int i = 0;
   while (n > 0 && i < (int)city_drivers_array->len) {
@@ -446,7 +452,6 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
     i++;
   }
 
-  g_ptr_array_free(city_drivers_array, TRUE);
   free(parameter);
   free(city);
   free(output_filename);

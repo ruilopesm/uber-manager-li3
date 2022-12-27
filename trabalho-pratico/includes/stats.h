@@ -16,6 +16,8 @@ typedef struct ride_stats *RIDE_STATS;
 
 typedef struct city_driver_stats *CITY_DRIVER_STATS;
 
+typedef struct city *CITY_STATS;
+
 typedef struct ride_gender_stats *RIDE_GENDER_STATS;
 
 typedef struct ride *RIDE;  // To not cause conflicts
@@ -25,6 +27,8 @@ STATS create_stats(void);
 CITY_DRIVER_STATS create_city_driver_stats(char *id, double total_rating,
                                            int total_rides, double ride_price);
 
+CITY_STATS create_city_stats(char *city);
+
 void update_city_driver_stats(CITY_DRIVER_STATS city_driver_stats,
                               double rating, double spent);
 
@@ -32,7 +36,11 @@ GList *get_top_drivers_by_average_score(STATS stats);
 
 GList *get_top_users_by_total_distance(STATS stats);
 
-GTree *get_city_driver_stats(STATS stats, char *city);
+CITY_STATS get_city_stats(STATS stats, char *city);
+
+GTree *get_city_stats_tree(STATS stats, char *city);
+
+GPtrArray *get_city_stats_array(STATS stats, char *city);
 
 double get_city_driver_stats_total_rating(CITY_DRIVER_STATS city_driver_stats);
 
@@ -43,6 +51,8 @@ char *get_city_driver_stats_id(CITY_DRIVER_STATS city_driver_stats);
 double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats);
 
 GHashTable *get_rides_by_date(STATS stats);
+
+void set_city_drivers_array(STATS stats, char *city, GPtrArray *drivers_array);
 
 GArray *get_male_rides_by_age(STATS stats);
 
