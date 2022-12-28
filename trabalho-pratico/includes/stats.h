@@ -24,7 +24,7 @@ typedef struct ride *RIDE;  // To not cause conflicts
 
 STATS create_stats(void);
 
-CITY_DRIVER_STATS create_city_driver_stats(char *id, double total_rating,
+CITY_DRIVER_STATS create_city_driver_stats(int *id, double total_rating,
                                            int total_rides, double ride_price);
 
 CITY_STATS create_city_stats(char *city);
@@ -46,7 +46,7 @@ double get_city_driver_stats_total_rating(CITY_DRIVER_STATS city_driver_stats);
 
 int get_city_driver_stats_total_rides(CITY_DRIVER_STATS city_driver_stats);
 
-char *get_city_driver_stats_id(CITY_DRIVER_STATS city_driver_stats);
+int get_city_driver_stats_id(CITY_DRIVER_STATS city_driver_stats);
 
 double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats);
 
@@ -61,16 +61,16 @@ GArray *get_female_rides_by_age(STATS stats);
 void update_user_stats(CATALOG catalog, char *username, int distance,
                        double rating, double price, double tip, int date);
 
-void update_driver_stats(CATALOG catalog, char *driver_id, double rating,
+void update_driver_stats(CATALOG catalog, int *driver_id, double rating,
                          double price, double tip, int date);
 
-void upsert_city_driver_stats(STATS stats, char *city, char *driver_id,
+void upsert_city_driver_stats(STATS stats, char *city, int *driver_id,
                               double driver_score, double ride_price);
 
-void update_genders_rides_by_age(CATALOG catalog, STATS stats, char *ride_id,
-                                 char *driver_id, char *username);
+void update_genders_rides_by_age(CATALOG catalog, STATS stats, int *ride_id,
+                                 int *driver_id, char *username);
 
-char *get_ride_gender_stats_id(RIDE_GENDER_STATS ride);
+int get_ride_gender_stats_id(RIDE_GENDER_STATS ride);
 
 int get_ride_gender_stats_driver_account_creation(RIDE_GENDER_STATS ride);
 

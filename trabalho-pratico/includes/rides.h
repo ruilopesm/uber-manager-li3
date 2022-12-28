@@ -35,11 +35,11 @@ void set_ride_tip(RIDE ride, char *tip_string);
 
 void set_ride_price(RIDE ride, double price);
 
-char *get_ride_id(RIDE ride);
+int get_ride_id(RIDE ride);
 
 int get_ride_date(RIDE ride);
 
-char *get_ride_driver(RIDE ride);
+int get_ride_driver(RIDE ride);
 
 char *get_ride_user(RIDE ride);
 

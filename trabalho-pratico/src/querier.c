@@ -89,7 +89,7 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
   while (iterator != NULL && n > 0) {
     DRIVER driver = iterator->data;
-    char *driver_id = get_driver_id(driver);
+    int driver_id = get_driver_id(driver);
     char *name = get_driver_name(driver);
 
     double total_rating = get_driver_total_rating(driver);
@@ -99,13 +99,12 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
     enum account_status account_status = get_driver_account_status(driver);
 
     if (account_status == ACTIVE) {
-      fprintf(output_file, "%s;%s;%.3f\n", driver_id, name, average_score);
+      fprintf(output_file, "%012d;%s;%.3f\n", driver_id, name, average_score);
       n--;
     }
 
     iterator = iterator->next;
 
-    free(driver_id);
     free(name);
   }
 
@@ -324,18 +323,18 @@ double calculate_avg_price(GHashTable *rides_by_date, GHashTable *drivers_hash,
                           j);  // Ride which we are calculating the total cost
         if (temp_ride == NULL)
           break;  // Make sure there is something in that array position
-        char *ride_driver = get_ride_driver(temp_ride);
+        int ride_driver = get_ride_driver(temp_ride);
         temp_car_class = get_driver_car_class(g_hash_table_lookup(
             drivers_hash,
-            ride_driver));  //  We need to get the driver's car class to
-                            //  calculatethe ride price, so we search for the
-                            //  driver using the ride ID and get their car class
+            &ride_driver));  //  We need to get the driver's car class to
+                             //  calculatethe ride price, so we search for the
+                             //  driver using the ride ID and get their car
+                             //  class
         total += calculate_ride_price(
             get_ride_distance(temp_ride),
             temp_car_class);  // the price of that specific ride is then
                               // calculated and added to the accumulator
         rides_counter++;
-        free(ride_driver);
       }
     }
   }
@@ -425,14 +424,14 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
   while (n > 0 && i < (int)city_drivers_array->len) {
     CITY_DRIVER_STATS city_driver_stats =
         g_ptr_array_index(city_drivers_array, i);
-    char *driver_id = get_city_driver_stats_id(city_driver_stats);
+    int driver_id = get_city_driver_stats_id(city_driver_stats);
 
     GHashTable *drivers = get_catalog_drivers(catalog);
-    DRIVER driver = g_hash_table_lookup(drivers, driver_id);
+    DRIVER driver = g_hash_table_lookup(drivers, &driver_id);
     enum account_status status = get_driver_account_status(driver);
 
     if (status == ACTIVE) {
-      char *driver_name = get_catalog_driver_name(catalog, driver_id);
+      char *driver_name = get_catalog_driver_name(catalog, &driver_id);
 
       double driver_rating =
           get_city_driver_stats_total_rating(city_driver_stats);
@@ -442,11 +441,10 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
       double driver_average_score = driver_rating / driver_number_of_rides;
 
-      fprintf(output_file, "%s;%s;%.3f\n", driver_id, driver_name,
+      fprintf(output_file, "%012d;%s;%.3f\n", driver_id, driver_name,
               driver_average_score);
 
       free(driver_name);
-      free(driver_id);
       n--;
     }
     i++;
@@ -510,7 +508,7 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
   for (int i = top_rides->len - 1; i >= 0; i--) {
     RIDE_GENDER_STATS current_ride =
         g_array_index(top_rides, RIDE_GENDER_STATS, i);
-    char *ride_id = get_ride_gender_stats_id(current_ride);
+    int ride_id = get_ride_gender_stats_id(current_ride);
 
     int driver_age = calculate_age(
         get_ride_gender_stats_driver_account_creation(current_ride));
@@ -527,15 +525,15 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
     }
 
     GHashTable *rides = get_catalog_rides(catalog);
-    RIDE current_ride_catalog = g_hash_table_lookup(rides, ride_id);
+    RIDE current_ride_catalog = g_hash_table_lookup(rides, &ride_id);
 
     char *username = get_ride_user(current_ride_catalog);
     USER current_user =
         g_hash_table_lookup(get_catalog_users(catalog), username);
 
-    char *driver_id = get_ride_driver(current_ride_catalog);
+    int driver_id = get_ride_driver(current_ride_catalog);
     DRIVER current_driver =
-        g_hash_table_lookup(get_catalog_drivers(catalog), driver_id);
+        g_hash_table_lookup(get_catalog_drivers(catalog), &driver_id);
 
     enum account_status driver_account_status =
         get_driver_account_status(current_driver);
@@ -546,14 +544,12 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
       char *driver_name = get_driver_name(current_driver);
       char *name = get_user_name(current_user);
 
-      fprintf(output_file, "%s;%s;%s;%s\n", driver_id, driver_name, username,
+      fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name, username,
               name);
 
       free(driver_name);
       free(name);
     }
-
-    free(ride_id);
   }
 
   free(parameter);
@@ -613,7 +609,7 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
   number_of_rides = rides_in_range->len - 1;
   while (number_of_rides >= 0) {
     temp_ride = g_array_index(rides_in_range, RIDE, number_of_rides);
-    fprintf(output_file, "%s;%s;%d;%s;%.3f\n", get_ride_id(temp_ride),
+    fprintf(output_file, "%012d;%s;%d;%s;%.3f\n", get_ride_id(temp_ride),
             date_to_string(get_ride_date(temp_ride)),
             get_ride_distance(temp_ride), get_ride_city(temp_ride),
             get_ride_tip(temp_ride));
@@ -649,9 +645,9 @@ gint sort_query9_by_distance(gconstpointer ride1_constpointer,
   int ride2_date = get_ride_date(ride2);
   temp = ride1_date - ride2_date;
   if (temp) return temp;
-  char *ride1_id = get_ride_id(ride1);
-  char *ride2_id = get_ride_id(ride2);
-  return strcmp(ride1_id, ride2_id);
+  int ride1_id = get_ride_id(ride1);
+  int ride2_id = get_ride_id(ride2);
+  return ride1_id - ride2_id;
 }
 
 void get_user_profile(CATALOG catalog, char *id, int counter) {
@@ -707,7 +703,8 @@ void get_driver_profile(CATALOG catalog, char *id, int counter) {
   }
 
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
-  DRIVER driver = g_hash_table_lookup(drivers_hash_table, id);
+  int id_int = atoi(id);
+  DRIVER driver = g_hash_table_lookup(drivers_hash_table, &id_int);
 
   if (driver == NULL) {
     free(output_filename);

@@ -194,8 +194,8 @@ int date_string_to_int(char *date_string) {
   return date_int;
 }
 
-gint compare_strings(gconstpointer a, gconstpointer b, gpointer data) {
-  gint result = strcmp(a, b);
+gint compare_ints(gconstpointer a, gconstpointer b, gpointer data) {
+  gint result = *(int *)a - *(int *)b;
   return result;
 
   (void)data;

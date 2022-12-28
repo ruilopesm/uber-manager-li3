@@ -10,8 +10,8 @@
 #include "users.h"
 
 struct ride {
-  char *id;
-  char *driver;
+  int *id;
+  int *driver;
   char *user;
   char *city;
   double tip;
@@ -69,10 +69,9 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
 }
 
 void set_ride_id(RIDE ride, char *id_string) {
-  char *id = malloc(sizeof(char) * 13);
-  strcpy(id, id_string);
-
-  ride->id = id;
+  ride->id = malloc(sizeof(int));
+  int id_int = atoi(id_string);
+  *ride->id = id_int;
 }
 
 void set_ride_date(RIDE ride, char *date_string) {
@@ -89,7 +88,9 @@ void set_ride_date(RIDE ride, char *date_string) {
 }
 
 void set_ride_driver(RIDE ride, char *driver_string) {
-  ride->driver = strdup(driver_string);
+  ride->driver = malloc(sizeof(int));
+  int driver_id = atoi(driver_string);
+  *ride->driver = driver_id;
 }
 
 void set_ride_user(RIDE ride, char *user_string) {
@@ -122,15 +123,15 @@ void set_ride_tip(RIDE ride, char *tip_string) {
 
 void set_ride_price(RIDE ride, double price) { ride->price = price; }
 
-char *get_ride_id(RIDE ride) { return strdup(ride->id); }
+int get_ride_id(RIDE ride) { return *ride->id; }
 
 int get_ride_date(RIDE ride) {
   int date_copy = ride->date;
   return date_copy;
 }
 
-char *get_ride_driver(RIDE ride) {
-  char *driver_copy = strdup(ride->driver);
+int get_ride_driver(RIDE ride) {
+  int driver_copy = *ride->driver;
   return driver_copy;
 }
 

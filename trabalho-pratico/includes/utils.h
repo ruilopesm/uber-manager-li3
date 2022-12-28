@@ -40,7 +40,7 @@ char *strip(char *string);
 
 void edit_strip(char *string);
 
-gint compare_strings(gconstpointer a, gconstpointer b, gpointer data);
+gint compare_ints(gconstpointer a, gconstpointer b, gpointer data);
 
 int increment_date(int date);
 

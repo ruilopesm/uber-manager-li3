@@ -9,7 +9,7 @@
 #include "stats.h"
 
 struct driver {
-  char *id;
+  int *id;
   char *name;
   double total_earned;
   double total_rating;
@@ -58,7 +58,9 @@ void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
 }
 
 void set_driver_id(DRIVER driver, char *id_string) {
-  driver->id = strdup(id_string);
+  driver->id = malloc(sizeof(int));
+  int id_int = atoi(id_string);
+  *driver->id = id_int;
 }
 
 void set_driver_name(DRIVER driver, char *name_string) {
@@ -154,8 +156,8 @@ void set_driver_latest_ride(DRIVER driver, char *latest_ride_string) {
   driver->latest_ride = latest_ride;
 }
 
-char *get_driver_id(DRIVER driver) {
-  char *id = strdup(driver->id);
+int get_driver_id(DRIVER driver) {
+  int id = *driver->id;
   return id;
 }
 
@@ -212,6 +214,5 @@ int get_driver_latest_ride(DRIVER driver) {
 
 void free_driver(DRIVER driver) {
   free(driver->name);
-  ;
   free(driver);
 }

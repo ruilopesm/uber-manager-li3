@@ -13,7 +13,7 @@ TEST driver_id_test(void) {
 
   set_driver_id(driver, id);
 
-  ASSERT_STR_EQ(id, get_driver_id(driver));
+  ASSERT_EQ(3, get_driver_id(driver));
 
   free(id);
 

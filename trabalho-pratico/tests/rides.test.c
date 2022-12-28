@@ -13,7 +13,7 @@ TEST ride_id_test(void) {
 
   set_ride_id(ride, id);
 
-  ASSERT_STR_EQ(id, get_ride_id(ride));
+  ASSERT_EQ(3, get_ride_id(ride));
 
   free(id);
 
@@ -39,7 +39,7 @@ TEST ride_driver_test(void) {
 
   set_ride_driver(ride, driver);
 
-  ASSERT_STR_EQ(driver, get_ride_driver(ride));
+  ASSERT_EQ(3, get_ride_driver(ride));
 
   free(driver);
 
