@@ -77,7 +77,6 @@ CITY_STATS create_city_stats(char *city) {
   new_city_stats->drivers_tree =
       g_tree_new_full((GCompareDataFunc)compare_ints, NULL, free,
                       (GDestroyNotify)free_city_driver_stats);
-  ;
   new_city_stats->drivers_array = NULL;
 
   return new_city_stats;
@@ -269,25 +268,25 @@ gint compare_rides_by_age(gconstpointer a, gconstpointer b) {
   int driver_account_creation_a = ride_a->driver_account_creation;
   int driver_account_creation_b = ride_b->driver_account_creation;
 
-  int result_dates = driver_account_creation_a - driver_account_creation_b;
+  int result_dates = driver_account_creation_b - driver_account_creation_a;
 
-  if (result_dates == 0) {
-    int user_account_creation_a = ride_a->user_account_creation;
-    int user_account_creation_b = ride_b->user_account_creation;
-
-    int result_dates = user_account_creation_a - user_account_creation_b;
-
-    if (result_dates == 0) {
-      int ride_id_a = ride_a->id;
-      int ride_id_b = ride_b->id;
-
-      return (ride_id_a - ride_id_b) * (-1);
-    }
-
-    return result_dates * (-1);
+  if (result_dates != 0) {
+    return result_dates;
   }
 
-  return result_dates * (-1);
+  int user_account_creation_a = ride_a->user_account_creation;
+  int user_account_creation_b = ride_b->user_account_creation;
+
+  result_dates = user_account_creation_b - user_account_creation_a;
+
+  if (result_dates != 0) {
+    return result_dates;
+  }
+
+  int ride_id_a = ride_a->id;
+  int ride_id_b = ride_b->id;
+
+  return ride_id_b - ride_id_a;
 }
 
 void calculate_top_users_by_total_distance(STATS stats, CATALOG catalog) {
@@ -316,57 +315,50 @@ gint compare_users_by_total_distance(gconstpointer a, gconstpointer b) {
   int total_distance_a = get_user_total_distance(user_a);
   int total_distance_b = get_user_total_distance(user_b);
 
-  if (total_distance_a == total_distance_b) {
-    int most_recent_ride_a = get_user_latest_ride(user_a);
-    int most_recent_ride_b = get_user_latest_ride(user_b);
-
-    int result_dates = most_recent_ride_a - most_recent_ride_b;
-
-    if (result_dates == 0) {
-      char *username_a = get_user_username(user_a);
-      char *username_b = get_user_username(user_b);
-
-      int to_return = strcmp(username_a, username_b);
-
-      free(username_a);
-      free(username_b);
-
-      return to_return;
-    }
-
-    return result_dates * (-1);
+  if (total_distance_a != total_distance_b) {
+    return total_distance_b - total_distance_a;
   }
 
-  return total_distance_b - total_distance_a;
+  int latest_ride_a = get_user_latest_ride(user_a);
+  int latest_ride_b = get_user_latest_ride(user_b);
+
+  int result_dates = latest_ride_b - latest_ride_a;
+
+  if (result_dates != 0) {
+    return result_dates;
+  }
+
+  char *username_a = get_user_username(user_a);
+  char *username_b = get_user_username(user_b);
+
+  int to_return = strcmp(username_a, username_b);
+
+  free(username_a);
+  free(username_b);
+
+  return to_return;
 }
 
-gint compare_driver_stats_by_rating(gconstpointer a, gconstpointer b) {
-  CITY_DRIVER_STATS *driver_stats_a = (CITY_DRIVER_STATS *)a;
-  CITY_DRIVER_STATS *driver_stats_b = (CITY_DRIVER_STATS *)b;
+gint compare_driver_stats_by_average_score(gconstpointer a, gconstpointer b) {
+  CITY_DRIVER_STATS driver_stats_a = *(CITY_DRIVER_STATS *)a;
+  CITY_DRIVER_STATS driver_stats_b = *(CITY_DRIVER_STATS *)b;
 
-  int total_distance_a = get_city_driver_stats_total_rides(*driver_stats_a);
-  int total_distance_b = get_city_driver_stats_total_rides(*driver_stats_b);
+  double a_total_rating = driver_stats_a->total_rating;
+  int a_number_of_rides = driver_stats_a->total_rides;
+  double a_score = (double)(a_total_rating / a_number_of_rides);
 
-  double total_score_a = get_city_driver_stats_total_rating(*driver_stats_a);
-  double total_score_b = get_city_driver_stats_total_rating(*driver_stats_b);
+  double b_total_rating = driver_stats_b->total_rating;
+  int b_number_of_rides = driver_stats_b->total_rides;
+  double b_score = (double)(b_total_rating / b_number_of_rides);
 
-  double average_score_a = total_score_a / total_distance_a;
-  double average_score_b = total_score_b / total_distance_b;
+  if (a_score == b_score) {
+    int driver_id_a = *driver_stats_a->id;
+    int driver_id_b = *driver_stats_b->id;
 
-  if (average_score_a < average_score_b) {
-    return 1;
-  } else if (average_score_a > average_score_b) {
-    return -1;
-  } else {
-    int driver_a_id = get_city_driver_stats_id(*driver_stats_a);
-    int driver_b_id = get_city_driver_stats_id(*driver_stats_b);
-
-    if (driver_a_id < driver_b_id) {
-      return 1;
-    } else {
-      return -1;
-    }
+    return driver_id_b - driver_id_a;
   }
+
+  return a_score > b_score ? -1 : 1;
 }
 
 void calculate_top_drivers_by_average_score(STATS stats, CATALOG catalog) {
@@ -402,25 +394,23 @@ gint compare_drivers_by_average_score(gconstpointer a, gconstpointer b) {
   int b_number_of_rides = get_driver_number_of_rides(driver_b);
   double b_score = (double)(b_total_rating / b_number_of_rides);
 
-  if (a_score == b_score) {
-    int most_recent_ride_a = get_driver_latest_ride(driver_a);
-    int most_recent_ride_b = get_driver_latest_ride(driver_b);
-
-    int result_dates = most_recent_ride_a - most_recent_ride_b;
-
-    if (result_dates == 0) {
-      int driver_id_a = get_driver_id(driver_a);
-      int driver_id_b = get_driver_id(driver_b);
-
-      int to_return = driver_id_a - driver_id_b;
-
-      return to_return;
-    }
-
-    return result_dates * (-1);
+  if (a_score != b_score) {
+    return a_score > b_score ? -1 : 1;
   }
 
-  return a_score > b_score ? -1 : 1;
+  int latest_ride_a = get_driver_latest_ride(driver_a);
+  int latest_ride_b = get_driver_latest_ride(driver_b);
+
+  int result_dates = latest_ride_b - latest_ride_a;
+
+  if (result_dates != 0) {
+    return result_dates;
+  }
+
+  int driver_id_a = get_driver_id(driver_a);
+  int driver_id_b = get_driver_id(driver_b);
+
+  return driver_id_a - driver_id_b;
 }
 
 gint compare_city_driver_stats_by_id(gconstpointer a, gconstpointer b) {

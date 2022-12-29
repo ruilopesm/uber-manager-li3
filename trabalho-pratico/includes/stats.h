@@ -94,7 +94,7 @@ gint compare_drivers_by_average_score(gconstpointer a, gconstpointer b);
 
 gint compare_city_driver_stats_by_id(gconstpointer a, gconstpointer b);
 
-gint compare_driver_stats_by_rating(gconstpointer a, gconstpointer b);
+gint compare_driver_stats_by_average_score(gconstpointer a, gconstpointer b);
 
 void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats);
 

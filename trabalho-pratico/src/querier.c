@@ -417,7 +417,7 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
     g_tree_foreach(city_drivers_tree, (GTraverseFunc)tree_to_array,
                    city_drivers_array);
-    g_ptr_array_sort(city_drivers_array, compare_driver_stats_by_rating);
+    g_ptr_array_sort(city_drivers_array, compare_driver_stats_by_average_score);
 
     set_city_drivers_array(stats, city, city_drivers_array);
   }

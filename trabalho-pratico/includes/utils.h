@@ -26,10 +26,6 @@ const char *pay_method_to_string(int x);
 
 int calculate_age(int birth_date);
 
-int is_date_newer(int date1, int date2);
-
-int is_date_equal(int date1, int date2);
-
 int is_id_smaller(char *id1, char *id2);
 
 int is_number(char *string);
