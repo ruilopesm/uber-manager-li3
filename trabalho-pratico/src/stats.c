@@ -42,8 +42,10 @@ struct ride_gender_stats {
 STATS create_stats(void) {
   STATS new_stats = malloc(sizeof(struct stats));
 
-  new_stats->top_drivers_by_average_score = NULL;
-  new_stats->top_users_by_total_distance = NULL;
+  new_stats->top_drivers_by_average_score =
+      g_array_new(FALSE, FALSE, sizeof(DRIVER));
+  new_stats->top_users_by_total_distance =
+      g_array_new(FALSE, FALSE, sizeof(USER));
   new_stats->city_drivers =
       g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
   new_stats->rides_by_date =

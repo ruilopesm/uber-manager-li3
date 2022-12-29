@@ -54,6 +54,10 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   set_user_total_distance(user, 0);
   set_user_latest_ride(user, "00/00/0000");
 
+  // udpate users array
+  GArray *users_array = get_top_users_by_total_distance(stats);
+  g_array_append_val(users_array, user);
+
   g_hash_table_insert(users_hash_table, user->username, user);
 
   (void)stats;  // To avoid the "unused variable" warning

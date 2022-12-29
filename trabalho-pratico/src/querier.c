@@ -78,11 +78,12 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
+  static int is_drivers_sorted = 0;
   GArray *top_drivers = get_top_drivers_by_average_score(stats);
 
-  if (top_drivers == NULL) {
-    calculate_top_drivers_by_average_score(stats, catalog);
-    top_drivers = get_top_drivers_by_average_score(stats);
+  if (!is_drivers_sorted) {
+    g_array_sort(top_drivers, (GCompareFunc)compare_drivers_by_average_score);
+    is_drivers_sorted = 1;
   }
 
   int i = 0;
@@ -114,6 +115,8 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
   printf("%d: Query 2 elapsed time: %f seconds\n", counter, time_spent);
+
+  (void)catalog;
 }
 
 void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
@@ -132,11 +135,12 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
+  static int is_users_sorted = 0;
   GArray *top_users = get_top_users_by_total_distance(stats);
 
-  if (top_users == NULL) {
-    calculate_top_users_by_total_distance(stats, catalog);
-    top_users = get_top_users_by_total_distance(stats);
+  if (!is_users_sorted) {
+    g_array_sort(top_users, (GCompareFunc)compare_users_by_total_distance);
+    is_users_sorted = 1;
   }
 
   int i = 0;
@@ -166,6 +170,8 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
   printf("%d: Query 3 elapsed time: %f seconds\n", counter, time_spent);
+
+  (void)catalog;
 }
 
 void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
