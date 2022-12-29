@@ -78,17 +78,16 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
-  GList *top_drivers = get_top_drivers_by_average_score(stats);
+  GArray *top_drivers = get_top_drivers_by_average_score(stats);
 
   if (top_drivers == NULL) {
     calculate_top_drivers_by_average_score(stats, catalog);
     top_drivers = get_top_drivers_by_average_score(stats);
   }
 
-  GList *iterator = top_drivers;
-
-  while (iterator != NULL && n > 0) {
-    DRIVER driver = iterator->data;
+  int i = 0;
+  while (n > 0 && i < (int)top_drivers->len) {
+    DRIVER driver = g_array_index(top_drivers, DRIVER, i);
     int driver_id = get_driver_id(driver);
     char *name = get_driver_name(driver);
 
@@ -103,8 +102,7 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
       n--;
     }
 
-    iterator = iterator->next;
-
+    ++i;
     free(name);
   }
 
@@ -134,17 +132,16 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
-  GList *top_users = get_top_users_by_total_distance(stats);
+  GArray *top_users = get_top_users_by_total_distance(stats);
 
   if (top_users == NULL) {
     calculate_top_users_by_total_distance(stats, catalog);
     top_users = get_top_users_by_total_distance(stats);
   }
 
-  GList *iterator = top_users;
-
-  while (iterator != NULL && n > 0) {
-    USER user = iterator->data;
+  int i = 0;
+  while (n > 0 && i < (int)top_users->len) {
+    USER user = g_array_index(top_users, USER, i);
     char *username = get_user_username(user);
     char *name = get_user_name(user);
 
@@ -156,8 +153,7 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
       n--;
     }
 
-    iterator = iterator->next;
-
+    ++i;
     free(username);
     free(name);
   }

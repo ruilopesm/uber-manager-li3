@@ -32,9 +32,9 @@ CITY_STATS create_city_stats(char *city);
 void update_city_driver_stats(CITY_DRIVER_STATS city_driver_stats,
                               double rating, double spent);
 
-GList *get_top_drivers_by_average_score(STATS stats);
+GArray *get_top_drivers_by_average_score(STATS stats);
 
-GList *get_top_users_by_total_distance(STATS stats);
+GArray *get_top_users_by_total_distance(STATS stats);
 
 CITY_STATS get_city_stats(STATS stats, char *city);
 
@@ -82,9 +82,13 @@ gint compare_rides_by_age(gconstpointer a, gconstpointer b);
 
 void calculate_top_users_by_total_distance(STATS stats, CATALOG catalog);
 
+void add_user_to_array(gpointer key, gpointer value, gpointer data);
+
 gint compare_users_by_total_distance(gconstpointer a, gconstpointer b);
 
 void calculate_top_drivers_by_average_score(STATS stats, CATALOG catalog);
+
+void add_driver_to_array(gpointer key, gpointer value, gpointer data);
 
 gint compare_drivers_by_average_score(gconstpointer a, gconstpointer b);
 

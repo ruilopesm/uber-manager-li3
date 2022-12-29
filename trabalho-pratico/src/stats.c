@@ -13,8 +13,8 @@
 
 struct stats {
   GHashTable *city_drivers;
-  GList *top_drivers_by_average_score;
-  GList *top_users_by_total_distance;
+  GArray *top_drivers_by_average_score;
+  GArray *top_users_by_total_distance;
   GHashTable *rides_by_date;
   GArray *male_rides_by_age;
   GArray *female_rides_by_age;
@@ -88,11 +88,11 @@ void update_city_driver_stats(CITY_DRIVER_STATS city_driver_stats,
   city_driver_stats->total_spent += ride_price;
 }
 
-GList *get_top_drivers_by_average_score(STATS stats) {
+GArray *get_top_drivers_by_average_score(STATS stats) {
   return stats->top_drivers_by_average_score;
 }
 
-GList *get_top_users_by_total_distance(STATS stats) {
+GArray *get_top_users_by_total_distance(STATS stats) {
   return stats->top_users_by_total_distance;
 }
 
@@ -289,16 +289,27 @@ gint compare_rides_by_age(gconstpointer a, gconstpointer b) {
 }
 
 void calculate_top_users_by_total_distance(STATS stats, CATALOG catalog) {
-  GList *top_users_by_total_distance =
-      g_hash_table_get_values(get_catalog_users(catalog));
+  GArray *top_users_by_total_distance = g_array_new(FALSE, FALSE, sizeof(USER));
+  g_hash_table_foreach(get_catalog_users(catalog), (GHFunc)add_user_to_array,
+                       top_users_by_total_distance);
 
-  stats->top_users_by_total_distance =
-      g_list_sort(top_users_by_total_distance, compare_users_by_total_distance);
+  g_array_sort(top_users_by_total_distance,
+               (GCompareFunc)compare_users_by_total_distance);
+  stats->top_users_by_total_distance = top_users_by_total_distance;
+}
+
+void add_user_to_array(gpointer key, gpointer value, gpointer data) {
+  USER user = (USER)value;
+  GArray *users = (GArray *)data;
+
+  g_array_append_val(users, user);
+
+  (void)key;
 }
 
 gint compare_users_by_total_distance(gconstpointer a, gconstpointer b) {
-  USER user_a = (USER)a;
-  USER user_b = (USER)b;
+  USER user_a = *(USER *)a;
+  USER user_b = *(USER *)b;
 
   int total_distance_a = get_user_total_distance(user_a);
   int total_distance_b = get_user_total_distance(user_b);
@@ -357,17 +368,29 @@ gint compare_driver_stats_by_rating(gconstpointer a, gconstpointer b) {
 }
 
 void calculate_top_drivers_by_average_score(STATS stats, CATALOG catalog) {
-  GList *top_drivers_by_average_score =
-      g_hash_table_get_values(get_catalog_drivers(catalog));
+  GArray *top_drivers_by_average_score =
+      g_array_new(FALSE, FALSE, sizeof(DRIVER));
+  g_hash_table_foreach(get_catalog_drivers(catalog),
+                       (GHFunc)add_driver_to_array,
+                       top_drivers_by_average_score);
+  g_array_sort(top_drivers_by_average_score,
+               (GCompareFunc)compare_drivers_by_average_score);
 
-  stats->top_drivers_by_average_score =
-      g_list_sort(top_drivers_by_average_score,
-                  (GCompareFunc)compare_drivers_by_average_score);
+  stats->top_drivers_by_average_score = top_drivers_by_average_score;
+}
+
+void add_driver_to_array(gpointer key, gpointer value, gpointer data) {
+  DRIVER driver = (DRIVER)value;
+  GArray *drivers = (GArray *)data;
+
+  g_array_append_val(drivers, driver);
+
+  (void)key;
 }
 
 gint compare_drivers_by_average_score(gconstpointer a, gconstpointer b) {
-  DRIVER driver_a = (DRIVER)a;
-  DRIVER driver_b = (DRIVER)b;
+  DRIVER driver_a = *(DRIVER *)a;
+  DRIVER driver_b = *(DRIVER *)b;
 
   double a_total_rating = get_driver_total_rating(driver_a);
   int a_number_of_rides = get_driver_number_of_rides(driver_a);
@@ -446,8 +469,8 @@ void free_city_stats(CITY_STATS city_stats) {
 }
 
 void free_stats(STATS stats) {
-  g_list_free(stats->top_users_by_total_distance);
-  g_list_free(stats->top_drivers_by_average_score);
+  g_array_free(stats->top_users_by_total_distance, FALSE);
+  g_array_free(stats->top_drivers_by_average_score, FALSE);
   g_hash_table_destroy(stats->city_drivers);
   g_hash_table_destroy(stats->rides_by_date);
   g_array_free(stats->male_rides_by_age, 1);
