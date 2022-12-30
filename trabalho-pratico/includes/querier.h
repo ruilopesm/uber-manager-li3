@@ -47,8 +47,7 @@ void query8(CATALOG catalog, STATS stats, char **parameters, int counter);
 
 void query9(CATALOG catalog, STATS stats, char **parameters, int counter);
 
-gint sort_query9_by_distance(gconstpointer ride1_constpointer,
-                             gconstpointer ride2_constpointer);
+gint compare_rides_by_distance(gconstpointer a, gconstpointer b);
 
 void get_user_profile(CATALOG catalog, char *id, int counter);
 

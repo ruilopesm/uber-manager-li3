@@ -245,6 +245,11 @@ void update_genders_rides_by_age(CATALOG catalog, STATS stats, int *ride_id,
   enum gender driver_gender = get_driver_gender(driver);
   int driver_account_creation = get_driver_account_creation(driver);
 
+  if (get_driver_account_status(driver) == INACTIVE ||
+      get_user_account_status(user) == INACTIVE) {
+    return;
+  }
+
   RIDE_GENDER_STATS to_insert = create_ride_gender_stats(
       ride_id, driver_account_creation, user_account_creation);
 
@@ -255,10 +260,6 @@ void update_genders_rides_by_age(CATALOG catalog, STATS stats, int *ride_id,
       g_array_append_val(female_rides_by_age, to_insert);
     }
   }
-}
-
-void calculate_rides_by_age(GArray *rides_by_age) {
-  g_array_sort(rides_by_age, (GCompareFunc)compare_rides_by_age);
 }
 
 gint compare_rides_by_age(gconstpointer a, gconstpointer b) {
@@ -287,16 +288,6 @@ gint compare_rides_by_age(gconstpointer a, gconstpointer b) {
   int ride_id_b = ride_b->id;
 
   return ride_id_b - ride_id_a;
-}
-
-void calculate_top_users_by_total_distance(STATS stats, CATALOG catalog) {
-  GArray *top_users_by_total_distance = g_array_new(FALSE, FALSE, sizeof(USER));
-  g_hash_table_foreach(get_catalog_users(catalog), (GHFunc)add_user_to_array,
-                       top_users_by_total_distance);
-
-  g_array_sort(top_users_by_total_distance,
-               (GCompareFunc)compare_users_by_total_distance);
-  stats->top_users_by_total_distance = top_users_by_total_distance;
 }
 
 void add_user_to_array(gpointer key, gpointer value, gpointer data) {
@@ -359,18 +350,6 @@ gint compare_driver_stats_by_average_score(gconstpointer a, gconstpointer b) {
   }
 
   return a_score > b_score ? -1 : 1;
-}
-
-void calculate_top_drivers_by_average_score(STATS stats, CATALOG catalog) {
-  GArray *top_drivers_by_average_score =
-      g_array_new(FALSE, FALSE, sizeof(DRIVER));
-  g_hash_table_foreach(get_catalog_drivers(catalog),
-                       (GHFunc)add_driver_to_array,
-                       top_drivers_by_average_score);
-  g_array_sort(top_drivers_by_average_score,
-               (GCompareFunc)compare_drivers_by_average_score);
-
-  stats->top_drivers_by_average_score = top_drivers_by_average_score;
 }
 
 void add_driver_to_array(gpointer key, gpointer value, gpointer data) {

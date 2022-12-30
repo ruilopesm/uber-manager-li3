@@ -82,7 +82,8 @@ void query2(CATALOG catalog, STATS stats, char **parameter, int counter) {
   GArray *top_drivers = get_top_drivers_by_average_score(stats);
 
   if (!is_drivers_sorted) {
-    g_array_sort(top_drivers, (GCompareFunc)compare_drivers_by_average_score);
+    qsort(top_drivers->data, top_drivers->len, sizeof(DRIVER),
+          (GCompareFunc)compare_drivers_by_average_score);
     is_drivers_sorted = 1;
   }
 
@@ -139,7 +140,8 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
   GArray *top_users = get_top_users_by_total_distance(stats);
 
   if (!is_users_sorted) {
-    g_array_sort(top_users, (GCompareFunc)compare_users_by_total_distance);
+    qsort(top_users->data, top_users->len, sizeof(USER),
+          (GCompareFunc)compare_users_by_total_distance);
     is_users_sorted = 1;
   }
 
@@ -491,7 +493,8 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
     top_rides = get_male_rides_by_age(stats);
 
     if (!males_sorted) {
-      calculate_rides_by_age(get_male_rides_by_age(stats));
+      qsort(top_rides->data, top_rides->len, sizeof(RIDE_GENDER_STATS),
+            (GCompareFunc)compare_rides_by_age);
       top_rides = get_male_rides_by_age(stats);
 
       males_sorted = 1;
@@ -500,7 +503,8 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
     top_rides = get_female_rides_by_age(stats);
 
     if (!females_sorted) {
-      calculate_rides_by_age(get_female_rides_by_age(stats));
+      qsort(top_rides->data, top_rides->len, sizeof(RIDE_GENDER_STATS),
+            (GCompareFunc)compare_rides_by_age);
       top_rides = get_female_rides_by_age(stats);
 
       females_sorted = 1;
@@ -537,21 +541,14 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
     DRIVER current_driver =
         g_hash_table_lookup(get_catalog_drivers(catalog), &driver_id);
 
-    enum account_status driver_account_status =
-        get_driver_account_status(current_driver);
-    enum account_status user_account_status =
-        get_user_account_status(current_user);
+    char *driver_name = get_driver_name(current_driver);
+    char *name = get_user_name(current_user);
 
-    if (driver_account_status == ACTIVE && user_account_status == ACTIVE) {
-      char *driver_name = get_driver_name(current_driver);
-      char *name = get_user_name(current_user);
+    fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name, username,
+            name);
 
-      fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name, username,
-              name);
-
-      free(driver_name);
-      free(name);
-    }
+    free(driver_name);
+    free(name);
   }
 
   free(parameter);
@@ -596,7 +593,9 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
       }
     }
   }
-  g_array_sort(rides_in_range, sort_query9_by_distance);
+
+  qsort(rides_in_range->data, rides_in_range->len, sizeof(RIDE),
+        (GCompareFunc)compare_rides_by_distance);
 
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
@@ -634,21 +633,24 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
   (void)counter;
 }
 
-gint sort_query9_by_distance(gconstpointer ride1_constpointer,
-                             gconstpointer ride2_constpointer) {
+gint compare_rides_by_distance(gconstpointer a, gconstpointer b) {
   int temp = 0;
-  RIDE ride1 = *(RIDE *)(ride1_constpointer);
-  RIDE ride2 = *(RIDE *)(ride2_constpointer);
+  RIDE ride1 = *(RIDE *)(a);
+  RIDE ride2 = *(RIDE *)(b);
+
   int ride1_distance = get_ride_distance(ride1);
   int ride2_distance = get_ride_distance(ride2);
   temp = ride1_distance - ride2_distance;
   if (temp) return temp;
+
   int ride1_date = get_ride_date(ride1);
   int ride2_date = get_ride_date(ride2);
   temp = ride1_date - ride2_date;
   if (temp) return temp;
+
   int ride1_id = get_ride_id(ride1);
   int ride2_id = get_ride_id(ride2);
+
   return ride1_id - ride2_id;
 }
 
