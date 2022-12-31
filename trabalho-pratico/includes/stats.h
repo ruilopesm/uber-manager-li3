@@ -27,7 +27,7 @@ STATS create_stats(void);
 CITY_DRIVER_STATS create_city_driver_stats(int *id, double total_rating,
                                            int total_rides, double ride_price);
 
-CITY_STATS create_city_stats(char *city);
+CITY_STATS create_city_stats();
 
 void update_city_driver_stats(CITY_DRIVER_STATS city_driver_stats,
                               double rating, double spent);

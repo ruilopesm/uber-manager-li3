@@ -28,7 +28,6 @@ struct city_driver_stats {
 };
 
 struct city {
-  char *name;
   GTree *drivers_tree;
   GPtrArray *drivers_array;
 };
@@ -70,10 +69,9 @@ CITY_DRIVER_STATS create_city_driver_stats(int *id, double total_rating,
   return new_city_driver_stats;
 }
 
-CITY_STATS create_city_stats(char *city) {
+CITY_STATS create_city_stats() {
   CITY_STATS new_city_stats = malloc(sizeof(struct city));
 
-  new_city_stats->name = city;
   new_city_stats->drivers_tree =
       g_tree_new_full((GCompareDataFunc)compare_ints, NULL, free,
                       (GDestroyNotify)free_city_driver_stats);
@@ -431,7 +429,6 @@ void insert_ride_by_date(RIDE ride, STATS stats) {
 }
 
 void free_city_stats(CITY_STATS city_stats) {
-  free(city_stats->name);
   g_tree_destroy(city_stats->drivers_tree);
   if (city_stats->drivers_array) {
     g_ptr_array_free(city_stats->drivers_array, TRUE);
