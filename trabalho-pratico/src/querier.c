@@ -259,25 +259,22 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
   clock_t begin = clock();
   double average = 0.f;
   GHashTable *rides_by_date = get_rides_by_date(stats);
-  GHashTable *drivers_hash = get_catalog_drivers(catalog);
+
   char *city = NULL;
-  if (query6_determiner)
-    city = parameters[0];  // if we are calculating query6, the city has value
-  int lower_limit = date_string_to_int(
-      parameters[0 + query6_determiner]);  // Earliest date at which rides are
-                                           // considered, if query6_determiner
-                                           // is true we add its value (1) due
-                                           // to the additional first parameter
-                                           // in query6, which is the city
-  int upper_limit = date_string_to_int(
-      parameters[1 + query6_determiner]);  // Latest date at which rides are
-                                           // considered
-  if (query6_determiner)
-    average =
-        calculate_avg_distance(rides_by_date, lower_limit, upper_limit, city);
-  else
-    average = calculate_avg_price(rides_by_date, drivers_hash, lower_limit,
-                                  upper_limit);
+
+  if (query6_determiner) {
+    city = parameters[0];  // If we are calculating query6, the city has a value
+  }
+
+  int lower_limit = date_string_to_int(parameters[0 + query6_determiner]);
+  int upper_limit = date_string_to_int(parameters[1 + query6_determiner]);
+
+  if (query6_determiner) {
+    average = calculate_average_distance(rides_by_date, lower_limit,
+                                         upper_limit, city);
+  } else {
+    average = calculate_average_price(rides_by_date, lower_limit, upper_limit);
+  }
 
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
@@ -289,7 +286,10 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
     return;
   }
 
-  if (average) fprintf(output_file, "%.3f\n", average);
+  if (average) {
+    fprintf(output_file, "%.3f\n", average);
+  }
+
   free(parameters);
   free(output_filename);
   fclose(output_file);
@@ -297,98 +297,87 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  if (!query6_determiner)
-    printf("%d: Query 5 elapsed time: %f seconds\n", counter, time_spent);
-  else
-    printf("%d: Query 6 elapsed time: %f seconds\n", counter, time_spent);
+  printf("%d: Query %d elapsed time: %f seconds\n", counter,
+         5 + query6_determiner, time_spent);
+
+  // Since catalog is not used in this query, we can safely ignore the warning
+  (void)catalog;
 }
 
-// Calculates the average price or distance
-double calculate_avg_price(GHashTable *rides_by_date, GHashTable *drivers_hash,
-                           int lower_limit, int upper_limit) {
-  double total = 0.f;     // Price accumulator
-  int rides_counter = 0;  // Rides Accumulator
+double calculate_average_price(GHashTable *rides_by_date, int lower_limit,
+                               int upper_limit) {
+  double total = 0.f;
+  int rides_counter = 0;
   int temp_date;
   RIDE temp_ride = NULL;
-  enum car_class
-      temp_car_class;  // Temporary variables used to fetch the car class of the
-                       // driver and calculate the price charged
 
   for (temp_date = lower_limit; upper_limit >= temp_date;
-       temp_date = increment_date(
-           temp_date)) {  // If the date searched for already surpasses theupper
-                          // limit the cycle is stopped
+       temp_date = increment_date(temp_date)) {
     GArray *rides_of_the_day = g_hash_table_lookup(rides_by_date, &temp_date);
+
     if (rides_of_the_day) {
       int number_of_rides = rides_of_the_day->len;
+
       for (int j = 0; j < number_of_rides; j++) {
-        temp_ride =
-            g_array_index(rides_of_the_day, RIDE,
-                          j);  // Ride which we are calculating the total cost
-        if (temp_ride == NULL)
-          break;  // Make sure there is something in that array position
-        int ride_driver = get_ride_driver(temp_ride);
-        temp_car_class = get_driver_car_class(g_hash_table_lookup(
-            drivers_hash,
-            &ride_driver));  //  We need to get the driver's car class to
-                             //  calculatethe ride price, so we search for the
-                             //  driver using the ride ID and get their car
-                             //  class
-        total += calculate_ride_price(
-            get_ride_distance(temp_ride),
-            temp_car_class);  // the price of that specific ride is then
-                              // calculated and added to the accumulator
+        temp_ride = g_array_index(rides_of_the_day, RIDE, j);
+
+        // Make sure there is something in that array position
+        if (temp_ride == NULL) {
+          break;
+        }
+
+        total += get_ride_price(temp_ride);
         rides_counter++;
       }
     }
   }
-  if (rides_counter)
-    return (total /
-            ((double)rides_counter));  // The average is then calculated and
-                                       // returned using the accumulators
-  else
-    return 0;
+
+  if (rides_counter) {
+    return (double)(total / rides_counter);
+  }
+
+  return 0;
 }
 
-double calculate_avg_distance(GHashTable *rides_by_date, int lower_limit,
-                              int upper_limit, char *city) {
-  double total = 0.f;     // Distance accumulator
-  int rides_counter = 0;  // Rides Accumulator
+double calculate_average_distance(GHashTable *rides_by_date, int lower_limit,
+                                  int upper_limit, char *city) {
+  double total = 0.f;
+  int rides_counter = 0;
   int temp_date;
   RIDE temp_ride = NULL;
 
   for (temp_date = lower_limit; upper_limit >= temp_date;
-       temp_date = increment_date(
-           temp_date)) {  // If the date searched for already surpasses the
-                          // upper limit the cycle is stopped
+       temp_date = increment_date(temp_date)) {
     GArray *rides_of_the_day = g_hash_table_lookup(rides_by_date, &temp_date);
+
     if (rides_of_the_day) {
       int number_of_rides = rides_of_the_day->len;
+
       for (int j = 0; j < number_of_rides; j++) {
-        temp_ride = g_array_index(
-            rides_of_the_day, RIDE,
-            j);  // Ride which we are calculating the total distance
-        if (temp_ride == NULL)
-          break;  // Make sure there is something in that array position
+        temp_ride = g_array_index(rides_of_the_day, RIDE, j);
+
+        // Make sure there is something in that array position
+        if (temp_ride == NULL) {
+          break;
+        }
+
         char *ride_city = get_ride_city(temp_ride);
-        if (strcmp(city, ride_city))
-          free(ride_city);  // If the cities are different, we skip this ride
-                            // and head to the next
-        else {
-          free(ride_city);
-          // The length of the ride is fetched and added to the accumulator
+
+        if (!strcmp(city, ride_city)) {
           total += get_ride_distance(temp_ride);
           rides_counter++;
         }
+
+        free(ride_city);
       }
     }
   }
-  if (rides_counter)
-    return (total /
-            ((double)rides_counter));  // The average is then calculated and
-                                       // returned using the accumulators
-  else
-    return 0;
+
+  if (rides_counter) {
+    return (double)(total / rides_counter);
+  }
+
+  return 0;
 }
 
 void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
@@ -451,6 +440,7 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
       free(driver_name);
       n--;
     }
+
     i++;
   }
 

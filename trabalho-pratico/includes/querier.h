@@ -35,11 +35,11 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
 gboolean count_city_total_spent(gpointer key, gpointer value,
                                 gpointer user_data);
 
-double calculate_avg_price(GHashTable *rides_by_date, GHashTable *drivers_hash,
-                           int lower_limit, int upper_limit);
+double calculate_average_price(GHashTable *rides_by_date, int lower_limit,
+                               int upper_limit);
 
-double calculate_avg_distance(GHashTable *rides_by_date, int lower_limit,
-                              int upper_limit, char *city);
+double calculate_average_distance(GHashTable *rides_by_date, int lower_limit,
+                                  int upper_limit, char *city);
 
 void query7(CATALOG catalog, STATS stats, char **parameters, int counter);
 
