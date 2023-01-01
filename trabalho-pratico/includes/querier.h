@@ -32,9 +32,6 @@ void query6(CATALOG catalog, STATS stats, char **parameters, int counter);
 void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
               int query6_determiner);
 
-gboolean count_city_total_spent(gpointer key, gpointer value,
-                                gpointer user_data);
-
 double calculate_average_price(GHashTable *rides_by_date, int lower_limit,
                                int upper_limit);
 

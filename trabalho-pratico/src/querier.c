@@ -192,25 +192,17 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
-  // in order to fit every parameter in the g_tree_foreach function, we need to
-  // utilize a struct that contains those parameters
-  struct query4_utils *utils = malloc(sizeof(struct query4_utils));
-  utils->catalog = catalog;
-  utils->total_spent = 0;
-  utils->total_rides = 0;
+  CITY_STATS city_stats = get_city_stats(stats, city);
 
-  GTree *city_drivers_tree = get_city_stats_tree(stats, city);
+  if (city_stats != NULL) {
+    double total_spent = get_city_stats_total_spent(city_stats);
+    int total_rides = get_city_stats_total_rides(city_stats);
 
-  if (city_drivers_tree != NULL) {
-    g_tree_foreach(city_drivers_tree, (GTraverseFunc)count_city_total_spent,
-                   utils);
-
-    double result = utils->total_spent / utils->total_rides;
+    double result = (double)(total_spent / total_rides);
 
     fprintf(output_file, "%.3f\n", result);
   }
 
-  free(utils);
   free(parameter);
   free(output_filename);
   fclose(output_file);
@@ -220,23 +212,10 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
   printf("%d: Query 4 elapsed time: %f seconds\n", counter, time_spent);
 
-  // Since stats is not used in this query, we can safely ignore the warning
-  (void)stats;
+  // Since catalog is not used in this query, we can safely ignore the warning
+  (void)catalog;
 }
 
-gboolean count_city_total_spent(gpointer key, gpointer value,
-                                gpointer user_data) {
-  struct query4_utils *utils = (struct query4_utils *)user_data;
-
-  CITY_DRIVER_STATS city_driver_stats = (CITY_DRIVER_STATS)value;
-
-  utils->total_spent += get_city_driver_stats_total_spent(city_driver_stats);
-  utils->total_rides += get_city_driver_stats_total_rides(city_driver_stats);
-
-  return FALSE;
-
-  (void)key;
-}
 gboolean tree_to_array(gpointer key, gpointer value, gpointer user_data) {
   GPtrArray *array = (GPtrArray *)user_data;
   g_ptr_array_add(array, value);
@@ -398,11 +377,13 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
   }
 
   GTree *city_drivers_tree = get_city_stats_tree(stats, city);
+
   if (city_drivers_tree == NULL) {
     return;
   }
 
   GPtrArray *city_drivers_array = get_city_stats_array(stats, city);
+
   if (city_drivers_array == NULL) {
     city_drivers_array = g_ptr_array_new();
 

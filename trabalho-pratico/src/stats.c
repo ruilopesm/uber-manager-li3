@@ -29,6 +29,8 @@ struct city_driver_stats {
 
 struct city {
   GTree *drivers_tree;
+  double total_spent;
+  int total_rides;
   GPtrArray *drivers_array;
 };
 
@@ -76,8 +78,18 @@ CITY_STATS create_city_stats() {
       g_tree_new_full((GCompareDataFunc)compare_ints, NULL, free,
                       (GDestroyNotify)free_city_driver_stats);
   new_city_stats->drivers_array = NULL;
+  new_city_stats->total_spent = 0.f;
+  new_city_stats->total_rides = 0;
 
   return new_city_stats;
+}
+
+double get_city_stats_total_spent(CITY_STATS city_stats) {
+  return city_stats->total_spent;
+}
+
+int get_city_stats_total_rides(CITY_STATS city_stats) {
+  return city_stats->total_rides;
 }
 
 void update_city_driver_stats(CITY_DRIVER_STATS city_driver_stats,
@@ -205,6 +217,9 @@ void upsert_city_driver_stats(STATS stats, char *city, int *driver_id,
     } else {
       update_city_driver_stats(city_driver_stats, driver_score, ride_price);
     }
+
+    city_stats->total_spent += ride_price;
+    city_stats->total_rides++;
   }
 }
 

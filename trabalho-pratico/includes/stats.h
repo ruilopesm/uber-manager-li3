@@ -29,6 +29,10 @@ CITY_DRIVER_STATS create_city_driver_stats(int *id, double total_rating,
 
 CITY_STATS create_city_stats();
 
+double get_city_stats_total_spent(CITY_STATS city_stats);
+
+int get_city_stats_total_rides(CITY_STATS city_stats);
+
 void update_city_driver_stats(CITY_DRIVER_STATS city_driver_stats,
                               double rating, double spent);
 
@@ -75,8 +79,6 @@ int get_ride_gender_stats_id(RIDE_GENDER_STATS ride);
 int get_ride_gender_stats_driver_account_creation(RIDE_GENDER_STATS ride);
 
 int get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride);
-
-void calculate_rides_by_age(GArray *rides_by_age);
 
 gint compare_rides_by_age(gconstpointer a, gconstpointer b);
 
