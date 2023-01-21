@@ -61,4 +61,6 @@ int get_driver_latest_ride(DRIVER driver);
 
 void free_driver(DRIVER driver);
 
+int verify_driver_input(char **parameters);
+
 #endif

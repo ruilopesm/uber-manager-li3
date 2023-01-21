@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "catalog.h"
+#include "input.h"
 #include "stats.h"
 
 struct user {
@@ -32,6 +33,9 @@ USER create_user(void) {
 }
 
 void insert_user(char **user_params, CATALOG catalog, STATS stats) {
+  // If the input verification failed, we don't insert the user
+  if (!verify_user_input(user_params)) return;
+
   GHashTable *users_hash_table = get_catalog_users(catalog);
   USER user = create_user();
 
@@ -41,13 +45,7 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   set_user_birth_date(user, user_params[3]);
   set_user_account_creation(user, user_params[4]);
   set_user_pay_method(user, user_params[5]);
-
-  // Since account_status is the last token, remove the \n from the end of the
-  // line
-  char *account_status_string = user_params[6];
-  account_status_string[strlen(account_status_string) - 1] = '\0';
-  set_user_account_status(user, account_status_string);
-
+  set_user_account_status(user, user_params[6]);
   set_user_number_of_rides(user, 0);
   set_user_total_rating(user, 0.0);
   set_user_total_spent(user, 0.0);
@@ -241,4 +239,30 @@ int get_user_latest_ride(USER user) {
 void free_user(USER user) {
   free(user->name);
   free(user);
+}
+
+int verify_user_input(char **parameters) {
+  // Verifies if the username isn't empty
+  if (!(parameters[0])) return 0;
+
+  // Verifies if the user's name isn't empty
+  if (!(parameters[1])) return 0;
+
+  // Verifies if the user's gender isn't empty
+  if (!(parameters[2])) return 0;
+
+  // Verifies if the payment method isn't empty
+  if (!(parameters[5])) return 0;
+
+  // Verifies if the birth date follows the format
+  if (!verify_date_format(parameters[3])) return 0;
+
+  // Verifies if the account date follows the format
+  if (!verify_date_format(parameters[4])) return 0;
+
+  // Verifies if account status follows the format
+  if (!verify_account_status_format(parameters[6])) return 0;
+
+  // If all fields are valid then the user is valid
+  return 1;
 }

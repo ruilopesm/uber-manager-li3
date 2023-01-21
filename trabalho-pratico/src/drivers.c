@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "catalog.h"
+#include "input.h"
 #include "stats.h"
 
 struct driver {
@@ -31,6 +32,9 @@ DRIVER create_driver(void) {
 }
 
 void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
+  // If the input verification failed, we don't insert the driver
+  if (!verify_driver_input(driver_params)) return;
+
   DRIVER driver = create_driver();
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
 
@@ -40,13 +44,7 @@ void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
   set_driver_gender(driver, driver_params[3]);
   set_driver_car_class(driver, driver_params[4]);
   set_driver_account_creation(driver, driver_params[7]);
-
-  // Since account_status is the last token, remove the \n from the end of the
-  // line
-  char *account_status_string = driver_params[8];
-  account_status_string[strlen(account_status_string) - 1] = '\0';
-  set_driver_account_status(driver, account_status_string);
-
+  set_driver_account_status(driver, driver_params[8]);
   set_driver_number_of_rides(driver, 0);
   set_driver_total_rating(driver, 0.0);
   set_driver_total_earned(driver, 0.0);
@@ -219,4 +217,36 @@ int get_driver_latest_ride(DRIVER driver) {
 void free_driver(DRIVER driver) {
   free(driver->name);
   free(driver);
+}
+
+int verify_driver_input(char **parameters) {
+  // Verifies if the driver's id isn't empty
+  if (!(parameters[0])) return 0;
+
+  // Verifies if the driver's name isn't empty
+  if (!(parameters[1])) return 0;
+
+  // Verifies if the driver's gender isn't empty
+  if (!(parameters[3])) return 0;
+
+  // Verifies if the license plate isn't empty
+  if (!(parameters[5])) return 0;
+
+  // Verifies if the city string isn't empty
+  if (!(parameters[6])) return 0;
+
+  // Verifies if the birth date follows the format
+  if (!verify_date_format(parameters[2])) return 0;
+
+  // Verifies if the account date follows the format
+  if (!verify_date_format(parameters[7])) return 0;
+
+  // Verifies if car class follows the format
+  if (!verify_car_class_format(parameters[4])) return 0;
+
+  // Verifies if account status follows the format
+  if (!verify_account_status_format(parameters[8])) return 0;
+
+  // If all fields are valid then the driver is valid
+  return 1;
 }

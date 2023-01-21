@@ -65,4 +65,6 @@ int get_user_latest_ride(USER user);
 
 void free_user(USER user);
 
+int verify_user_input(char **parameters);
+
 #endif

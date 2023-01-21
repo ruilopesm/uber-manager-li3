@@ -13,6 +13,9 @@ void parse_file(FILE *file, int max_tokens, insert_function_pointer insert,
   fgets(line, MAX_LINE_LENGTH, file);
 
   while (fgets(line, MAX_LINE_LENGTH, file)) {
+    // Remove the \n from the end of the line
+    line[strlen(line) - 1] = '\0';
+
     char **tokens = parse_line(line, max_tokens);
     insert(tokens, catalog, stats);
 
@@ -24,17 +27,24 @@ void parse_file(FILE *file, int max_tokens, insert_function_pointer insert,
 
 char **parse_line(char *line, int max_tokens) {
   char **tokens = malloc(sizeof(char *) * max_tokens);
-  char *token = strtok(line, ";");
+  char comma[2] = ";";
+  char *temp = strstr(line, comma);
+  char *token = NULL;
 
   int i = 0;
-  while (token != NULL) {
+  while (temp != NULL) {
+    if (temp != line) {
+      token = strndup(line, temp - line);
+    } else {
+      token = NULL;
+    }
     tokens[i] = token;
-    token = strtok(NULL, ";");
-
+    line = temp + 1;
+    temp = strstr(line, comma);
     i++;
   }
-
-  free(token);
+  token = strdup(line);
+  tokens[i] = token;
 
   return tokens;
 }

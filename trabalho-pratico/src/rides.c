@@ -1,11 +1,13 @@
 #include "rides.h"
 
 #include <glib.h>
+#include <regex.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "catalog.h"
 #include "drivers.h"
+#include "input.h"
 #include "stats.h"
 #include "users.h"
 
@@ -33,6 +35,9 @@ RIDE create_ride() {
 }
 
 void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
+  // If the input verification failed, we don't insert the ride
+  if (!verify_ride_input(ride_params)) return;
+
   RIDE ride = create_ride();
   GHashTable *rides_hash_table = get_catalog_rides(catalog);
 
@@ -193,4 +198,36 @@ void free_ride(RIDE ride) {
   free(ride->user);
   free(ride->city);
   free(ride);
+}
+
+int verify_ride_input(char **parameters) {
+  // Verifies if the ID string isn't empty
+  if (!(parameters[0])) return 0;
+
+  // Verifies if the driver ID isn't empty
+  if (!(parameters[2])) return 0;
+
+  // Verifies if the username string isn't empty
+  if (!(parameters[3])) return 0;
+
+  // Verifies if the city string isn't empty
+  if (!(parameters[4])) return 0;
+
+  // Verifies if the date follows the format
+  if (!verify_date_format(parameters[1])) return 0;
+
+  // Verifies if distance is an integer higher than zero
+  if (!is_integer(parameters[5])) return 0;
+
+  // Verifies if score_user is an integer higher than zero
+  if (!is_integer(parameters[6])) return 0;
+
+  // Verifies if score_driver is an integer higher than zero
+  if (!is_integer(parameters[7])) return 0;
+
+  // Verifies if tip is a double higher than 0
+  if (!is_float(parameters[8])) return 0;
+
+  // If all fields are valid then the ride is verified
+  return 1;
 }

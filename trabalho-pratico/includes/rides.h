@@ -59,4 +59,6 @@ double calculate_ride_price(int distance, enum car_class car_class);
 
 void free_ride(RIDE ride);
 
+int verify_ride_input(char **parameters);
+
 #endif
