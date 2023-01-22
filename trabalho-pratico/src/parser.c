@@ -34,16 +34,17 @@ char **parse_line(char *line, int max_tokens) {
   int i = 0;
   while (temp != NULL) {
     if (temp != line) {
-      token = strndup(line, temp - line);
+      token = line;
     } else {
       token = NULL;
     }
     tokens[i] = token;
     line = temp + 1;
+    *temp = '\0';
     temp = strstr(line, comma);
     i++;
   }
-  token = strdup(line);
+  token = line;
   tokens[i] = token;
 
   return tokens;
