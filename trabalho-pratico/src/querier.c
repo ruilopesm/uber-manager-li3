@@ -179,9 +179,6 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
 void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t begin = clock();
 
-  char *city = parameter[0];
-  city[strlen(city) - 1] = '\0';
-
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
 
@@ -192,15 +189,24 @@ void query4(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
-  CITY_STATS city_stats = get_city_stats(stats, city);
+  char *city_string = parameter[0];
+  city_string[strlen(city_string) - 1] = '\0';
+  GHashTable *city_code = get_catalog_city_code(catalog);
+  char *city_number = g_hash_table_lookup(city_code, city_string);
 
-  if (city_stats != NULL) {
-    double total_spent = get_city_stats_total_spent(city_stats);
-    int total_rides = get_city_stats_total_rides(city_stats);
+  if (city_number) {
+    int city = *city_number;
 
-    double result = (double)(total_spent / total_rides);
+    CITY_STATS city_stats = get_city_stats(stats, city);
 
-    fprintf(output_file, "%.3f\n", result);
+    if (city_stats != NULL) {
+      double total_spent = get_city_stats_total_spent(city_stats);
+      int total_rides = get_city_stats_total_rides(city_stats);
+
+      double result = (double)(total_spent / total_rides);
+
+      fprintf(output_file, "%.3f\n", result);
+    }
   }
 
   free(parameter);
@@ -249,8 +255,12 @@ void query5_6(CATALOG catalog, STATS stats, char **parameters, int counter,
   int upper_limit = date_string_to_int(parameters[1 + query6_determiner]);
 
   if (query6_determiner) {
-    average = calculate_average_distance(rides_by_date, lower_limit,
-                                         upper_limit, city);
+    GHashTable *city_codes = get_catalog_city_code(catalog);
+    char *city_code;
+    city_code = g_hash_table_lookup(city_codes, city);
+    if (city_code)
+      average = calculate_average_distance(rides_by_date, lower_limit,
+                                           upper_limit, *city_code);
   } else {
     average = calculate_average_price(rides_by_date, lower_limit, upper_limit);
   }
@@ -319,7 +329,7 @@ double calculate_average_price(GHashTable *rides_by_date, int lower_limit,
 }
 
 double calculate_average_distance(GHashTable *rides_by_date, int lower_limit,
-                                  int upper_limit, char *city) {
+                                  int upper_limit, char city_code) {
   double total = 0.f;
   int rides_counter = 0;
   int temp_date;
@@ -340,14 +350,12 @@ double calculate_average_distance(GHashTable *rides_by_date, int lower_limit,
           break;
         }
 
-        char *ride_city = get_ride_city(temp_ride);
+        int ride_city = get_ride_city(temp_ride);
 
-        if (!strcmp(city, ride_city)) {
+        if (city_code == ride_city) {
           total += get_ride_distance(temp_ride);
           rides_counter++;
         }
-
-        free(ride_city);
       }
     }
   }
@@ -362,10 +370,6 @@ double calculate_average_distance(GHashTable *rides_by_date, int lower_limit,
 void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
   clock_t begin = clock();
 
-  int n;
-  sscanf(parameter[0], "%d", &n);
-  char *city = strip(parameter[1]);
-
   char *output_filename = malloc(sizeof(char) * 256);
   sprintf(output_filename, "Resultados/command%d_output.txt", counter);
 
@@ -376,57 +380,67 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
-  GTree *city_drivers_tree = get_city_stats_tree(stats, city);
+  int n;
+  sscanf(parameter[0], "%d", &n);
+  char *city_string = strip(parameter[1]);
+  GHashTable *city_code = get_catalog_city_code(catalog);
+  char *city_number = g_hash_table_lookup(city_code, city_string);
 
-  if (city_drivers_tree == NULL) {
-    return;
-  }
+  if (city_number) {
+    int city = *city_number;
 
-  GPtrArray *city_drivers_array = get_city_stats_array(stats, city);
+    GTree *city_drivers_tree = get_city_stats_tree(stats, city);
 
-  if (city_drivers_array == NULL) {
-    city_drivers_array = g_ptr_array_new();
-
-    g_tree_foreach(city_drivers_tree, (GTraverseFunc)tree_to_array,
-                   city_drivers_array);
-    g_ptr_array_sort(city_drivers_array, compare_driver_stats_by_average_score);
-
-    set_city_drivers_array(stats, city, city_drivers_array);
-  }
-
-  int i = 0;
-  while (n > 0 && i < (int)city_drivers_array->len) {
-    CITY_DRIVER_STATS city_driver_stats =
-        g_ptr_array_index(city_drivers_array, i);
-    int driver_id = get_city_driver_stats_id(city_driver_stats);
-
-    GHashTable *drivers = get_catalog_drivers(catalog);
-    DRIVER driver = g_hash_table_lookup(drivers, &driver_id);
-    enum account_status status = get_driver_account_status(driver);
-
-    if (status == ACTIVE) {
-      char *driver_name = get_catalog_driver_name(catalog, &driver_id);
-
-      double driver_rating =
-          get_city_driver_stats_total_rating(city_driver_stats);
-
-      int driver_number_of_rides =
-          get_city_driver_stats_total_rides(city_driver_stats);
-
-      double driver_average_score = driver_rating / driver_number_of_rides;
-
-      fprintf(output_file, "%012d;%s;%.3f\n", driver_id, driver_name,
-              driver_average_score);
-
-      free(driver_name);
-      n--;
+    if (city_drivers_tree == NULL) {
+      return;
     }
 
-    i++;
+    GPtrArray *city_drivers_array = get_city_stats_array(stats, city);
+
+    if (city_drivers_array == NULL) {
+      city_drivers_array = g_ptr_array_new();
+
+      g_tree_foreach(city_drivers_tree, (GTraverseFunc)tree_to_array,
+                     city_drivers_array);
+      g_ptr_array_sort(city_drivers_array,
+                       compare_driver_stats_by_average_score);
+
+      set_city_drivers_array(stats, city, city_drivers_array);
+    }
+
+    int i = 0;
+    while (n > 0 && i < (int)city_drivers_array->len) {
+      CITY_DRIVER_STATS city_driver_stats =
+          g_ptr_array_index(city_drivers_array, i);
+      int driver_id = get_city_driver_stats_id(city_driver_stats);
+
+      GHashTable *drivers = get_catalog_drivers(catalog);
+      DRIVER driver = g_hash_table_lookup(drivers, &driver_id);
+      enum account_status status = get_driver_account_status(driver);
+
+      if (status == ACTIVE) {
+        char *driver_name = get_catalog_driver_name(catalog, &driver_id);
+
+        double driver_rating =
+            get_city_driver_stats_total_rating(city_driver_stats);
+
+        int driver_number_of_rides =
+            get_city_driver_stats_total_rides(city_driver_stats);
+
+        double driver_average_score = driver_rating / driver_number_of_rides;
+
+        fprintf(output_file, "%012d;%s;%.3f\n", driver_id, driver_name,
+                driver_average_score);
+
+        free(driver_name);
+        n--;
+      }
+
+      i++;
+    }
   }
 
   free(parameter);
-  free(city);
   free(output_filename);
   fclose(output_file);
 
@@ -578,12 +592,15 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
     return;
   }
 
+  GPtrArray *city_lookup_reverse = get_catalog_city_reverse_lookup(catalog);
   number_of_rides = rides_in_range->len - 1;
   while (number_of_rides >= 0) {
     temp_ride = g_array_index(rides_in_range, RIDE, number_of_rides);
     fprintf(output_file, "%012d;%s;%d;%s;%.3f\n", get_ride_id(temp_ride),
             date_to_string(get_ride_date(temp_ride)),
-            get_ride_distance(temp_ride), get_ride_city(temp_ride),
+            get_ride_distance(temp_ride),
+            (char *)(g_ptr_array_index(city_lookup_reverse,
+                                       get_ride_city(temp_ride))),
             get_ride_tip(temp_ride));
     number_of_rides--;
   }

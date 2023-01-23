@@ -40,11 +40,11 @@ GArray *get_top_drivers_by_average_score(STATS stats);
 
 GArray *get_top_users_by_total_distance(STATS stats);
 
-CITY_STATS get_city_stats(STATS stats, char *city);
+CITY_STATS get_city_stats(STATS stats, int city);
 
-GTree *get_city_stats_tree(STATS stats, char *city);
+GTree *get_city_stats_tree(STATS stats, int city);
 
-GPtrArray *get_city_stats_array(STATS stats, char *city);
+GPtrArray *get_city_stats_array(STATS stats, int city);
 
 double get_city_driver_stats_total_rating(CITY_DRIVER_STATS city_driver_stats);
 
@@ -56,7 +56,7 @@ double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats);
 
 GHashTable *get_rides_by_date(STATS stats);
 
-void set_city_drivers_array(STATS stats, char *city, GPtrArray *drivers_array);
+void set_city_drivers_array(STATS stats, int city, GPtrArray *drivers_array);
 
 GArray *get_male_rides_by_age(STATS stats);
 
@@ -68,7 +68,7 @@ void update_user_stats(CATALOG catalog, char *username, int distance,
 void update_driver_stats(CATALOG catalog, int *driver_id, double rating,
                          double price, double tip, int date);
 
-void upsert_city_driver_stats(STATS stats, char *city, int *driver_id,
+void upsert_city_driver_stats(STATS stats, int city, int *driver_id,
                               double driver_score, double ride_price);
 
 void update_genders_rides_by_age(CATALOG catalog, STATS stats, int *ride_id,

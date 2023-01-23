@@ -36,7 +36,7 @@ double calculate_average_price(GHashTable *rides_by_date, int lower_limit,
                                int upper_limit);
 
 double calculate_average_distance(GHashTable *rides_by_date, int lower_limit,
-                                  int upper_limit, char *city);
+                                  int upper_limit, char city_code);
 
 void query7(CATALOG catalog, STATS stats, char **parameters, int counter);
 

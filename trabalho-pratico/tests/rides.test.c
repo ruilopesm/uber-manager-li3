@@ -59,19 +59,6 @@ TEST ride_user_test(void) {
   PASS();
 }
 
-TEST ride_city_test(void) {
-  RIDE ride = create_ride();
-  char *city = strdup("Lisboa");
-
-  set_ride_city(ride, city);
-
-  ASSERT_STR_EQ(city, get_ride_city(ride));
-
-  free(city);
-
-  PASS();
-}
-
 TEST ride_distance_test(void) {
   RIDE ride = create_ride();
   char *distance = strdup("10");

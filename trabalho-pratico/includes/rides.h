@@ -23,7 +23,8 @@ void set_ride_driver(RIDE ride, char *driver_string);
 
 void set_ride_user(RIDE ride, char *user_string);
 
-void set_ride_city(RIDE ride, char *city_string);
+void set_ride_city(RIDE ride, char *city_string, GHashTable *city_code,
+                   GPtrArray *city_reverse_lookup);
 
 void set_ride_distance(RIDE ride, char *distance_string);
 
@@ -43,7 +44,7 @@ int get_ride_driver(RIDE ride);
 
 char *get_ride_user(RIDE ride);
 
-char *get_ride_city(RIDE ride);
+int get_ride_city(RIDE ride);
 
 int get_ride_distance(RIDE ride);
 
