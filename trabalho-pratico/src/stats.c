@@ -381,11 +381,21 @@ gint compare_drivers_by_average_score(gconstpointer a, gconstpointer b) {
   DRIVER driver_b = *(DRIVER *)b;
 
   double a_total_rating = get_driver_total_rating(driver_a);
+
   int a_number_of_rides = get_driver_number_of_rides(driver_a);
+  if (a_number_of_rides == 0) {
+    return 1;  // Division by zero check
+  }
+
   double a_score = (double)(a_total_rating / a_number_of_rides);
 
   double b_total_rating = get_driver_total_rating(driver_b);
+
   int b_number_of_rides = get_driver_number_of_rides(driver_b);
+  if (b_number_of_rides == 0) {
+    return -1;  // Division by zero check
+  }
+
   double b_score = (double)(b_total_rating / b_number_of_rides);
 
   if (a_score != b_score) {
