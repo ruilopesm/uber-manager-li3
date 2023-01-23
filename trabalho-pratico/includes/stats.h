@@ -98,6 +98,12 @@ void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats);
 
 void insert_ride_by_date(RIDE ride, STATS stats);
 
+void free_rides_by_age(gpointer ride_gender_stats_gpointer);
+
+void free_city_stats(gpointer city_stats_gpointer);
+
+void free_rides_by_date(gpointer rides_of_the_day_gpointer);
+
 void free_stats(STATS stats);
 
 #endif

@@ -48,10 +48,13 @@ STATS create_stats(void) {
   new_stats->top_users_by_total_distance =
       g_array_new(FALSE, FALSE, sizeof(USER));
   new_stats->city_drivers = g_array_new(1, 1, sizeof(CITY_STATS));
-  new_stats->rides_by_date =
-      g_hash_table_new_full(g_int_hash, g_int_equal, free, NULL);
+  g_array_set_clear_func(new_stats->city_drivers, free_city_stats);
+  new_stats->rides_by_date = g_hash_table_new_full(
+      g_int_hash, g_int_equal, free, (GDestroyNotify)free_rides_by_date);
   new_stats->male_rides_by_age = g_array_new(1, 1, sizeof(RIDE_GENDER_STATS));
   new_stats->female_rides_by_age = g_array_new(1, 1, sizeof(RIDE_GENDER_STATS));
+  g_array_set_clear_func(new_stats->male_rides_by_age, free_rides_by_age);
+  g_array_set_clear_func(new_stats->female_rides_by_age, free_rides_by_age);
 
   return new_stats;
 }
@@ -74,7 +77,7 @@ CITY_STATS create_city_stats() {
   CITY_STATS new_city_stats = malloc(sizeof(struct city));
 
   new_city_stats->drivers_tree =
-      g_tree_new_full((GCompareDataFunc)compare_ints, NULL, free,
+      g_tree_new_full((GCompareDataFunc)compare_ints, NULL, NULL,
                       (GDestroyNotify)free_city_driver_stats);
   new_city_stats->drivers_array = NULL;
   new_city_stats->total_spent = 0.f;
@@ -262,10 +265,10 @@ void update_genders_rides_by_age(CATALOG catalog, STATS stats, int *ride_id,
     return;
   }
 
-  RIDE_GENDER_STATS to_insert = create_ride_gender_stats(
-      ride_id, driver_account_creation, user_account_creation);
-
   if (user_gender == driver_gender) {
+    RIDE_GENDER_STATS to_insert = create_ride_gender_stats(
+        ride_id, driver_account_creation, user_account_creation);
+
     if (user_gender == M) {
       g_array_append_val(male_rides_by_age, to_insert);
     } else {
@@ -442,7 +445,18 @@ void insert_ride_by_date(RIDE ride, STATS stats) {
   }
 }
 
-void free_city_stats(CITY_STATS city_stats) {
+void free_rides_by_age(gpointer ride_gender_stats_gpointer) {
+  RIDE_GENDER_STATS stats = *(RIDE_GENDER_STATS *)ride_gender_stats_gpointer;
+  free(stats);
+}
+
+void free_rides_by_date(gpointer rides_of_the_day_gpointer) {
+  GArray *rides_of_the_day = (GArray *)(rides_of_the_day_gpointer);
+  g_array_free(rides_of_the_day, 1);
+}
+
+void free_city_stats(gpointer city_stats_gpointer) {
+  CITY_STATS city_stats = *(CITY_STATS *)city_stats_gpointer;
   g_tree_destroy(city_stats->drivers_tree);
   if (city_stats->drivers_array) {
     g_ptr_array_free(city_stats->drivers_array, TRUE);
@@ -451,10 +465,10 @@ void free_city_stats(CITY_STATS city_stats) {
 }
 
 void free_stats(STATS stats) {
-  g_array_free(stats->top_users_by_total_distance, FALSE);
-  g_array_free(stats->top_drivers_by_average_score, FALSE);
-  g_array_free(stats->city_drivers, 1);
   g_hash_table_destroy(stats->rides_by_date);
+  g_array_free(stats->top_users_by_total_distance, 1);
+  g_array_free(stats->top_drivers_by_average_score, 1);
+  g_array_free(stats->city_drivers, 1);
   g_array_free(stats->male_rides_by_age, 1);
   g_array_free(stats->female_rides_by_age, 1);
 

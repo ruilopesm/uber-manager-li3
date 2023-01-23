@@ -440,6 +440,7 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
     }
   }
 
+  free(city_string);
   free(parameter);
   free(output_filename);
   fclose(output_file);
@@ -532,6 +533,7 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
     fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name, username,
             name);
 
+    free(username);
     free(driver_name);
     free(name);
   }
@@ -596,13 +598,14 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
   number_of_rides = rides_in_range->len - 1;
   while (number_of_rides >= 0) {
     temp_ride = g_array_index(rides_in_range, RIDE, number_of_rides);
+    char *temp_date = date_to_string(get_ride_date(temp_ride));
     fprintf(output_file, "%012d;%s;%d;%s;%.3f\n", get_ride_id(temp_ride),
-            date_to_string(get_ride_date(temp_ride)),
-            get_ride_distance(temp_ride),
+            temp_date, get_ride_distance(temp_ride),
             (char *)(g_ptr_array_index(city_lookup_reverse,
                                        get_ride_city(temp_ride))),
             get_ride_tip(temp_ride));
     number_of_rides--;
+    free(temp_date);
   }
 
   free(parameter);
