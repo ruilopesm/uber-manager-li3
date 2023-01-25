@@ -389,24 +389,26 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
   if (city_number) {
     int city = *city_number;
 
-    GTree *city_drivers_tree = get_city_stats_tree(stats, city);
+    /* GTree *city_drivers_tree = get_city_stats_tree(stats, city); */
+    GHashTable *city_drivers_hash = get_city_stats_hash(stats, city);
 
-    if (city_drivers_tree == NULL) {
+    if (city_drivers_hash == NULL) {
       return;
     }
 
     GPtrArray *city_drivers_array = get_city_stats_array(stats, city);
+    g_ptr_array_sort(city_drivers_array, compare_driver_stats_by_average_score);
 
-    if (city_drivers_array == NULL) {
-      city_drivers_array = g_ptr_array_new();
+    /* if (city_drivers_array == NULL) { */
+    /*   city_drivers_array = g_ptr_array_new(); */
 
-      g_tree_foreach(city_drivers_tree, (GTraverseFunc)tree_to_array,
-                     city_drivers_array);
-      g_ptr_array_sort(city_drivers_array,
-                       compare_driver_stats_by_average_score);
+    /*   g_tree_foreach(city_drivers_tree, (GTraverseFunc)tree_to_array, */
+    /*                  city_drivers_array); */
+    /*   g_ptr_array_sort(city_drivers_array, */
+    /*                    compare_driver_stats_by_average_score); */
 
-      set_city_drivers_array(stats, city, city_drivers_array);
-    }
+    /*   set_city_drivers_array(stats, city, city_drivers_array); */
+    /* } */
 
     int i = 0;
     while (n > 0 && i < (int)city_drivers_array->len) {

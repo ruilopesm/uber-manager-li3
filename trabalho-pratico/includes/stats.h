@@ -16,7 +16,7 @@ typedef struct ride_stats *RIDE_STATS;
 
 typedef struct city_driver_stats *CITY_DRIVER_STATS;
 
-typedef struct city *CITY_STATS;
+typedef struct city_stats *CITY_STATS;
 
 typedef struct ride_gender_stats *RIDE_GENDER_STATS;
 
@@ -42,7 +42,7 @@ GArray *get_top_users_by_total_distance(STATS stats);
 
 CITY_STATS get_city_stats(STATS stats, int city);
 
-GTree *get_city_stats_tree(STATS stats, int city);
+GHashTable *get_city_stats_hash(STATS stats, int city);
 
 GPtrArray *get_city_stats_array(STATS stats, int city);
 
