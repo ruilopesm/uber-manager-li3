@@ -78,7 +78,7 @@ CITY_STATS create_city_stats() {
 
   new_city_stats->drivers_array = g_ptr_array_new();
   new_city_stats->drivers_hash = g_hash_table_new_full(
-      g_int_hash, g_int_equal, free, (GDestroyNotify)free_city_driver_stats);
+      g_int_hash, g_int_equal, NULL, (GDestroyNotify)free_city_driver_stats);
   new_city_stats->total_spent = 0.f;
   new_city_stats->total_rides = 0;
 
@@ -428,7 +428,6 @@ gint compare_city_driver_stats_by_id(gconstpointer a, gconstpointer b) {
 }
 
 void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats) {
-  /* free(city_driver_stats->id); */
   free(city_driver_stats);
 }
 
@@ -470,11 +469,9 @@ void free_rides_by_date(gpointer rides_of_the_day_gpointer) {
 
 void free_city_stats(gpointer city_stats_gpointer) {
   CITY_STATS city_stats = *(CITY_STATS *)city_stats_gpointer;
-  /* g_tree_destroy(city_stats->drivers_tree); */
-  /* g_hash_table_destroy(city_stats->drivers_hash); */
-  /* if (city_stats->drivers_array) { */
-  /*   g_ptr_array_free(city_stats->drivers_array, FALSE); */
-  /* } */
+
+  g_hash_table_destroy(city_stats->drivers_hash);
+  g_ptr_array_free(city_stats->drivers_array, 1);
   free(city_stats);
 }
 
