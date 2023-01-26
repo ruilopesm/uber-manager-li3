@@ -59,3 +59,4 @@ data/
 Resultados/
 .vscode/
 massif*
+gprof.png
