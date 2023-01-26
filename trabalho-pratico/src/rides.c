@@ -61,7 +61,6 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
   g_hash_table_insert(rides_hash_table, ride->id, ride);
 
   insert_ride_by_date(ride, stats);
-
   update_user_stats(catalog, ride->user, ride->distance, ride->score_user,
                     ride->price, ride->tip, ride->date);
   update_driver_stats(catalog, ride->driver, ride->score_driver, ride->price,
@@ -80,14 +79,25 @@ void set_ride_id(RIDE ride, char *id_string) {
 }
 
 void set_ride_date(RIDE ride, char *date_string) {
-  int date;
-  int day, month, year;
+  int date = 0;
+  // int day = 0, month = 0, year = 0;
 
-  sscanf(date_string, "%d/%d/%d", &day, &month, &year);
+  date = (date_string[0] - '0') * 10;
+  date += (date_string[1] - '0');
+
+  date += (date_string[3] - '0') * 1000;
+  date += (date_string[4] - '0') * 100;
+
+  date += (date_string[6] - '0') * 10000000;
+  date += (date_string[7] - '0') * 1000000;
+  date += (date_string[8] - '0') * 100000;
+  date += (date_string[9] - '0') * 10000;
+
+  /*sscanf(date_string, "%d/%d/%d", &day, &month, &year);
 
   date = day;
   date += month * 100;
-  date += year * 10000;
+  date += year * 10000;*/
 
   ride->date = date;
 }

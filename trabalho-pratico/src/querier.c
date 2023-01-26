@@ -298,33 +298,60 @@ double calculate_average_price(GHashTable *rides_by_date, int lower_limit,
   double total = 0.f;
   int rides_counter = 0;
   int temp_date;
-  RIDE temp_ride = NULL;
 
   for (temp_date = lower_limit; upper_limit >= temp_date;
        temp_date = increment_date(temp_date)) {
-    GArray *rides_of_the_day = g_hash_table_lookup(rides_by_date, &temp_date);
+    RIDES_OF_THE_DAY rides_of_the_day =
+        g_hash_table_lookup(rides_by_date, &temp_date);
 
     if (rides_of_the_day) {
-      int number_of_rides = rides_of_the_day->len;
+      GArray *day_rides = get_ride_of_the_day_array(rides_of_the_day);
 
-      for (int j = 0; j < number_of_rides; j++) {
-        temp_ride = g_array_index(rides_of_the_day, RIDE, j);
+      // If this day's total price wasn't calculated yet, we calculate it
 
-        // Make sure there is something in that array position
-        if (temp_ride == NULL) {
-          break;
+      if (get_ride_of_the_day_avg_price(rides_of_the_day) == -1) {
+        int number_of_cities = day_rides->len, day_rides_counter = 0;
+        double daily_total = 0.f;
+        // We add the price of every ride in every city in that day
+
+        for (int i = 0; i < number_of_cities; i++) {
+          GArray *city_rides = g_array_index(day_rides, GArray *, i);
+          // We check if any rides were made on that city on that day
+          if (city_rides) {
+            int number_of_rides = city_rides->len;
+
+            for (int j = 0; j < number_of_rides; j++) {
+              RIDE temp_ride = g_array_index(city_rides, RIDE, j);
+              // Make sure there is something in that array position
+              if (temp_ride == NULL) {
+                break;
+              }
+
+              daily_total += get_ride_price(temp_ride);
+              day_rides_counter++;
+            }
+          }
         }
 
-        total += get_ride_price(temp_ride);
-        rides_counter++;
+        // If any rides were made in that day, we add them to the total
+        if (day_rides_counter) {
+          set_ride_of_the_day_avg_price(rides_of_the_day, daily_total);
+          set_ride_of_the_day_number_of_rides(rides_of_the_day,
+                                              day_rides_counter);
+        } else {
+          set_ride_of_the_day_avg_price(rides_of_the_day, 0);
+          set_ride_of_the_day_number_of_rides(rides_of_the_day, 0);
+        }
       }
+
+      total += get_ride_of_the_day_avg_price(rides_of_the_day);
+      rides_counter += get_ride_of_the_day_number_of_rides(rides_of_the_day);
     }
   }
 
   if (rides_counter) {
     return (double)(total / rides_counter);
   }
-
   return 0;
 }
 
@@ -337,24 +364,26 @@ double calculate_average_distance(GHashTable *rides_by_date, int lower_limit,
 
   for (temp_date = lower_limit; upper_limit >= temp_date;
        temp_date = increment_date(temp_date)) {
-    GArray *rides_of_the_day = g_hash_table_lookup(rides_by_date, &temp_date);
+    RIDES_OF_THE_DAY rides_of_the_day =
+        g_hash_table_lookup(rides_by_date, &temp_date);
 
     if (rides_of_the_day) {
-      int number_of_rides = rides_of_the_day->len;
+      GArray *array = get_ride_of_the_day_array(rides_of_the_day);
 
-      for (int j = 0; j < number_of_rides; j++) {
-        temp_ride = g_array_index(rides_of_the_day, RIDE, j);
-
-        // Make sure there is something in that array position
-        if (temp_ride == NULL) {
-          break;
-        }
-
-        int ride_city = get_ride_city(temp_ride);
-
-        if (city_code == ride_city) {
-          total += get_ride_distance(temp_ride);
-          rides_counter++;
+      // Prevent checking NULL and out of bounds
+      if (array && array->len >= (guint)city_code) {
+        GArray *city_rides = g_array_index(array, GArray *, (int)city_code);
+        if (city_rides) {
+          int number_of_rides = city_rides->len;
+          for (int i = 0; i < number_of_rides; i++) {
+            temp_ride = g_array_index(city_rides, RIDE, i);
+            // Make sure there is something in that array position
+            if (temp_ride == NULL) {
+              break;
+            }
+            total += get_ride_distance(temp_ride);
+            rides_counter++;
+          }
         }
       }
     }
@@ -564,21 +593,35 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
   GArray *rides_in_range = g_array_new(1, 1, sizeof(RIDE));
   int lower_limit = date_string_to_int(parameter[0]);
   int upper_limit = date_string_to_int(parameter[1]);
-  RIDE temp_ride = NULL;
   int number_of_rides = 0;
 
   for (int temp_date = lower_limit; upper_limit >= temp_date;
        temp_date = increment_date(temp_date)) {
     // Tries to find if there are rides in that specific day
-    GArray *rides_of_the_day = g_hash_table_lookup(rides_by_date, &temp_date);
-    if (rides_of_the_day) {
-      number_of_rides = rides_of_the_day->len;
-      for (int i = 0; i < number_of_rides; i++) {
-        temp_ride = g_array_index(rides_of_the_day, RIDE, i);
-        // Make sure there is something in that array position
-        if (temp_ride == NULL) break;
-        // The ride is inserted into the temporary structure
-        g_array_append_val(rides_in_range, temp_ride);
+    RIDES_OF_THE_DAY rides_of_the_day_struct =
+        g_hash_table_lookup(rides_by_date, &temp_date);
+    if (rides_of_the_day_struct) {
+      GArray *rides_of_the_day =
+          get_ride_of_the_day_array(rides_of_the_day_struct);
+
+      if (rides_of_the_day) {
+        int number_of_cities = rides_of_the_day->len;
+
+        for (int i = 0; i < number_of_cities; i++) {
+          GArray *city_rides = g_array_index(rides_of_the_day, GArray *, i);
+
+          if (city_rides) {
+            int number_of_rides = city_rides->len;
+
+            for (int j = 0; j < number_of_rides; j++) {
+              RIDE temp_ride = g_array_index(city_rides, RIDE, j);
+              // Make sure there is something in that array position
+              if (temp_ride == NULL) break;
+              // The ride is inserted into the temporary structure
+              g_array_append_val(rides_in_range, temp_ride);
+            }
+          }
+        }
       }
     }
   }
@@ -599,7 +642,7 @@ void query9(CATALOG catalog, STATS stats, char **parameter, int counter) {
   GPtrArray *city_lookup_reverse = get_catalog_city_reverse_lookup(catalog);
   number_of_rides = rides_in_range->len - 1;
   while (number_of_rides >= 0) {
-    temp_ride = g_array_index(rides_in_range, RIDE, number_of_rides);
+    RIDE temp_ride = g_array_index(rides_in_range, RIDE, number_of_rides);
     char *temp_date = date_to_string(get_ride_date(temp_ride));
     fprintf(output_file, "%012d;%s;%d;%s;%.3f\n", get_ride_id(temp_ride),
             temp_date, get_ride_distance(temp_ride),

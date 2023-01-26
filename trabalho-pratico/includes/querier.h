@@ -38,6 +38,8 @@ double calculate_average_price(GHashTable *rides_by_date, int lower_limit,
 double calculate_average_distance(GHashTable *rides_by_date, int lower_limit,
                                   int upper_limit, char city_code);
 
+gint find_city_position(gconstpointer ride_pointer, gconstpointer city_pointer);
+
 void query7(CATALOG catalog, STATS stats, char **parameters, int counter);
 
 void query8(CATALOG catalog, STATS stats, char **parameters, int counter);

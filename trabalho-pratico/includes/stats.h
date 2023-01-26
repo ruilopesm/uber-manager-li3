@@ -20,6 +20,8 @@ typedef struct city_stats *CITY_STATS;
 
 typedef struct ride_gender_stats *RIDE_GENDER_STATS;
 
+typedef struct rides_of_the_day *RIDES_OF_THE_DAY;
+
 typedef struct ride *RIDE;  // To not cause conflicts
 
 STATS create_stats(void);
@@ -97,6 +99,18 @@ gint compare_driver_stats_by_average_score(gconstpointer a, gconstpointer b);
 void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats);
 
 void insert_ride_by_date(RIDE ride, STATS stats);
+
+GArray *get_ride_of_the_day_array(RIDES_OF_THE_DAY rides_of_the_day);
+
+double get_ride_of_the_day_number_of_rides(RIDES_OF_THE_DAY rides_of_the_day);
+
+void set_ride_of_the_day_number_of_rides(RIDES_OF_THE_DAY rides_of_the_day,
+                                         int ride_number);
+
+double get_ride_of_the_day_avg_price(RIDES_OF_THE_DAY rides_of_the_day);
+
+void set_ride_of_the_day_avg_price(RIDES_OF_THE_DAY rides_of_the_day,
+                                   double price);
 
 void free_rides_by_age(gpointer ride_gender_stats_gpointer);
 

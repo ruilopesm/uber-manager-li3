@@ -40,6 +40,12 @@ struct ride_gender_stats {
   int user_account_creation;
 };
 
+struct rides_of_the_day {
+  GArray *array;
+  double avg_price;
+  int number_of_rides;
+};
+
 STATS create_stats(void) {
   STATS new_stats = malloc(sizeof(struct stats));
 
@@ -49,8 +55,8 @@ STATS create_stats(void) {
       g_array_new(FALSE, FALSE, sizeof(USER));
   new_stats->city_drivers = g_array_new(1, 1, sizeof(CITY_STATS));
   g_array_set_clear_func(new_stats->city_drivers, free_city_stats);
-  new_stats->rides_by_date = g_hash_table_new_full(
-      g_int_hash, g_int_equal, free, (GDestroyNotify)free_rides_by_date);
+  new_stats->rides_by_date =
+      g_hash_table_new_full(g_int_hash, g_int_equal, free, NULL);
   new_stats->male_rides_by_age = g_array_new(1, 1, sizeof(RIDE_GENDER_STATS));
   new_stats->female_rides_by_age = g_array_new(1, 1, sizeof(RIDE_GENDER_STATS));
   g_array_set_clear_func(new_stats->male_rides_by_age, free_rides_by_age);
@@ -435,26 +441,78 @@ void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats) {
 void insert_ride_by_date(RIDE ride, STATS stats) {
   GHashTable *rides_by_date = get_rides_by_date(stats);
   int ride_date = get_ride_date(ride);
-  GArray *rides_of_the_day = NULL;
-  rides_of_the_day = g_hash_table_lookup(
-      rides_by_date, &ride_date);  // Tries to find if there are any rides
-                                   // already inserted with the same day
+  int ride_city = get_ride_city(ride);
+  RIDES_OF_THE_DAY rides_of_the_day = NULL;
+  // Tries to find if there are any rides already inserted with the same day
+  rides_of_the_day = g_hash_table_lookup(rides_by_date, &ride_date);
+
   if (rides_of_the_day) {
-    g_array_append_val(rides_of_the_day,
-                       ride);  // The ride is then added to the array that has
-                               // all the rides made in the same day
+    GArray *day_rides = rides_of_the_day->array;
+    // prevent checking out of bounds
+    if (day_rides->len > (guint)ride_city) {
+      GArray *city_rides = g_array_index(day_rides, GArray *, ride_city);
+      if (city_rides) {
+        // The ride is then added to the array that has all the rides made in
+        // the same day in the same city
+        g_array_append_val(city_rides, ride);
+      } else {
+        GArray *new_city = g_array_new(1, 1, sizeof(RIDE));
+        g_array_append_val(new_city, ride);
+        // g_array_remove_index(day_rides,ride_city);
+        // g_array_insert_val(day_rides,ride_city,new_city);
+        g_array_index(day_rides, GArray *, ride_city) = new_city;
+      }
+    } else {
+      GArray *new_city = g_array_new(1, 1, sizeof(RIDE));
+      g_array_append_val(new_city, ride);
+      g_array_insert_val(day_rides, ride_city, new_city);
+    }
   } else {
     int *date = g_malloc(sizeof(int));
     *date = ride_date;
-    GArray *new_day = g_array_new(
-        1, 1, sizeof(RIDE));  // If no rides made on the same day were added
-                              // yet, we create a new array to store all the
-                              // rides made on this day
-    g_array_append_val(new_day, ride);
-    g_hash_table_insert(rides_by_date, date,
-                        new_day);  // The new day with the ride is inserted
-                                   // ordered by date into the hash table
+    // If no rides made on the same day were added yet, we create a new array to
+    // store all the rides made on this day
+    GArray *new_city_array = g_array_new(1, 1, sizeof(RIDE));
+    g_array_append_val(new_city_array, ride);
+    GArray *new_day_array = g_array_new(1, 1, sizeof(GArray *));
+    g_array_insert_val(new_day_array, ride_city, new_city_array);
+
+    RIDES_OF_THE_DAY new_day_struct = malloc(sizeof(struct rides_of_the_day));
+    new_day_struct->avg_price = -1;
+    new_day_struct->number_of_rides = -1;
+    new_day_struct->array = new_day_array;
+
+    // The new day with the ride is inserted in the hash table
+    g_hash_table_insert(rides_by_date, date, new_day_struct);
+
+    /*RIDES_OF_THE_DAY test = g_hash_table_lookup(rides_by_date,date);
+    GArray *test_a = test->array;
+    GArray *test_city = g_array_index(test_a,GArray *,ride_city);
+    RIDE test_ride =g_array_index(test_city,RIDE,0);
+    printf("%d\n",get_ride_id(test_ride));*/
   }
+}
+
+GArray *get_ride_of_the_day_array(RIDES_OF_THE_DAY rides_of_the_day) {
+  return rides_of_the_day->array;
+}
+
+double get_ride_of_the_day_number_of_rides(RIDES_OF_THE_DAY rides_of_the_day) {
+  return rides_of_the_day->number_of_rides;
+}
+
+void set_ride_of_the_day_number_of_rides(RIDES_OF_THE_DAY rides_of_the_day,
+                                         int ride_number) {
+  rides_of_the_day->number_of_rides = ride_number;
+}
+
+double get_ride_of_the_day_avg_price(RIDES_OF_THE_DAY rides_of_the_day) {
+  return rides_of_the_day->avg_price;
+}
+
+void set_ride_of_the_day_avg_price(RIDES_OF_THE_DAY rides_of_the_day,
+                                   double price) {
+  rides_of_the_day->avg_price = price;
 }
 
 void free_rides_by_age(gpointer ride_gender_stats_gpointer) {
@@ -463,8 +521,10 @@ void free_rides_by_age(gpointer ride_gender_stats_gpointer) {
 }
 
 void free_rides_by_date(gpointer rides_of_the_day_gpointer) {
-  GArray *rides_of_the_day = (GArray *)(rides_of_the_day_gpointer);
-  g_array_free(rides_of_the_day, 1);
+  RIDES_OF_THE_DAY rides_of_the_day =
+      (RIDES_OF_THE_DAY)(rides_of_the_day_gpointer);
+  g_array_free(rides_of_the_day->array, 1);
+  free(rides_of_the_day);
 }
 
 void free_city_stats(gpointer city_stats_gpointer) {
