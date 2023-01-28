@@ -1,6 +1,7 @@
 #include "stats.h"
 
 #include <glib.h>
+#include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -55,8 +56,8 @@ STATS create_stats(void) {
       g_array_new(FALSE, FALSE, sizeof(USER));
   new_stats->city_drivers = g_array_new(1, 1, sizeof(CITY_STATS));
   g_array_set_clear_func(new_stats->city_drivers, free_city_stats);
-  new_stats->rides_by_date =
-      g_hash_table_new_full(g_int_hash, g_int_equal, free, NULL);
+  new_stats->rides_by_date = g_hash_table_new_full(
+      g_int_hash, g_int_equal, free, (GDestroyNotify)free_rides_by_date);
   new_stats->male_rides_by_age = g_array_new(1, 1, sizeof(RIDE_GENDER_STATS));
   new_stats->female_rides_by_age = g_array_new(1, 1, sizeof(RIDE_GENDER_STATS));
   g_array_set_clear_func(new_stats->male_rides_by_age, free_rides_by_age);
@@ -523,6 +524,17 @@ void free_rides_by_age(gpointer ride_gender_stats_gpointer) {
 void free_rides_by_date(gpointer rides_of_the_day_gpointer) {
   RIDES_OF_THE_DAY rides_of_the_day =
       (RIDES_OF_THE_DAY)(rides_of_the_day_gpointer);
+  GArray *array = rides_of_the_day->array;
+  int size = array->len;
+  for (int i = 0; i < size; i++) {
+    GArray *temp = g_array_index(rides_of_the_day->array, GArray *, i);
+// GCC Complains it's unused but it is used two lines below
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+    GArray *copy = temp;
+    if (temp != NULL) g_array_free(temp, 1);
+    copy = malloc(sizeof(GArray *));
+  }
+
   g_array_free(rides_of_the_day->array, 1);
   free(rides_of_the_day);
 }

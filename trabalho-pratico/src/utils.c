@@ -66,8 +66,18 @@ int calculate_age(int birth_date) {
   int birth_date_day = birth_date % 100;
 
   const char *master_date = MASTER_DATE;
-  int day, month, year;
-  sscanf(master_date, "%d/%d/%d", &day, &month, &year);
+  int day = 0, month = 0, year = 0;
+
+  day = (master_date[0] - '0') * 10;
+  day += (master_date[1] - '0');
+
+  month = (master_date[3] - '0') * 10;
+  month += (master_date[4] - '0');
+
+  year = (master_date[6] - '0') * 1000;
+  year += (master_date[7] - '0') * 100;
+  year += (master_date[8] - '0') * 10;
+  year += (master_date[9] - '0');
 
   age = year - birth_date_year;
 
@@ -207,4 +217,31 @@ enum gender string_to_gender(char *gender) {
   } else {
     return F;
   }
+}
+
+int string_to_int(char *string) {
+  int value = 0;
+  for (int i = 0; string[i] != '\0'; i++) {
+    value *= 10;
+    value += string[i] - '0';
+  }
+  return value;
+}
+
+double string_to_float(char *string) {
+  double value = 0;
+  int i;
+  for (i = 0; string[i] != '.'; i++) {
+    value *= 10;
+    value += string[i] - '0';
+  }
+  double temp = 1;
+  i++;
+  while (string[i] != '\0') {
+    double digit = (string[i] - '0');
+    value += digit / (10 * temp);
+    temp++;
+    i++;
+  }
+  return value;
 }

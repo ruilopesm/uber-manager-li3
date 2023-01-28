@@ -46,4 +46,8 @@ int date_string_to_int(char *date_string);
 
 enum gender string_to_gender(char *gender);
 
+int string_to_int(char *string);
+
+double string_to_float(char *string);
+
 #endif

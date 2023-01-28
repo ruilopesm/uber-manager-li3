@@ -84,29 +84,37 @@ void set_user_gender(USER user, char *gender_string) {
 }
 
 void set_user_birth_date(USER user, char *birth_date_string) {
-  int birth_date = 0;
-  int day, month, year;
+  int date = 0;
 
-  sscanf(birth_date_string, "%d/%d/%d", &day, &month, &year);
+  date = (birth_date_string[0] - '0') * 10;
+  date += (birth_date_string[1] - '0');
 
-  birth_date = day;
-  birth_date += month * 100;
-  birth_date += year * 10000;
+  date += (birth_date_string[3] - '0') * 1000;
+  date += (birth_date_string[4] - '0') * 100;
 
-  user->birth_date = birth_date;
+  date += (birth_date_string[6] - '0') * 10000000;
+  date += (birth_date_string[7] - '0') * 1000000;
+  date += (birth_date_string[8] - '0') * 100000;
+  date += (birth_date_string[9] - '0') * 10000;
+
+  user->birth_date = date;
 }
 
 void set_user_account_creation(USER user, char *account_creation_date_string) {
-  int account_creation = 0;
-  int day, month, year;
+  int date = 0;
 
-  sscanf(account_creation_date_string, "%d/%d/%d", &day, &month, &year);
+  date = (account_creation_date_string[0] - '0') * 10;
+  date += (account_creation_date_string[1] - '0');
 
-  account_creation = day;
-  account_creation += month * 100;
-  account_creation += year * 10000;
+  date += (account_creation_date_string[3] - '0') * 1000;
+  date += (account_creation_date_string[4] - '0') * 100;
 
-  user->account_creation = account_creation;
+  date += (account_creation_date_string[6] - '0') * 10000000;
+  date += (account_creation_date_string[7] - '0') * 1000000;
+  date += (account_creation_date_string[8] - '0') * 100000;
+  date += (account_creation_date_string[9] - '0') * 10000;
+
+  user->account_creation = date;
 }
 
 void set_user_pay_method(USER user, char *pay_method_string) {
@@ -152,16 +160,20 @@ void set_user_total_distance(USER user, int total_distance) {
 }
 
 void set_user_latest_ride(USER user, char *latest_ride_date_string) {
-  int latest_ride = 0;
-  int day, month, year;
+  int date = 0;
 
-  sscanf(latest_ride_date_string, "%d/%d/%d", &day, &month, &year);
+  date = (latest_ride_date_string[0] - '0') * 10;
+  date += (latest_ride_date_string[1] - '0');
 
-  latest_ride = day;
-  latest_ride += month * 100;
-  latest_ride += year * 10000;
+  date += (latest_ride_date_string[3] - '0') * 1000;
+  date += (latest_ride_date_string[4] - '0') * 100;
 
-  user->latest_ride = latest_ride;
+  date += (latest_ride_date_string[6] - '0') * 10000000;
+  date += (latest_ride_date_string[7] - '0') * 1000000;
+  date += (latest_ride_date_string[8] - '0') * 100000;
+  date += (latest_ride_date_string[9] - '0') * 10000;
+
+  user->latest_ride = date;
 }
 
 char *get_user_username(USER user) {

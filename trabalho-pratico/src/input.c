@@ -7,14 +7,31 @@
 // Verifies if the date follows the DD/MM/YYYY format
 int verify_date_format(char* date_string) {
   if (!date_string) return 0;
-  int day, month, year;
-  int read = sscanf(date_string, "%d/%d/%d", &day, &month, &year);
-  if (read == 3) {
-    if (day > 31) return 0;
-    if (month > 12) return 0;
-    return 1;
-  }
-  return 0;
+  int temp;
+  if (is_digit(date_string[0]))
+    temp = (date_string[0] - '0') * 10;
+  else
+    return 0;
+  if (is_digit(date_string[1]))
+    temp += (date_string[1] - '0');
+  else
+    return 0;
+  if (temp > 31) return 0;
+  if (is_digit(date_string[3]))
+    temp = (date_string[3] - '0') * 10;
+  else
+    return 0;
+  if (is_digit(date_string[4]))
+    temp += (date_string[4] - '0');
+  else
+    return 0;
+  if (temp > 12) return 0;
+  if (!is_digit(date_string[6])) return 0;
+  if (!is_digit(date_string[7])) return 0;
+  if (!is_digit(date_string[8])) return 0;
+  if (!is_digit(date_string[9])) return 0;
+
+  return 1;
 }
 
 // Verifies if the character is a digit

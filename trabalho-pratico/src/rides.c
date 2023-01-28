@@ -80,7 +80,6 @@ void set_ride_id(RIDE ride, char *id_string) {
 
 void set_ride_date(RIDE ride, char *date_string) {
   int date = 0;
-  // int day = 0, month = 0, year = 0;
 
   date = (date_string[0] - '0') * 10;
   date += (date_string[1] - '0');
@@ -92,12 +91,6 @@ void set_ride_date(RIDE ride, char *date_string) {
   date += (date_string[7] - '0') * 1000000;
   date += (date_string[8] - '0') * 100000;
   date += (date_string[9] - '0') * 10000;
-
-  /*sscanf(date_string, "%d/%d/%d", &day, &month, &year);
-
-  date = day;
-  date += month * 100;
-  date += year * 10000;*/
 
   ride->date = date;
 }
@@ -132,23 +125,19 @@ void set_ride_city(RIDE ride, char *city_string, GHashTable *city_code,
 }
 
 void set_ride_distance(RIDE ride, char *distance_string) {
-  char *ptr;
-  ride->distance = strtol(distance_string, &ptr, 10);
+  ride->distance = string_to_int(distance_string);
 }
 
 void set_ride_score_user(RIDE ride, char *score_user_string) {
-  char *ptr;
-  ride->score_user = strtol(score_user_string, &ptr, 10);
+  ride->score_user = string_to_int(score_user_string);
 }
 
 void set_ride_score_driver(RIDE ride, char *score_driver_string) {
-  char *ptr;
-  ride->score_driver = strtol(score_driver_string, &ptr, 10);
+  ride->score_driver = string_to_int(score_driver_string);
 }
 
 void set_ride_tip(RIDE ride, char *tip_string) {
-  char *ptr;
-  ride->tip = strtod(tip_string, &ptr);
+  ride->tip = string_to_float(tip_string);
 }
 
 void set_ride_price(RIDE ride, double price) { ride->price = price; }
