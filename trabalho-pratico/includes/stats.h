@@ -64,7 +64,7 @@ GArray *get_male_rides_by_age(STATS stats);
 
 GArray *get_female_rides_by_age(STATS stats);
 
-void update_user_stats(CATALOG catalog, char *username, int distance,
+void update_user_stats(CATALOG catalog, int username, int distance,
                        double rating, double price, double tip, int date);
 
 void update_driver_stats(CATALOG catalog, int *driver_id, double rating,
@@ -74,7 +74,7 @@ void upsert_city_driver_stats(STATS stats, int city, int *driver_id,
                               double driver_score, double ride_price);
 
 void update_genders_rides_by_age(CATALOG catalog, STATS stats, int *ride_id,
-                                 int *driver_id, char *username);
+                                 int *driver_id, int username);
 
 int get_ride_gender_stats_id(RIDE_GENDER_STATS ride);
 
@@ -86,7 +86,8 @@ gint compare_rides_by_age(gconstpointer a, gconstpointer b);
 
 void add_user_to_array(gpointer key, gpointer value, gpointer data);
 
-gint compare_users_by_total_distance(gconstpointer a, gconstpointer b);
+gint compare_users_by_total_distance(gconstpointer a, gconstpointer b,
+                                     gpointer users_reverse_gpointer);
 
 void add_driver_to_array(gpointer key, gpointer value, gpointer data);
 
@@ -95,8 +96,6 @@ gint compare_drivers_by_average_score(gconstpointer a, gconstpointer b);
 gint compare_city_driver_stats_by_id(gconstpointer a, gconstpointer b);
 
 gint compare_driver_stats_by_average_score(gconstpointer a, gconstpointer b);
-
-void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats);
 
 void insert_ride_by_date(RIDE ride, STATS stats);
 

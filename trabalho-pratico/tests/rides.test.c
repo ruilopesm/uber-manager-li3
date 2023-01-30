@@ -46,19 +46,6 @@ TEST ride_driver_test(void) {
   PASS();
 }
 
-TEST ride_user_test(void) {
-  RIDE ride = create_ride();
-  char *user = strdup("000000000003");
-
-  set_ride_user(ride, user);
-
-  ASSERT_STR_EQ(user, get_ride_user(ride));
-
-  free(user);
-
-  PASS();
-}
-
 TEST ride_distance_test(void) {
   RIDE ride = create_ride();
   char *distance = strdup("10");

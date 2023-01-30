@@ -138,29 +138,31 @@ void query3(CATALOG catalog, STATS stats, char **parameter, int counter) {
 
   static int is_users_sorted = 0;
   GArray *top_users = get_top_users_by_total_distance(stats);
+  GPtrArray *users_reverse_lookup = get_catalog_users_reverse_lookup(catalog);
 
   if (!is_users_sorted) {
-    qsort(top_users->data, top_users->len, sizeof(USER),
-          (GCompareFunc)compare_users_by_total_distance);
+    g_array_sort_with_data(top_users,
+                           (GCompareDataFunc)compare_users_by_total_distance,
+                           users_reverse_lookup);
     is_users_sorted = 1;
   }
 
   int i = 0;
   while (n > 0 && i < (int)top_users->len) {
     USER user = g_array_index(top_users, USER, i);
-    char *username = get_user_username(user);
+    int username = get_user_username(user);
     char *name = get_user_name(user);
 
     int total_distance = get_user_total_distance(user);
     enum account_status account_status = get_user_account_status(user);
 
     if (account_status == ACTIVE) {
-      fprintf(output_file, "%s;%s;%d\n", username, name, total_distance);
+      char *username_string = g_ptr_array_index(users_reverse_lookup, username);
+      fprintf(output_file, "%s;%s;%d\n", username_string, name, total_distance);
       n--;
     }
 
     ++i;
-    free(username);
     free(name);
   }
 
@@ -528,6 +530,8 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
     }
   }
 
+  GPtrArray *users_reverse_lookup = get_catalog_users_reverse_lookup(catalog);
+
   for (int i = top_rides->len - 1; i >= 0; i--) {
     RIDE_GENDER_STATS current_ride =
         g_array_index(top_rides, RIDE_GENDER_STATS, i);
@@ -550,9 +554,9 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
     GHashTable *rides = get_catalog_rides(catalog);
     RIDE current_ride_catalog = g_hash_table_lookup(rides, &ride_id);
 
-    char *username = get_ride_user(current_ride_catalog);
+    int username = get_ride_user(current_ride_catalog);
     USER current_user =
-        g_hash_table_lookup(get_catalog_users(catalog), username);
+        g_hash_table_lookup(get_catalog_users(catalog), &username);
 
     int driver_id = get_ride_driver(current_ride_catalog);
     DRIVER current_driver =
@@ -561,10 +565,10 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
     char *driver_name = get_driver_name(current_driver);
     char *name = get_user_name(current_user);
 
-    fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name, username,
-            name);
+    char *username_string = g_ptr_array_index(users_reverse_lookup, username);
+    fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name,
+            username_string, name);
 
-    free(username);
     free(driver_name);
     free(name);
   }
@@ -701,15 +705,18 @@ void get_user_profile(CATALOG catalog, char *id, int counter) {
     return;
   }
 
-  GHashTable *users_hash_table = get_catalog_users(catalog);
-  USER user = g_hash_table_lookup(users_hash_table, id);
+  GHashTable *users_code = get_catalog_users_code(catalog);
+  int *user_code = g_hash_table_lookup(users_code, id);
 
-  if (user == NULL) {
+  if (user_code == NULL) {
     free(output_filename);
     fclose(output_file);
     printf("User with id %s does not exist\n", id);
     return;
   }
+
+  GHashTable *users_hash_table = get_catalog_users(catalog);
+  USER user = g_hash_table_lookup(users_hash_table, user_code);
 
   char *name = get_user_name(user);
   enum gender gender = get_user_gender(user);

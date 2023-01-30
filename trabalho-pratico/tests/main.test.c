@@ -7,7 +7,6 @@
 GREATEST_MAIN_DEFS();
 
 SUITE(users) {
-  RUN_TEST(user_username_test);
   RUN_TEST(user_name_test);
   RUN_TEST(user_gender_test);
   RUN_TEST(user_birth_date_test);
@@ -30,7 +29,6 @@ SUITE(rides) {
   RUN_TEST(ride_id_test);
   RUN_TEST(ride_date_test);
   RUN_TEST(ride_driver_test);
-  RUN_TEST(ride_user_test);
   RUN_TEST(ride_distance_test);
   RUN_TEST(ride_score_user_test);
   RUN_TEST(ride_score_driver_test);

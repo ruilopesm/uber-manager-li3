@@ -10,7 +10,7 @@
 #include "stats.h"
 
 struct user {
-  char *username;
+  int *username;
   char *name;
   double total_rating;
   double total_spent;
@@ -39,7 +39,9 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   GHashTable *users_hash_table = get_catalog_users(catalog);
   USER user = create_user();
 
-  set_user_username(user, user_params[0]);
+  GHashTable *users_code = get_catalog_users_code(catalog);
+  GPtrArray *users_reverse = get_catalog_users_reverse_lookup(catalog);
+  set_user_username(user, user_params[0], users_code, users_reverse);
   set_user_name(user, user_params[1]);
   set_user_gender(user, user_params[2]);
   set_user_birth_date(user, user_params[3]);
@@ -61,9 +63,25 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   (void)stats;  // To avoid the "unused variable" warning
 }
 
-void set_user_username(USER user, char *username_string) {
+void set_user_username(USER user, char *username_string, GHashTable *users_code,
+                       GPtrArray *users_reverse) {
+  static int users_parsed = 0;
+
+  // Creates the user_code and inserts it into the hash table
   char *username = strdup(username_string);
-  user->username = username;
+  int *user_code = malloc(sizeof(int));
+  *user_code = users_parsed;
+  g_hash_table_insert(users_code, username, user_code);
+
+  // Inserts the username into the reverse search array
+  char *username_copy = strdup(username_string);
+  g_ptr_array_add(users_reverse, username_copy);
+
+  // Puts the user code into the user struct
+  int *username_code = malloc(sizeof(int));
+  *username_code = users_parsed;
+  user->username = username_code;
+  users_parsed++;
 }
 
 void set_user_name(USER user, char *name_string) {
@@ -176,8 +194,8 @@ void set_user_latest_ride(USER user, char *latest_ride_date_string) {
   user->latest_ride = date;
 }
 
-char *get_user_username(USER user) {
-  char *username_copy = strdup(user->username);
+int get_user_username(USER user) {
+  int username_copy = *user->username;
 
   return username_copy;
 }

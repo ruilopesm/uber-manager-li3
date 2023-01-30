@@ -118,10 +118,17 @@ char *date_to_string(int date) {
   int date_year = date / 10000;
   int date_month = (date % 10000) / 100;
   int date_day = date % 100;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-overflow"
-  sprintf(string, "%02d/%02d/%04d", date_day, date_month, date_year);
-#pragma GCC diagnostic pop
+  string[0] = (date_day / 10) + '0';
+  string[1] = (date_day % 10) + '0';
+  string[2] = '/';
+  string[3] = (date_month / 10) + '0';
+  string[4] = (date_month % 10) + '0';
+  string[5] = '/';
+  string[6] = (date_year / 1000) + '0';
+  string[7] = ((date_year / 100) % 10) + '0';
+  string[8] = ((date_year % 100) / 10) + '0';
+  string[9] = (date_year % 10) + '0';
+  string[10] = '\0';
 
   return string;
 }

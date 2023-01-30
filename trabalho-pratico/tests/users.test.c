@@ -7,19 +7,6 @@
 #include "../lib/greatest.h"
 #include "utils.h"
 
-TEST user_username_test(void) {
-  USER user = create_user();
-  char *username = strdup("JorBranco31");
-
-  set_user_username(user, username);
-
-  ASSERT_STR_EQ(username, get_user_username(user));
-
-  free(username);
-
-  PASS();
-}
-
 TEST user_name_test(void) {
   USER user = create_user();
   char *name = strdup("Jorge Branco");

@@ -14,9 +14,9 @@
 struct ride {
   int *id;
   int *driver;
-  char *user;
   double tip;
   double price;
+  int user;
   int city;
   int date;
   int distance;
@@ -28,7 +28,6 @@ RIDE create_ride() {
   RIDE ride = malloc(sizeof(struct ride));
   ride->id = NULL;
   ride->driver = NULL;
-  ride->user = NULL;
 
   return ride;
 }
@@ -40,10 +39,11 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
   RIDE ride = create_ride();
   GHashTable *rides_hash_table = get_catalog_rides(catalog);
 
+  GHashTable *user_code_hash = get_catalog_users_code(catalog);
   set_ride_id(ride, ride_params[0]);
   set_ride_date(ride, ride_params[1]);
   set_ride_driver(ride, ride_params[2]);
-  set_ride_user(ride, ride_params[3]);
+  set_ride_user(ride, ride_params[3], user_code_hash);
   set_ride_city(ride, ride_params[4], get_catalog_city_code(catalog),
                 get_catalog_city_reverse_lookup(catalog));
   set_ride_distance(ride, ride_params[5]);
@@ -74,7 +74,7 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
 
 void set_ride_id(RIDE ride, char *id_string) {
   ride->id = malloc(sizeof(int));
-  int id_int = atoi(id_string);
+  int id_int = string_to_int(id_string);
   *ride->id = id_int;
 }
 
@@ -97,12 +97,13 @@ void set_ride_date(RIDE ride, char *date_string) {
 
 void set_ride_driver(RIDE ride, char *driver_string) {
   ride->driver = malloc(sizeof(int));
-  int driver_id = atoi(driver_string);
+  int driver_id = string_to_int(driver_string);
   *ride->driver = driver_id;
 }
 
-void set_ride_user(RIDE ride, char *user_string) {
-  ride->user = strdup(user_string);
+void set_ride_user(RIDE ride, char *user_string, GHashTable *user_code_hash) {
+  int *user_code = g_hash_table_lookup(user_code_hash, user_string);
+  ride->user = *user_code;
 }
 
 void set_ride_city(RIDE ride, char *city_string, GHashTable *city_code,
@@ -154,8 +155,8 @@ int get_ride_driver(RIDE ride) {
   return driver_copy;
 }
 
-char *get_ride_user(RIDE ride) {
-  char *user_copy = strdup(ride->user);
+int get_ride_user(RIDE ride) {
+  int user_copy = ride->user;
   return user_copy;
 }
 
@@ -206,7 +207,6 @@ double calculate_ride_price(int distance, enum car_class car_class) {
 
 void free_ride(RIDE ride) {
   free(ride->driver);
-  free(ride->user);
   free(ride);
 }
 

@@ -25,6 +25,10 @@ GHashTable *get_catalog_city_code(CATALOG catalog);
 
 GPtrArray *get_catalog_city_reverse_lookup(CATALOG catalog);
 
+GHashTable *get_catalog_users_code(CATALOG catalog);
+
+GPtrArray *get_catalog_users_reverse_lookup(CATALOG catalog);
+
 char *get_catalog_driver_name(CATALOG catalog, int *driver_id);
 
 void free_catalog(CATALOG catalog);

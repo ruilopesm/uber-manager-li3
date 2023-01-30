@@ -22,7 +22,7 @@ struct stats {
 };
 
 struct city_driver_stats {
-  int *id;
+  int id;
   double total_rating;
   int total_rides;
   double total_spent;
@@ -72,7 +72,7 @@ CITY_DRIVER_STATS create_city_driver_stats(int *id, double total_rating,
   CITY_DRIVER_STATS new_city_driver_stats =
       malloc(sizeof(struct city_driver_stats));
 
-  new_city_driver_stats->id = id;
+  new_city_driver_stats->id = *id;
   new_city_driver_stats->total_rating = total_rating;
   new_city_driver_stats->total_rides = total_rides;
   new_city_driver_stats->total_spent = total_spent;
@@ -84,8 +84,8 @@ CITY_STATS create_city_stats() {
   CITY_STATS new_city_stats = malloc(sizeof(struct city_stats));
 
   new_city_stats->drivers_array = g_ptr_array_new();
-  new_city_stats->drivers_hash = g_hash_table_new_full(
-      g_int_hash, g_int_equal, NULL, (GDestroyNotify)free_city_driver_stats);
+  new_city_stats->drivers_hash =
+      g_hash_table_new_full(g_int_hash, g_int_equal, NULL, free);
   new_city_stats->total_spent = 0.f;
   new_city_stats->total_rides = 0;
 
@@ -144,8 +144,8 @@ int get_city_driver_stats_total_rides(CITY_DRIVER_STATS city_driver_stats) {
 }
 
 int get_city_driver_stats_id(CITY_DRIVER_STATS city_driver_stats) {
-  int *id = city_driver_stats->id;
-  return *id;
+  int id = city_driver_stats->id;
+  return id;
 }
 
 double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats) {
@@ -168,10 +168,10 @@ GArray *get_female_rides_by_age(STATS stats) {
   return stats->female_rides_by_age;
 }
 
-void update_user_stats(CATALOG catalog, char *username, int distance,
+void update_user_stats(CATALOG catalog, int username, int distance,
                        double rating, double price, double tip, int date) {
   GHashTable *users = get_catalog_users(catalog);
-  USER user = g_hash_table_lookup(users, username);
+  USER user = g_hash_table_lookup(users, &username);
 
   set_user_number_of_rides(user, get_user_number_of_rides(user) + 1);
   set_user_total_rating(user, get_user_total_rating(user) + rating);
@@ -258,11 +258,11 @@ int get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride) {
 }
 
 void update_genders_rides_by_age(CATALOG catalog, STATS stats, int *ride_id,
-                                 int *driver_id, char *username) {
+                                 int *driver_id, int username) {
   GArray *male_rides_by_age = get_male_rides_by_age(stats);
   GArray *female_rides_by_age = get_female_rides_by_age(stats);
 
-  USER user = g_hash_table_lookup(get_catalog_users(catalog), username);
+  USER user = g_hash_table_lookup(get_catalog_users(catalog), &username);
   enum gender user_gender = get_user_gender(user);
   int user_account_creation = get_user_account_creation(user);
 
@@ -324,7 +324,8 @@ void add_user_to_array(gpointer key, gpointer value, gpointer data) {
   (void)key;
 }
 
-gint compare_users_by_total_distance(gconstpointer a, gconstpointer b) {
+gint compare_users_by_total_distance(gconstpointer a, gconstpointer b,
+                                     gpointer users_reverse_gpointer) {
   USER user_a = *(USER *)a;
   USER user_b = *(USER *)b;
 
@@ -344,13 +345,14 @@ gint compare_users_by_total_distance(gconstpointer a, gconstpointer b) {
     return result_dates;
   }
 
-  char *username_a = get_user_username(user_a);
-  char *username_b = get_user_username(user_b);
+  int username_code_a = get_user_username(user_a);
+  int username_code_b = get_user_username(user_b);
+  GPtrArray *user_reverse = (GPtrArray *)users_reverse_gpointer;
+
+  char *username_a = g_ptr_array_index(user_reverse, username_code_a);
+  char *username_b = g_ptr_array_index(user_reverse, username_code_b);
 
   int to_return = strcmp(username_a, username_b);
-
-  free(username_a);
-  free(username_b);
 
   return to_return;
 }
@@ -368,8 +370,8 @@ gint compare_driver_stats_by_average_score(gconstpointer a, gconstpointer b) {
   double b_score = (double)(b_total_rating / b_number_of_rides);
 
   if (a_score == b_score) {
-    int driver_id_a = *driver_stats_a->id;
-    int driver_id_b = *driver_stats_b->id;
+    int driver_id_a = driver_stats_a->id;
+    int driver_id_b = driver_stats_b->id;
 
     return driver_id_b - driver_id_a;
   }
@@ -432,10 +434,6 @@ gint compare_city_driver_stats_by_id(gconstpointer a, gconstpointer b) {
   char *city_driver_stats_b = (char *)b;
 
   return strcmp(city_driver_stats_a, city_driver_stats_b);
-}
-
-void free_city_driver_stats(CITY_DRIVER_STATS city_driver_stats) {
-  free(city_driver_stats);
 }
 
 // Inserts a ride on the rides by date stats

@@ -15,7 +15,8 @@ USER create_user(void);
 
 void insert_user(char **user_params, CATALOG catalog, STATS stats);
 
-void set_user_username(USER user, char *username_string);
+void set_user_username(USER user, char *username_string, GHashTable *users_code,
+                       GPtrArray *users_reverse);
 
 void set_user_name(USER user, char *name_string);
 
@@ -39,7 +40,7 @@ void set_user_total_distance(USER user, int total_distance);
 
 void set_user_latest_ride(USER user, char *latest_ride_date_string);
 
-char *get_user_username(USER user);
+int get_user_username(USER user);
 
 char *get_user_name(USER user);
 
