@@ -11,7 +11,6 @@ SUITE(users) {
   RUN_TEST(user_gender_test);
   RUN_TEST(user_birth_date_test);
   RUN_TEST(user_account_creation_test);
-  RUN_TEST(user_pay_method_test);
   RUN_TEST(user_account_status_test);
 }
 

@@ -26,8 +26,6 @@ void set_user_birth_date(USER user, char *birth_date_string);
 
 void set_user_account_creation(USER user, char *account_creation_date);
 
-void set_user_pay_method(USER user, char *pay_method_string);
-
 void set_user_account_status(USER user, char *account_status_string);
 
 void set_user_number_of_rides(USER user, int number_of_rides);
@@ -49,8 +47,6 @@ enum gender get_user_gender(USER user);
 int get_user_birth_date(USER user);
 
 int get_user_account_creation(USER user);
-
-enum pay_method get_user_pay_method(USER user);
 
 enum account_status get_user_account_status(USER user);
 

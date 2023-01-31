@@ -19,7 +19,6 @@ struct user {
   int latest_ride;
   int number_of_rides;
   int total_distance;
-  enum pay_method pay_method : 2;
   enum gender gender : 1;
   enum account_status account_status : 1;
 };
@@ -46,7 +45,6 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   set_user_gender(user, user_params[2]);
   set_user_birth_date(user, user_params[3]);
   set_user_account_creation(user, user_params[4]);
-  set_user_pay_method(user, user_params[5]);
   set_user_account_status(user, user_params[6]);
   set_user_number_of_rides(user, 0);
   set_user_total_rating(user, 0.0);
@@ -135,20 +133,6 @@ void set_user_account_creation(USER user, char *account_creation_date_string) {
   user->account_creation = date;
 }
 
-void set_user_pay_method(USER user, char *pay_method_string) {
-  enum pay_method pay_method;
-
-  if (!strcmp(pay_method_string, "cash")) {
-    pay_method = CASH;
-  } else if (!strcmp(pay_method_string, "credit_card")) {
-    pay_method = CREDIT_CARD;
-  } else {
-    pay_method = DEBIT_CARD;
-  }
-
-  user->pay_method = pay_method;
-}
-
 void set_user_account_status(USER user, char *account_status_string) {
   enum account_status account_status;
 
@@ -222,12 +206,6 @@ int get_user_account_creation(USER user) {
   int account_creation_copy = user->account_creation;
 
   return account_creation_copy;
-}
-
-enum pay_method get_user_pay_method(USER user) {
-  enum pay_method pay_method_copy = user->pay_method;
-
-  return pay_method_copy;
 }
 
 enum account_status get_user_account_status(USER user) {

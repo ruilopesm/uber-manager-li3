@@ -59,19 +59,6 @@ TEST user_account_creation_test(void) {
   PASS();
 }
 
-TEST user_pay_method_test(void) {
-  USER user = create_user();
-  char *pay_method = strdup("cash");
-
-  set_user_pay_method(user, pay_method);
-
-  ASSERT_ENUM_EQ(CASH, get_user_pay_method(user), pay_method_to_string);
-
-  free(pay_method);
-
-  PASS();
-}
-
 TEST user_account_status_test(void) {
   USER user = create_user();
   char *account_status = strdup("active");
