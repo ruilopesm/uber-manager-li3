@@ -448,7 +448,7 @@ void query7(CATALOG catalog, STATS stats, char **parameter, int counter) {
       int driver_id = get_city_driver_stats_id(city_driver_stats);
 
       GHashTable *drivers = get_catalog_drivers(catalog);
-      DRIVER driver = g_hash_table_lookup(drivers, &driver_id);
+      DRIVER driver = g_hash_table_lookup(drivers, GINT_TO_POINTER(driver_id));
       enum account_status status = get_driver_account_status(driver);
 
       if (status == ACTIVE) {
@@ -535,7 +535,7 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
   for (int i = top_rides->len - 1; i >= 0; i--) {
     RIDE_GENDER_STATS current_ride =
         g_array_index(top_rides, RIDE_GENDER_STATS, i);
-    int ride_id = get_ride_gender_stats_id(current_ride);
+    gint ride_id = get_ride_gender_stats_id(current_ride);
 
     int driver_age = calculate_age(
         get_ride_gender_stats_driver_account_creation(current_ride));
@@ -552,22 +552,24 @@ void query8(CATALOG catalog, STATS stats, char **parameter, int counter) {
     }
 
     GHashTable *rides = get_catalog_rides(catalog);
-    RIDE current_ride_catalog = g_hash_table_lookup(rides, &ride_id);
+    RIDE current_ride_catalog =
+        g_hash_table_lookup(rides, GINT_TO_POINTER(ride_id));
 
-    int username = get_ride_user(current_ride_catalog);
+    gpointer username = get_ride_user(current_ride_catalog);
     USER current_user =
-        g_hash_table_lookup(get_catalog_users(catalog), &username);
+        g_hash_table_lookup(get_catalog_users(catalog), username);
 
-    int driver_id = get_ride_driver(current_ride_catalog);
-    DRIVER current_driver =
-        g_hash_table_lookup(get_catalog_drivers(catalog), &driver_id);
+    gpointer driver_id = get_ride_driver(current_ride_catalog);
+    DRIVER current_driver = g_hash_table_lookup(get_catalog_drivers(catalog),
+                                                GINT_TO_POINTER(driver_id));
 
     char *driver_name = get_driver_name(current_driver);
     char *name = get_user_name(current_user);
 
-    char *username_string = g_ptr_array_index(users_reverse_lookup, username);
-    fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name,
-            username_string, name);
+    char *username_string =
+        g_ptr_array_index(users_reverse_lookup, GPOINTER_TO_INT(username));
+    fprintf(output_file, "%012d;%s;%s;%s\n", GPOINTER_TO_INT(driver_id),
+            driver_name, username_string, name);
 
     free(driver_name);
     free(name);
@@ -706,7 +708,7 @@ void get_user_profile(CATALOG catalog, char *id, int counter) {
   }
 
   GHashTable *users_code = get_catalog_users_code(catalog);
-  int *user_code = g_hash_table_lookup(users_code, id);
+  gpointer user_code = g_hash_table_lookup(users_code, id);
 
   if (user_code == NULL) {
     free(output_filename);
@@ -751,7 +753,8 @@ void get_driver_profile(CATALOG catalog, char *id, int counter) {
 
   GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
   int id_int = atoi(id);
-  DRIVER driver = g_hash_table_lookup(drivers_hash_table, &id_int);
+  DRIVER driver =
+      g_hash_table_lookup(drivers_hash_table, GINT_TO_POINTER(id_int));
 
   if (driver == NULL) {
     free(output_filename);

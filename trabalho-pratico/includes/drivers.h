@@ -35,7 +35,7 @@ void set_driver_total_rating(DRIVER driver, double total_rating);
 
 void set_driver_total_earned(DRIVER driver, double total_earned);
 
-void set_driver_latest_ride(DRIVER driver, char *latest_ride_string);
+void set_driver_latest_ride(DRIVER driver, int latest_ride_string);
 
 int get_driver_id(DRIVER driver);
 

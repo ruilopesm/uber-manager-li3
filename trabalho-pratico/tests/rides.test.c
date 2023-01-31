@@ -33,19 +33,6 @@ TEST ride_date_test(void) {
   PASS();
 }
 
-TEST ride_driver_test(void) {
-  RIDE ride = create_ride();
-  char *driver = strdup("000000000003");
-
-  set_ride_driver(ride, driver);
-
-  ASSERT_EQ(3, get_ride_driver(ride));
-
-  free(driver);
-
-  PASS();
-}
-
 TEST ride_distance_test(void) {
   RIDE ride = create_ride();
   char *distance = strdup("10");

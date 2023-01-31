@@ -36,7 +36,7 @@ void set_user_total_spent(USER user, double total_spent);
 
 void set_user_total_distance(USER user, int total_distance);
 
-void set_user_latest_ride(USER user, char *latest_ride_date_string);
+void set_user_latest_ride(USER user, int latest_ride_date);
 
 int get_user_username(USER user);
 

@@ -12,11 +12,11 @@
 #include "users.h"
 
 struct ride {
-  int *id;
-  int *driver;
+  gpointer id;
+  gpointer driver;
+  gpointer user;
   double tip;
   double price;
-  int user;
   int city;
   int date;
   int distance;
@@ -73,9 +73,9 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
 }
 
 void set_ride_id(RIDE ride, char *id_string) {
-  ride->id = malloc(sizeof(int));
-  int id_int = string_to_int(id_string);
-  *ride->id = id_int;
+  gint id_int = string_to_int(id_string);
+  gpointer id_pointer = GINT_TO_POINTER(id_int);
+  ride->id = id_pointer;
 }
 
 void set_ride_date(RIDE ride, char *date_string) {
@@ -96,14 +96,13 @@ void set_ride_date(RIDE ride, char *date_string) {
 }
 
 void set_ride_driver(RIDE ride, char *driver_string) {
-  ride->driver = malloc(sizeof(int));
   int driver_id = string_to_int(driver_string);
-  *ride->driver = driver_id;
+  ride->driver = GINT_TO_POINTER(driver_id);
 }
 
 void set_ride_user(RIDE ride, char *user_string, GHashTable *user_code_hash) {
-  int *user_code = g_hash_table_lookup(user_code_hash, user_string);
-  ride->user = *user_code;
+  gpointer user_code = g_hash_table_lookup(user_code_hash, user_string);
+  ride->user = user_code;
 }
 
 void set_ride_city(RIDE ride, char *city_string, GHashTable *city_code,
@@ -143,20 +142,19 @@ void set_ride_tip(RIDE ride, char *tip_string) {
 
 void set_ride_price(RIDE ride, double price) { ride->price = price; }
 
-int get_ride_id(RIDE ride) { return *ride->id; }
+int get_ride_id(RIDE ride) { return GPOINTER_TO_INT(ride->id); }
 
 int get_ride_date(RIDE ride) {
   int date_copy = ride->date;
   return date_copy;
 }
 
-int get_ride_driver(RIDE ride) {
-  int driver_copy = *ride->driver;
+gpointer get_ride_driver(RIDE ride) {
+  gpointer driver_copy = ride->driver;
   return driver_copy;
 }
-
-int get_ride_user(RIDE ride) {
-  int user_copy = ride->user;
+gpointer get_ride_user(RIDE ride) {
+  gpointer user_copy = ride->user;
   return user_copy;
 }
 
@@ -203,11 +201,6 @@ double calculate_ride_price(int distance, enum car_class car_class) {
   }
 
   return price;
-}
-
-void free_ride(RIDE ride) {
-  free(ride->driver);
-  free(ride);
 }
 
 int verify_ride_input(char **parameters) {

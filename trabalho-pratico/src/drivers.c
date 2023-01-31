@@ -10,7 +10,7 @@
 #include "stats.h"
 
 struct driver {
-  int *id;
+  gpointer id;
   char *name;
   double total_earned;
   double total_rating;
@@ -48,7 +48,7 @@ void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
   set_driver_number_of_rides(driver, 0);
   set_driver_total_rating(driver, 0.0);
   set_driver_total_earned(driver, 0.0);
-  set_driver_latest_ride(driver, "00/00/0000");
+  set_driver_latest_ride(driver, 0);
 
   // udpate drivers array
   GArray *drivers_array = get_top_drivers_by_average_score(stats);
@@ -60,9 +60,9 @@ void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
 }
 
 void set_driver_id(DRIVER driver, char *id_string) {
-  driver->id = malloc(sizeof(int));
-  int id_int = atoi(id_string);
-  *driver->id = id_int;
+  int id_int = string_to_int(id_string);
+  gpointer id_int_pointer = GINT_TO_POINTER(id_int);
+  driver->id = id_int_pointer;
 }
 
 void set_driver_name(DRIVER driver, char *name_string) {
@@ -145,21 +145,12 @@ void set_driver_total_earned(DRIVER driver, double total_earned) {
   driver->total_earned = total_earned;
 }
 
-void set_driver_latest_ride(DRIVER driver, char *latest_ride_string) {
-  int latest_ride = 0;
-  int day, month, year;
-
-  sscanf(latest_ride_string, "%d/%d/%d", &day, &month, &year);
-
-  latest_ride = day;
-  latest_ride += month * 100;
-  latest_ride += year * 10000;
-
+void set_driver_latest_ride(DRIVER driver, int latest_ride) {
   driver->latest_ride = latest_ride;
 }
 
 int get_driver_id(DRIVER driver) {
-  int id = *driver->id;
+  int id = GPOINTER_TO_INT(driver->id);
   return id;
 }
 

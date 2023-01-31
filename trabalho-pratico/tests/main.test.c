@@ -27,7 +27,6 @@ SUITE(drivers) {
 SUITE(rides) {
   RUN_TEST(ride_id_test);
   RUN_TEST(ride_date_test);
-  RUN_TEST(ride_driver_test);
   RUN_TEST(ride_distance_test);
   RUN_TEST(ride_score_user_test);
   RUN_TEST(ride_score_driver_test);

@@ -24,15 +24,14 @@ struct catalog {
 CATALOG create_catalog(void) {
   CATALOG new_catalog = malloc(sizeof(struct catalog));
   new_catalog->users_code =
-      g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
+      g_hash_table_new_full(g_str_hash, g_str_equal, free, NULL);
   new_catalog->users_reverse_lookup = g_ptr_array_new();
   g_ptr_array_set_free_func(new_catalog->users_reverse_lookup, free);
-  new_catalog->users = g_hash_table_new_full(g_int_hash, g_int_equal, free,
+  new_catalog->users = g_hash_table_new_full(NULL, g_direct_equal, NULL,
                                              (GDestroyNotify)free_user);
-  new_catalog->drivers = g_hash_table_new_full(g_int_hash, g_int_equal, free,
+  new_catalog->drivers = g_hash_table_new_full(NULL, g_direct_equal, NULL,
                                                (GDestroyNotify)free_driver);
-  new_catalog->rides = g_hash_table_new_full(g_int_hash, g_int_equal, free,
-                                             (GDestroyNotify)free_ride);
+  new_catalog->rides = g_hash_table_new_full(NULL, g_direct_equal, NULL, free);
   new_catalog->city_code =
       g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
   new_catalog->city_reverse_lookup = g_ptr_array_new();
@@ -63,7 +62,8 @@ GPtrArray *get_catalog_users_reverse_lookup(CATALOG catalog) {
 }
 
 char *get_catalog_driver_name(CATALOG catalog, int *driver_id) {
-  DRIVER driver = g_hash_table_lookup(catalog->drivers, driver_id);
+  DRIVER driver =
+      g_hash_table_lookup(catalog->drivers, GINT_TO_POINTER(*driver_id));
   return get_driver_name(driver);
 }
 

@@ -40,9 +40,9 @@ int get_ride_id(RIDE ride);
 
 int get_ride_date(RIDE ride);
 
-int get_ride_driver(RIDE ride);
+gpointer get_ride_driver(RIDE ride);
 
-int get_ride_user(RIDE ride);
+gpointer get_ride_user(RIDE ride);
 
 int get_ride_city(RIDE ride);
 
@@ -57,8 +57,6 @@ double get_ride_tip(RIDE ride);
 double get_ride_price(RIDE ride);
 
 double calculate_ride_price(int distance, enum car_class car_class);
-
-void free_ride(RIDE ride);
 
 int verify_ride_input(char **parameters);
 

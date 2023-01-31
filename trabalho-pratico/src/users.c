@@ -10,7 +10,7 @@
 #include "stats.h"
 
 struct user {
-  int *username;
+  gpointer username;
   char *name;
   double total_rating;
   double total_spent;
@@ -50,7 +50,7 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   set_user_total_rating(user, 0.0);
   set_user_total_spent(user, 0.0);
   set_user_total_distance(user, 0);
-  set_user_latest_ride(user, "00/00/0000");
+  set_user_latest_ride(user, 0);
 
   // udpate users array
   GArray *users_array = get_top_users_by_total_distance(stats);
@@ -67,8 +67,7 @@ void set_user_username(USER user, char *username_string, GHashTable *users_code,
 
   // Creates the user_code and inserts it into the hash table
   char *username = strdup(username_string);
-  int *user_code = malloc(sizeof(int));
-  *user_code = users_parsed;
+  gpointer user_code = GINT_TO_POINTER(users_parsed);
   g_hash_table_insert(users_code, username, user_code);
 
   // Inserts the username into the reverse search array
@@ -76,8 +75,7 @@ void set_user_username(USER user, char *username_string, GHashTable *users_code,
   g_ptr_array_add(users_reverse, username_copy);
 
   // Puts the user code into the user struct
-  int *username_code = malloc(sizeof(int));
-  *username_code = users_parsed;
+  gpointer username_code = GINT_TO_POINTER(users_parsed);
   user->username = username_code;
   users_parsed++;
 }
@@ -161,25 +159,12 @@ void set_user_total_distance(USER user, int total_distance) {
   user->total_distance = total_distance;
 }
 
-void set_user_latest_ride(USER user, char *latest_ride_date_string) {
-  int date = 0;
-
-  date = (latest_ride_date_string[0] - '0') * 10;
-  date += (latest_ride_date_string[1] - '0');
-
-  date += (latest_ride_date_string[3] - '0') * 1000;
-  date += (latest_ride_date_string[4] - '0') * 100;
-
-  date += (latest_ride_date_string[6] - '0') * 10000000;
-  date += (latest_ride_date_string[7] - '0') * 1000000;
-  date += (latest_ride_date_string[8] - '0') * 100000;
-  date += (latest_ride_date_string[9] - '0') * 10000;
-
-  user->latest_ride = date;
+void set_user_latest_ride(USER user, int latest_ride_date) {
+  user->latest_ride = latest_ride_date;
 }
 
 int get_user_username(USER user) {
-  int username_copy = *user->username;
+  int username_copy = GPOINTER_TO_INT(user->username);
 
   return username_copy;
 }

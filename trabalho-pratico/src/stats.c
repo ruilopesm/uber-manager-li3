@@ -66,13 +66,13 @@ STATS create_stats(void) {
   return new_stats;
 }
 
-CITY_DRIVER_STATS create_city_driver_stats(int *id, double total_rating,
+CITY_DRIVER_STATS create_city_driver_stats(gpointer id, double total_rating,
                                            int total_rides,
                                            double total_spent) {
   CITY_DRIVER_STATS new_city_driver_stats =
       malloc(sizeof(struct city_driver_stats));
 
-  new_city_driver_stats->id = *id;
+  new_city_driver_stats->id = GPOINTER_TO_INT(id);
   new_city_driver_stats->total_rating = total_rating;
   new_city_driver_stats->total_rides = total_rides;
   new_city_driver_stats->total_spent = total_spent;
@@ -85,7 +85,7 @@ CITY_STATS create_city_stats() {
 
   new_city_stats->drivers_array = g_ptr_array_new();
   new_city_stats->drivers_hash =
-      g_hash_table_new_full(g_int_hash, g_int_equal, NULL, free);
+      g_hash_table_new_full(NULL, g_direct_equal, NULL, free);
   new_city_stats->total_spent = 0.f;
   new_city_stats->total_rides = 0;
 
@@ -168,10 +168,10 @@ GArray *get_female_rides_by_age(STATS stats) {
   return stats->female_rides_by_age;
 }
 
-void update_user_stats(CATALOG catalog, int username, int distance,
+void update_user_stats(CATALOG catalog, gpointer username, int distance,
                        double rating, double price, double tip, int date) {
   GHashTable *users = get_catalog_users(catalog);
-  USER user = g_hash_table_lookup(users, &username);
+  USER user = g_hash_table_lookup(users, username);
 
   set_user_number_of_rides(user, get_user_number_of_rides(user) + 1);
   set_user_total_rating(user, get_user_total_rating(user) + rating);
@@ -179,13 +179,11 @@ void update_user_stats(CATALOG catalog, int username, int distance,
   set_user_total_distance(user, get_user_total_distance(user) + distance);
 
   if ((date - get_user_latest_ride(user)) > 0) {
-    char *date_string = date_to_string(date);
-    set_user_latest_ride(user, date_string);
-    free(date_string);
+    set_user_latest_ride(user, date);
   }
 }
 
-void update_driver_stats(CATALOG catalog, int *driver_id, double rating,
+void update_driver_stats(CATALOG catalog, gpointer driver_id, double rating,
                          double price, double tip, int date) {
   GHashTable *drivers = get_catalog_drivers(catalog);
   DRIVER driver = g_hash_table_lookup(drivers, driver_id);
@@ -196,13 +194,11 @@ void update_driver_stats(CATALOG catalog, int *driver_id, double rating,
                           get_driver_total_earned(driver) + price + tip);
 
   if ((date - get_driver_latest_ride(driver)) > 0) {
-    char *date_string = date_to_string(date);
-    set_driver_latest_ride(driver, date_string);
-    free(date_string);
+    set_driver_latest_ride(driver, date);
   }
 }
 
-void upsert_city_driver_stats(STATS stats, int city, int *driver_id,
+void upsert_city_driver_stats(STATS stats, int city, gpointer driver_id,
                               double driver_score, double ride_price) {
   CITY_STATS city_stats = g_array_index(stats->city_drivers, CITY_STATS, city);
 
@@ -235,12 +231,12 @@ void upsert_city_driver_stats(STATS stats, int city, int *driver_id,
   }
 }
 
-RIDE_GENDER_STATS create_ride_gender_stats(int *ride_id,
+RIDE_GENDER_STATS create_ride_gender_stats(gpointer ride_id,
                                            int driver_account_creation,
                                            int user_account_creation) {
   RIDE_GENDER_STATS new = malloc(sizeof(struct ride_gender_stats));
 
-  new->id = *ride_id;
+  new->id = GPOINTER_TO_INT(ride_id);
   new->driver_account_creation = driver_account_creation;
   new->user_account_creation = user_account_creation;
 
@@ -257,12 +253,12 @@ int get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride) {
   return ride->user_account_creation;
 }
 
-void update_genders_rides_by_age(CATALOG catalog, STATS stats, int *ride_id,
-                                 int *driver_id, int username) {
+void update_genders_rides_by_age(CATALOG catalog, STATS stats, gpointer ride_id,
+                                 gpointer driver_id, gpointer username) {
   GArray *male_rides_by_age = get_male_rides_by_age(stats);
   GArray *female_rides_by_age = get_female_rides_by_age(stats);
 
-  USER user = g_hash_table_lookup(get_catalog_users(catalog), &username);
+  USER user = g_hash_table_lookup(get_catalog_users(catalog), username);
   enum gender user_gender = get_user_gender(user);
   int user_account_creation = get_user_account_creation(user);
 
@@ -274,7 +270,6 @@ void update_genders_rides_by_age(CATALOG catalog, STATS stats, int *ride_id,
       get_user_account_status(user) == INACTIVE) {
     return;
   }
-
   if (user_gender == driver_gender) {
     RIDE_GENDER_STATS to_insert = create_ride_gender_stats(
         ride_id, driver_account_creation, user_account_creation);
