@@ -3,7 +3,7 @@
 
 #include <glib.h>
 
-#include "catalog.h"
+#include "base/catalog.h"
 
 typedef struct stats *STATS;
 

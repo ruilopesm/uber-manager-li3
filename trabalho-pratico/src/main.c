@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "batch.h"
-#include "interactive.h"
-#include "utils.h"
+#include "base/batch.h"
+#include "base/interactive.h"
+#include "utils/utils.h"
 
 int main(int argc, char **argv) {
   if (argc == 3) {

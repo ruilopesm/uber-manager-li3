@@ -1,4 +1,4 @@
-#include "querier.h"
+#include "base/querier.h"
 
 #include <glib.h>
 #include <stdbool.h>
@@ -8,10 +8,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "catalog.h"
-#include "rides.h"
-#include "stats.h"
-#include "utils.h"
+#include "base/catalog.h"
+#include "base/stats.h"
+#include "entities/rides.h"
+#include "utils/utils.h"
 
 void *querier(CATALOG catalog, STATS stats, char *line) {
   char **query_parameters = malloc(sizeof(char *) * MAX_INPUT_TOKENS);

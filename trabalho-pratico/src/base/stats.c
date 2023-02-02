@@ -1,16 +1,16 @@
-#include "stats.h"
+#include "base/stats.h"
 
 #include <glib.h>
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "catalog.h"
-#include "drivers.h"
-#include "rides.h"
-#include "stats.h"
-#include "users.h"
-#include "utils.h"
+#include "base/catalog.h"
+#include "base/stats.h"
+#include "entities/drivers.h"
+#include "entities/rides.h"
+#include "entities/users.h"
+#include "utils/utils.h"
 
 struct stats {
   GArray *city_drivers;

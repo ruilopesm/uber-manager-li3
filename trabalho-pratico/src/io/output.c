@@ -1,12 +1,12 @@
-#include "output.h"
+#include "io/output.h"
 
 #include <glib.h>
 #include <ncurses.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "components.h"
-#include "querier.h"
+#include "base/querier.h"
+#include "utils/components.h"
 #include "views/execute_query.h"
 
 // Used in batch mode

@@ -15,17 +15,17 @@ endif
 LIBS := -lm `pkg-config --libs glib-2.0 ncursesw`
 PKG_CONFIG := `pkg-config --cflags glib-2.0 ncursesw`
 INC := -I includes/
-SRC := $(wildcard src/*.c src/views/*.c)
+SRC := $(shell find src/ -name "*.c")
 OBJ := $(SRC:src/%.c=build/%.o)
 
 EXEC_TEST := programa-testes
 FLAGS_TEST := $(FLAGS) -Wno-unused-function
 INC_TEST := $(INC) -I lib/
-SRC_TEST := $(wildcard tests/*.c)
+SRC_TEST := $(shell find tests/ -name "*.c")
 OBJ_TEST := $(filter-out build/main.o, $(OBJ)) $(SRC_TEST:tests/%.c=build/%.o)
 
-BUILD_DIR := $(shell mkdir -p build build/views)
-INCLUDE_FILES := $(wildcard includes/*.h includes/views/*.h)
+BUILD_DIR := $(shell mkdir -p build/views build/base build/io build/entities build/utils)
+INCLUDE_FILES := $(shell find includes/ -name "*.h")
 
 .SUFFIXES:
 

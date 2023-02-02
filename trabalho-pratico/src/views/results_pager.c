@@ -2,8 +2,8 @@
 
 #include <ncurses.h>
 
-#include "components.h"
-#include "output.h"
+#include "io/output.h"
+#include "utils/components.h"
 
 void results_pager(MANAGER manager, void *result, char *input) {
   initscr();

@@ -1,14 +1,14 @@
-#include "batch.h"
+#include "base/batch.h"
 
-#include "catalog.h"
-#include "drivers.h"
-#include "output.h"
-#include "parser.h"
-#include "querier.h"
-#include "rides.h"
-#include "stats.h"
-#include "users.h"
-#include "utils.h"
+#include "base/catalog.h"
+#include "base/querier.h"
+#include "base/stats.h"
+#include "entities/drivers.h"
+#include "entities/rides.h"
+#include "entities/users.h"
+#include "io/output.h"
+#include "io/parser.h"
+#include "utils/utils.h"
 
 int batch(char **argv) {
   CATALOG catalog = create_catalog();

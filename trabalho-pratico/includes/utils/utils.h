@@ -5,8 +5,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "catalog.h"
-#include "stats.h"
+#include "base/catalog.h"
+#include "base/stats.h"
 
 #define MASTER_DATE "09/10/2022"
 

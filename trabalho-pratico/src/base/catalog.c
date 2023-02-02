@@ -1,11 +1,11 @@
-#include "catalog.h"
+#include "base/catalog.h"
 
 #include <glib.h>
 #include <stdio.h>
 
-#include "drivers.h"
-#include "users.h"
-#include "utils.h"
+#include "entities/drivers.h"
+#include "entities/users.h"
+#include "utils/utils.h"
 
 struct catalog {
   // username -> user_code: int

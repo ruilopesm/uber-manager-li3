@@ -4,11 +4,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "catalog.h"
-#include "drivers.h"
-#include "rides.h"
-#include "stats.h"
-#include "users.h"
+#include "base/catalog.h"
+#include "base/stats.h"
+#include "entities/drivers.h"
+#include "entities/rides.h"
+#include "entities/users.h"
 
 #define MAX_INPUT_TOKENS 4
 

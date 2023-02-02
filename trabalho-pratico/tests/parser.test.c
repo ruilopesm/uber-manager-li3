@@ -1,7 +1,7 @@
-#include "parser.h"
+#include "io/parser.h"
 
 #include "../lib/greatest.h"
-#include "utils.h"
+#include "utils/utils.h"
 
 TEST parse_line_test(void) {
   char *line = strdup(

@@ -4,11 +4,11 @@
 #include <ncurses.h>
 #include <stdbool.h>
 
-#include "catalog.h"
-#include "components.h"
-#include "interactive.h"
-#include "stats.h"
-#include "users.h"
+#include "base/catalog.h"
+#include "base/interactive.h"
+#include "base/stats.h"
+#include "entities/users.h"
+#include "utils/components.h"
 #include "views/inspect_dataset.h"
 
 void users_pager(MANAGER manager) {

@@ -1,11 +1,11 @@
-#include "drivers.h"
+#include "entities/drivers.h"
 
 #include <glib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "../lib/greatest.h"
-#include "utils.h"
+#include "utils/utils.h"
 
 TEST driver_id_test(void) {
   DRIVER driver = create_driver();

@@ -4,7 +4,7 @@
 #include <ncurses.h>
 #include <stdio.h>
 
-#include "interactive.h"
+#include "base/interactive.h"
 
 typedef void (*file_output_function_pointer)(FILE *file, void *result);
 

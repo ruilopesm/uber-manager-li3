@@ -2,10 +2,10 @@
 
 #include <ncurses.h>
 
-#include "components.h"
-#include "input.h"
-#include "output.h"
-#include "querier.h"
+#include "base/querier.h"
+#include "io/input.h"
+#include "io/output.h"
+#include "utils/components.h"
 #include "views/main_menu.h"
 #include "views/results_pager.h"
 

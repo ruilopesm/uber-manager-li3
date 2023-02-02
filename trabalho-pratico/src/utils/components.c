@@ -1,4 +1,4 @@
-#include "components.h"
+#include "utils/components.h"
 
 #include <glib.h>
 #include <ncurses.h>

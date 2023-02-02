@@ -1,7 +1,7 @@
 #ifndef INSPECT_DATASET_H
 #define INSPECT_DATASET_H
 
-#include "interactive.h"
+#include "base/interactive.h"
 
 #define INSPECT_DATASET_ENTRIES 4
 

@@ -1,13 +1,13 @@
-#include "users.h"
+#include "entities/users.h"
 
 #include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "catalog.h"
-#include "input.h"
-#include "stats.h"
+#include "base/catalog.h"
+#include "base/stats.h"
+#include "io/input.h"
 
 struct user {
   gpointer username;

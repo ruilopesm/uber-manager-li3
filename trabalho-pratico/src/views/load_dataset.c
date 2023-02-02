@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "components.h"
-#include "interactive.h"
-#include "utils.h"
+#include "base/interactive.h"
+#include "utils/components.h"
+#include "utils/utils.h"
 #include "views/main_menu.h"
 
 void load_dataset(MANAGER manager) {

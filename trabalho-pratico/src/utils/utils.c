@@ -1,13 +1,13 @@
-#include "utils.h"
+#include "utils/utils.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "drivers.h"
-#include "parser.h"
-#include "rides.h"
-#include "users.h"
+#include "entities/drivers.h"
+#include "entities/rides.h"
+#include "entities/users.h"
+#include "io/parser.h"
 
 int setup_catalog_and_stats(CATALOG catalog, STATS stats, char *folder) {
   char *users_filename = create_filename(folder, "/users.csv");

@@ -1,7 +1,7 @@
 #ifndef EXECUTE_QUERY_H
 #define EXECUTE_QUERY_H
 
-#include "interactive.h"
+#include "base/interactive.h"
 
 #define EXECUTE_QUERY_ENTRIES 2
 

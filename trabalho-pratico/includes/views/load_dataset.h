@@ -3,9 +3,9 @@
 
 #include <ncurses.h>
 
-#include "catalog.h"
-#include "interactive.h"
-#include "stats.h"
+#include "base/catalog.h"
+#include "base/interactive.h"
+#include "base/stats.h"
 
 #define LOAD_DATASET_ENTRIES 2
 

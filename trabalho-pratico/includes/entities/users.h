@@ -3,9 +3,9 @@
 
 #include <glib.h>
 
-#include "catalog.h"
-#include "stats.h"
-#include "utils.h"
+#include "base/catalog.h"
+#include "base/stats.h"
+#include "utils/utils.h"
 
 #define MAX_USER_TOKENS 7
 

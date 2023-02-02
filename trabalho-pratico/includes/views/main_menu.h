@@ -3,7 +3,7 @@
 
 #include <ncurses.h>
 
-#include "interactive.h"
+#include "base/interactive.h"
 
 #define MAIN_MENU_ENTRIES 5
 

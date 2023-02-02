@@ -1,4 +1,4 @@
-#include "input.h"
+#include "io/input.h"
 
 #include <ctype.h>
 #include <stdbool.h>

@@ -3,7 +3,7 @@
 
 #include <ncurses.h>
 
-#include "interactive.h"
+#include "base/interactive.h"
 
 void results_pager(MANAGER manager, void *result, char *input);
 

@@ -2,7 +2,7 @@
 
 #include <ncurses.h>
 
-#include "components.h"
+#include "utils/components.h"
 #include "views/main_menu.h"
 
 void help(MANAGER manager) {

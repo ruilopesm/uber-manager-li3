@@ -1,4 +1,4 @@
-#include "interactive.h"
+#include "base/interactive.h"
 
 #include <curses.h>
 #include <locale.h>
@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "catalog.h"
-#include "stats.h"
+#include "base/catalog.h"
+#include "base/stats.h"
 #include "views/main_menu.h"
 
 struct manager {

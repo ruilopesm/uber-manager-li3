@@ -1,15 +1,15 @@
-#include "rides.h"
+#include "entities/rides.h"
 
 #include <glib.h>
 #include <regex.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "catalog.h"
-#include "drivers.h"
-#include "input.h"
-#include "stats.h"
-#include "users.h"
+#include "base/catalog.h"
+#include "base/stats.h"
+#include "entities/drivers.h"
+#include "entities/users.h"
+#include "io/input.h"
 
 struct ride {
   gpointer id;

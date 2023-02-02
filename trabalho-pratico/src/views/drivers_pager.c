@@ -4,12 +4,12 @@
 #include <ncurses.h>
 #include <stdbool.h>
 
-#include "catalog.h"
-#include "components.h"
-#include "drivers.h"
-#include "interactive.h"
-#include "stats.h"
-#include "utils.h"
+#include "base/catalog.h"
+#include "base/interactive.h"
+#include "base/stats.h"
+#include "entities/drivers.h"
+#include "utils/components.h"
+#include "utils/utils.h"
 #include "views/inspect_dataset.h"
 
 void drivers_pager(MANAGER manager) {

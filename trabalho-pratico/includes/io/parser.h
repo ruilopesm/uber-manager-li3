@@ -4,8 +4,8 @@
 #include <glib.h>
 #include <stdio.h>
 
-#include "catalog.h"
-#include "stats.h"
+#include "base/catalog.h"
+#include "base/stats.h"
 
 #define SEPARATOR ";"
 

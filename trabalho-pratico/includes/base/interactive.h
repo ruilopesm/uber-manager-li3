@@ -4,8 +4,8 @@
 #include <ncurses.h>
 #include <stdbool.h>
 
-#include "catalog.h"
-#include "stats.h"
+#include "base/catalog.h"
+#include "base/stats.h"
 
 // Use wide characters
 #define _XOPEN_SOURCE_EXTENDED

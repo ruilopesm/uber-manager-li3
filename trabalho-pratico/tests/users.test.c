@@ -1,11 +1,11 @@
-#include "users.h"
+#include "entities/users.h"
 
 #include <glib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "../lib/greatest.h"
-#include "utils.h"
+#include "utils/utils.h"
 
 TEST user_name_test(void) {
   USER user = create_user();

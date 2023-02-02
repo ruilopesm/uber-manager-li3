@@ -3,7 +3,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-#include "components.h"
+#include "utils/components.h"
 #include "views/execute_query.h"
 #include "views/help.h"
 #include "views/inspect_dataset.h"

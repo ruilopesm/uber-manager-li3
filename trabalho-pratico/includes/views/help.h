@@ -1,7 +1,7 @@
 #ifndef HELP_H
 #define HELP_H
 
-#include "interactive.h"
+#include "base/interactive.h"
 
 #define HELP_ENTRIES 2
 

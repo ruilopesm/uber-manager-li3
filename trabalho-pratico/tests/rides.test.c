@@ -1,11 +1,11 @@
-#include "rides.h"
+#include "entities/rides.h"
 
 #include <glib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "../lib/greatest.h"
-#include "utils.h"
+#include "utils/utils.h"
 
 TEST ride_id_test(void) {
   RIDE ride = create_ride();
