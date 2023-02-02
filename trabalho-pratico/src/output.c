@@ -488,19 +488,17 @@ void write_query8_result(FILE *output_file, void *result) {
       get_query8_result_users_reverse_lookup(query_result);
 
   CATALOG catalog = get_query8_result_catalog(query_result);
-  GHashTable *users = get_catalog_users(catalog);
-  GHashTable *drivers = get_catalog_drivers(catalog);
 
   for (int i = 0; i < (int)rides->len; i++) {
     RIDE_GENDER_STATS ride = g_array_index(rides, RIDE_GENDER_STATS, i);
 
     int username = get_ride_gender_stats_username(ride);
     char *username_str = g_ptr_array_index(users_reverse, username);
-    USER user = g_hash_table_lookup(users, GINT_TO_POINTER(username));
+    USER user = get_user_by_username(catalog, username_str);
     char *user_name = get_user_name(user);
 
     int driver_id = get_ride_gender_stats_driver_id(ride);
-    DRIVER driver = g_hash_table_lookup(drivers, GINT_TO_POINTER(driver_id));
+    DRIVER driver = get_driver_by_id(catalog, driver_id);
     char *driver_name = get_driver_name(driver);
 
     fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name,
@@ -522,8 +520,6 @@ void draw_query8_result(MANAGER manager, WINDOW *win, char *title,
       get_query8_result_users_reverse_lookup(query_result);
 
   CATALOG catalog = get_query8_result_catalog(query_result);
-  GHashTable *users = get_catalog_users(catalog);
-  GHashTable *drivers = get_catalog_drivers(catalog);
 
   int current_page = 0;
   int rides_per_page = y - 4;
@@ -556,12 +552,11 @@ void draw_query8_result(MANAGER manager, WINDOW *win, char *title,
 
         int username = get_ride_gender_stats_username(ride);
         char *username_str = g_ptr_array_index(users_reverse, username);
-        USER user = g_hash_table_lookup(users, GINT_TO_POINTER(username));
+        USER user = get_user_by_username(catalog, username_str);
         char *user_name = get_user_name(user);
 
         int driver_id = get_ride_gender_stats_driver_id(ride);
-        DRIVER driver =
-            g_hash_table_lookup(drivers, GINT_TO_POINTER(driver_id));
+        DRIVER driver = get_driver_by_id(catalog, driver_id);
         char *driver_name = get_driver_name(driver);
 
         mvwprintw(win, counter - start + 2, x / 2 - 25, "%012d;%s;%s;%s",

@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <glib.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "catalog.h"
@@ -48,15 +49,11 @@ int calculate_age(int birth_date);
 
 int is_id_smaller(char *id1, char *id2);
 
-int is_number(char *string);
+bool is_number(char *string);
 
 char *date_to_string(int date);
 
 char *strip(char *string);
-
-void edit_strip(char *string);
-
-gint compare_ints(gconstpointer a, gconstpointer b, gpointer data);
 
 int increment_date(int date);
 

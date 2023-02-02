@@ -171,8 +171,7 @@ GArray *get_female_rides_by_age(STATS stats) {
 
 void update_user_stats(CATALOG catalog, gpointer username, int distance,
                        double rating, double price, double tip, int date) {
-  GHashTable *users = get_catalog_users(catalog);
-  USER user = g_hash_table_lookup(users, username);
+  USER user = get_user_by_code(catalog, username);
 
   set_user_number_of_rides(user, get_user_number_of_rides(user) + 1);
   set_user_total_rating(user, get_user_total_rating(user) + rating);
@@ -186,8 +185,7 @@ void update_user_stats(CATALOG catalog, gpointer username, int distance,
 
 void update_driver_stats(CATALOG catalog, gpointer driver_id, double rating,
                          double price, double tip, int date) {
-  GHashTable *drivers = get_catalog_drivers(catalog);
-  DRIVER driver = g_hash_table_lookup(drivers, driver_id);
+  DRIVER driver = get_driver_by_code(catalog, driver_id);
 
   set_driver_number_of_rides(driver, get_driver_number_of_rides(driver) + 1);
   set_driver_total_rating(driver, get_driver_total_rating(driver) + rating);
@@ -270,11 +268,11 @@ void update_genders_rides_by_age(CATALOG catalog, STATS stats, gpointer ride_id,
   GArray *male_rides_by_age = get_male_rides_by_age(stats);
   GArray *female_rides_by_age = get_female_rides_by_age(stats);
 
-  USER user = g_hash_table_lookup(get_catalog_users(catalog), username);
+  USER user = get_user_by_code(catalog, username);
   enum gender user_gender = get_user_gender(user);
   int user_account_creation = get_user_account_creation(user);
 
-  DRIVER driver = g_hash_table_lookup(get_catalog_drivers(catalog), driver_id);
+  DRIVER driver = get_driver_by_code(catalog, driver_id);
   enum gender driver_gender = get_driver_gender(driver);
   int driver_account_creation = get_driver_account_creation(driver);
 
@@ -321,15 +319,6 @@ gint compare_rides_by_age(gconstpointer a, gconstpointer b) {
   int ride_id_b = ride_b->id;
 
   return ride_id_b - ride_id_a;
-}
-
-void add_user_to_array(gpointer key, gpointer value, gpointer data) {
-  USER user = (USER)value;
-  GArray *users = (GArray *)data;
-
-  g_array_append_val(users, user);
-
-  (void)key;
 }
 
 gint compare_users_by_total_distance(gconstpointer a, gconstpointer b,
@@ -465,8 +454,6 @@ void insert_ride_by_date(RIDE ride, STATS stats) {
       } else {
         GArray *new_city = g_array_new(1, 1, sizeof(RIDE));
         g_array_append_val(new_city, ride);
-        // g_array_remove_index(day_rides,ride_city);
-        // g_array_insert_val(day_rides,ride_city,new_city);
         g_array_index(day_rides, GArray *, ride_city) = new_city;
       }
     } else {
@@ -491,13 +478,28 @@ void insert_ride_by_date(RIDE ride, STATS stats) {
 
     // The new day with the ride is inserted in the hash table
     g_hash_table_insert(rides_by_date, date, new_day_struct);
-
-    /*RIDES_OF_THE_DAY test = g_hash_table_lookup(rides_by_date,date);
-    GArray *test_a = test->array;
-    GArray *test_city = g_array_index(test_a,GArray *,ride_city);
-    RIDE test_ride =g_array_index(test_city,RIDE,0);
-    printf("%d\n",get_ride_id(test_ride));*/
   }
+}
+
+gint compare_rides_by_distance(gconstpointer a, gconstpointer b) {
+  int temp = 0;
+  RIDE ride1 = *(RIDE *)(a);
+  RIDE ride2 = *(RIDE *)(b);
+
+  int ride1_distance = get_ride_distance(ride1);
+  int ride2_distance = get_ride_distance(ride2);
+  temp = ride1_distance - ride2_distance;
+  if (temp) return temp;
+
+  int ride1_date = get_ride_date(ride1);
+  int ride2_date = get_ride_date(ride2);
+  temp = ride1_date - ride2_date;
+  if (temp) return temp;
+
+  int ride1_id = get_ride_id(ride1);
+  int ride2_id = get_ride_id(ride2);
+
+  return ride1_id - ride2_id;
 }
 
 GArray *get_ride_of_the_day_array(RIDES_OF_THE_DAY rides_of_the_day) {

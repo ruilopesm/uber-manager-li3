@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -187,14 +188,14 @@ int is_id_smaller(char *id1, char *id2) {
   return 0;
 }
 
-int is_number(char *string) {
+bool is_number(char *string) {
   for (unsigned i = 0; i < strlen(string); i++) {
     if (string[i] < '0' || string[i] > '9') {
-      return 0;
+      return false;
     }
   }
 
-  return 1;
+  return true;
 }
 
 char *date_to_string(int date) {

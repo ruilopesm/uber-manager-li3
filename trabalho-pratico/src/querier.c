@@ -9,10 +9,8 @@
 #include <unistd.h>
 
 #include "catalog.h"
-#include "drivers.h"
 #include "rides.h"
 #include "stats.h"
-#include "users.h"
 #include "utils.h"
 
 void *querier(CATALOG catalog, STATS stats, char *line) {
@@ -49,58 +47,40 @@ struct query1_result {
 
 void *query1(CATALOG catalog, STATS stats, char **parameters) {
   char *id = parameters[0];
-  int flag = is_number(id);
+  bool flag = is_number(id);
 
-  switch (flag) {
-    case 0: {
-      GHashTable *users_code = get_catalog_users_code(catalog);
-      gpointer user_code = g_hash_table_lookup(users_code, id);
+  if (flag == false) {
+    USER user = get_user_by_username(catalog, id);
 
-      if (user_code == NULL) {
-        return NULL;
-      }
-
-      GHashTable *users = get_catalog_users(catalog);
-      USER user = g_hash_table_lookup(users, user_code);
-      enum account_status account_status = get_user_account_status(user);
-
-      if (account_status == ACTIVE) {
-        QUERY1_RESULT result = malloc(sizeof(struct query1_result));
-        result->data.user = user;
-        result->is_user = true;
-
-        return (void *)result;
-      } else {
-        return NULL;
-      }
-
-      break;
+    if (user == NULL) {
+      return NULL;
     }
 
-    case 1: {
-      int id_int = atoi(id);
+    enum account_status account_status = get_user_account_status(user);
 
-      GHashTable *drivers = get_catalog_drivers(catalog);
-      gpointer driver_id = GINT_TO_POINTER(id_int);
-      DRIVER driver = g_hash_table_lookup(drivers, driver_id);
+    if (account_status == ACTIVE) {
+      QUERY1_RESULT result = malloc(sizeof(struct query1_result));
+      result->data.user = user;
+      result->is_user = true;
 
-      if (driver == NULL) {
-        return NULL;
-      }
+      return (void *)result;
+    }
+  } else {
+    int driver_id = atoi(id);
+    DRIVER driver = get_driver_by_id(catalog, driver_id);
 
-      enum account_status account_status = get_driver_account_status(driver);
+    if (driver == NULL) {
+      return NULL;
+    }
 
-      if (account_status == ACTIVE) {
-        QUERY1_RESULT result = malloc(sizeof(struct query1_result));
-        result->data.driver = driver;
-        result->is_user = false;
+    enum account_status account_status = get_driver_account_status(driver);
 
-        return (void *)result;
-      } else {
-        return NULL;
-      }
+    if (account_status == ACTIVE) {
+      QUERY1_RESULT result = malloc(sizeof(struct query1_result));
+      result->data.driver = driver;
+      result->is_user = false;
 
-      break;
+      return (void *)result;
     }
   }
 
@@ -320,9 +300,9 @@ void *query7(CATALOG catalog, STATS stats, char **parameter) {
     while (n > 0 && i < (int)city_drivers_array->len) {
       CITY_DRIVER_STATS city_driver_stats =
           g_ptr_array_index(city_drivers_array, i);
-      guint driver_id = get_city_driver_stats_id(city_driver_stats);
-      GHashTable *drivers = get_catalog_drivers(catalog);
-      DRIVER driver = g_hash_table_lookup(drivers, GINT_TO_POINTER(driver_id));
+
+      int driver_id = get_city_driver_stats_id(city_driver_stats);
+      DRIVER driver = get_driver_by_id(catalog, driver_id);
       enum account_status status = get_driver_account_status(driver);
 
       if (status == ACTIVE) {
@@ -621,27 +601,6 @@ double calculate_average_distance(GHashTable *rides_by_date, int lower_limit,
   }
 
   return 0;
-}
-
-gint compare_rides_by_distance(gconstpointer a, gconstpointer b) {
-  int temp = 0;
-  RIDE ride1 = *(RIDE *)(a);
-  RIDE ride2 = *(RIDE *)(b);
-
-  int ride1_distance = get_ride_distance(ride1);
-  int ride2_distance = get_ride_distance(ride2);
-  temp = ride1_distance - ride2_distance;
-  if (temp) return temp;
-
-  int ride1_date = get_ride_date(ride1);
-  int ride2_date = get_ride_date(ride2);
-  temp = ride1_date - ride2_date;
-  if (temp) return temp;
-
-  int ride1_id = get_ride_id(ride1);
-  int ride2_id = get_ride_id(ride2);
-
-  return ride1_id - ride2_id;
 }
 
 void free_query_result(void *result, char query_type) {

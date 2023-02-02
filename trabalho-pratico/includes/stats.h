@@ -92,8 +92,6 @@ int get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride);
 
 gint compare_rides_by_age(gconstpointer a, gconstpointer b);
 
-void add_user_to_array(gpointer key, gpointer value, gpointer data);
-
 gint compare_users_by_total_distance(gconstpointer a, gconstpointer b,
                                      gpointer users_reverse_gpointer);
 

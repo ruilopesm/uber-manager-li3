@@ -4,20 +4,20 @@
 #include <stdio.h>
 
 #include "drivers.h"
-#include "rides.h"
 #include "users.h"
 #include "utils.h"
 
 struct catalog {
+  // username -> user_code: int
   GHashTable *users_code;
-  // Used in situations where you have a user code and need to find the username
   GPtrArray *users_reverse_lookup;
+
   GHashTable *users;
   GHashTable *drivers;
   GHashTable *rides;
+
+  // city -> city_code: int
   GHashTable *cities_code;
-  // Used in situations where you have a city code and need to find the city
-  // name
   GPtrArray *cities_reverse_lookup;
 };
 
@@ -47,6 +47,31 @@ GHashTable *get_catalog_drivers(CATALOG catalog) { return catalog->drivers; }
 
 GHashTable *get_catalog_rides(CATALOG catalog) { return catalog->rides; }
 
+USER get_user_by_username(CATALOG catalog, char *username) {
+  GHashTable *users_code = catalog->users_code;
+  gpointer user_code = g_hash_table_lookup(users_code, username);
+
+  if (user_code == NULL) {
+    return NULL;
+  }
+
+  return g_hash_table_lookup(catalog->users, user_code);
+}
+
+USER get_user_by_code(CATALOG catalog, gpointer user_code) {
+  return g_hash_table_lookup(catalog->users, user_code);
+}
+
+DRIVER get_driver_by_id(CATALOG catalog, int driver_id) {
+  gpointer driver_id_ptr = GINT_TO_POINTER(driver_id);
+
+  return g_hash_table_lookup(catalog->drivers, driver_id_ptr);
+}
+
+DRIVER get_driver_by_code(CATALOG catalog, gpointer driver_code) {
+  return g_hash_table_lookup(catalog->drivers, driver_code);
+}
+
 GHashTable *get_catalog_cities_code(CATALOG catalog) {
   return catalog->cities_code;
 }
@@ -61,12 +86,6 @@ GHashTable *get_catalog_users_code(CATALOG catalog) {
 
 GPtrArray *get_catalog_users_reverse_lookup(CATALOG catalog) {
   return catalog->users_reverse_lookup;
-}
-
-char *get_catalog_driver_name(CATALOG catalog, int *driver_id) {
-  DRIVER driver =
-      g_hash_table_lookup(catalog->drivers, GINT_TO_POINTER(*driver_id));
-  return get_driver_name(driver);
 }
 
 void free_catalog(CATALOG catalog) {
