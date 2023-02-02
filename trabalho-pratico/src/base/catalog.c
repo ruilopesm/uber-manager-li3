@@ -62,6 +62,10 @@ USER get_user_by_code(CATALOG catalog, gpointer user_code) {
   return g_hash_table_lookup(catalog->users, user_code);
 }
 
+char *get_username_from_code(CATALOG catalog, int user_code) {
+  return g_ptr_array_index(catalog->users_reverse_lookup, user_code);
+}
+
 DRIVER get_driver_by_id(CATALOG catalog, int driver_id) {
   gpointer driver_id_ptr = GINT_TO_POINTER(driver_id);
 
@@ -74,6 +78,14 @@ DRIVER get_driver_by_code(CATALOG catalog, gpointer driver_code) {
 
 GHashTable *get_catalog_cities_code(CATALOG catalog) {
   return catalog->cities_code;
+}
+
+char *get_city_from_code(CATALOG catalog, int city_code) {
+  return g_ptr_array_index(catalog->cities_reverse_lookup, city_code);
+}
+
+char *get_city_code(CATALOG catalog, char *city) {
+  return g_hash_table_lookup(catalog->cities_code, city);
 }
 
 GPtrArray *get_catalog_cities_reverse_lookup(CATALOG catalog) {

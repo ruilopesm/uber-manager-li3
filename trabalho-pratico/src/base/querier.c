@@ -90,7 +90,7 @@ void *query1(CATALOG catalog, STATS stats, char **parameters) {
   return NULL;
 }
 
-bool get_query1_bool(QUERY1_RESULT result) { return result->is_user; }
+bool get_query1_is_user(QUERY1_RESULT result) { return result->is_user; }
 
 USER get_query1_result_user(QUERY1_RESULT result) { return result->data.user; }
 
@@ -98,6 +98,7 @@ DRIVER get_query1_result_driver(QUERY1_RESULT result) {
   return result->data.driver;
 }
 
+// Does not have a struct result, the result is simply a GArray of DRIVERS
 void *query2(CATALOG catalog, STATS stats, char **parameters) {
   int n = atoi(parameters[0]);
 
@@ -133,7 +134,7 @@ void *query2(CATALOG catalog, STATS stats, char **parameters) {
 
 struct query3_result {
   GArray *users;
-  GPtrArray *users_reverse_lookup;
+  CATALOG catalog;
 };
 
 void *query3(CATALOG catalog, STATS stats, char **parameters) {
@@ -143,12 +144,10 @@ void *query3(CATALOG catalog, STATS stats, char **parameters) {
 
   static int is_users_sorted = 0;
   GArray *top_users = get_top_users_by_total_distance(stats);
-  GPtrArray *users_reverse_lookup = get_catalog_users_reverse_lookup(catalog);
 
   if (!is_users_sorted) {
-    g_array_sort_with_data(top_users,
-                           (GCompareDataFunc)compare_users_by_total_distance,
-                           users_reverse_lookup);
+    g_array_sort_with_data(
+        top_users, (GCompareDataFunc)compare_users_by_total_distance, catalog);
     is_users_sorted = 1;
   }
 
@@ -165,33 +164,29 @@ void *query3(CATALOG catalog, STATS stats, char **parameters) {
     i++;
   }
 
-  // Catalog is not used in this query
-  (void)catalog;
+  QUERY3_RESULT query3_result = malloc(sizeof(struct query3_result));
+  query3_result->users = result;
+  query3_result->catalog = catalog;
 
-  QUERY3_RESULT query_result = malloc(sizeof(struct query3_result));
-  query_result->users = result;
-  query_result->users_reverse_lookup = users_reverse_lookup;
-
-  return (void *)query_result;
+  return (void *)query3_result;
 }
 
 GArray *get_query3_result_users(QUERY3_RESULT result) { return result->users; }
 
-GPtrArray *get_query3_result_users_reverse_lookup(QUERY3_RESULT result) {
-  return result->users_reverse_lookup;
+CATALOG get_query3_result_catalog(QUERY3_RESULT result) {
+  return result->catalog;
 }
 
+// Does not have a struct result, the result is simply a string
 void *query4(CATALOG catalog, STATS stats, char **parameters) {
   char *city_string = parameters[0];
 
-  char *result = malloc(sizeof(char) * 10);
+  char *result = malloc(sizeof(char) * 16);
 
-  GHashTable *city_code = get_catalog_cities_code(catalog);
-  char *city_number = g_hash_table_lookup(city_code, city_string);
+  char *city_code = get_city_code(catalog, city_string);
 
-  if (city_number) {
-    int city = *city_number;
-
+  if (city_code) {
+    int city = *city_code;
     CITY_STATS city_stats = get_city_stats(stats, city);
 
     if (city_stats != NULL) {
@@ -206,12 +201,10 @@ void *query4(CATALOG catalog, STATS stats, char **parameters) {
     return NULL;
   }
 
-  // Catalog is not used in this query
-  (void)catalog;
-
   return (void *)result;
 }
 
+// Does not have a struct result, the result is simply a string
 void *query5(CATALOG catalog, STATS stats, char **parameters) {
   int lower_limit = date_string_to_int(parameters[0]);
   int upper_limit = date_string_to_int(parameters[1]);
@@ -235,6 +228,7 @@ void *query5(CATALOG catalog, STATS stats, char **parameters) {
   return (void *)result;
 }
 
+// Does not have a struct result, the result is simply a string
 void *query6(CATALOG catalog, STATS stats, char **parameters) {
   char *city = parameters[0];
   int lower_limit = date_string_to_int(parameters[1]);
@@ -243,8 +237,7 @@ void *query6(CATALOG catalog, STATS stats, char **parameters) {
   char *result = malloc(sizeof(char) * 10);
 
   GHashTable *rides_by_date = get_rides_by_date(stats);
-  GHashTable *cities_code = get_catalog_cities_code(catalog);
-  char *city_code = g_hash_table_lookup(cities_code, city);
+  char *city_code = get_city_code(catalog, city);
 
   double average = 0.f;
   if (city_code) {
@@ -262,9 +255,6 @@ void *query6(CATALOG catalog, STATS stats, char **parameters) {
     return NULL;
   }
 
-  // Catalog is not used in this query
-  (void)catalog;
-
   return (void *)result;
 }
 
@@ -280,8 +270,7 @@ void *query7(CATALOG catalog, STATS stats, char **parameter) {
   GPtrArray *result = g_ptr_array_new();
   g_ptr_array_set_free_func(result, free);
 
-  GHashTable *cities_code = get_catalog_cities_code(catalog);
-  char *city_code = g_hash_table_lookup(cities_code, city);
+  char *city_code = get_city_code(catalog, city);
 
   if (city_code) {
     int city = *city_code;
@@ -340,7 +329,6 @@ double get_query7_auxiliar_average_score(QUERY7_AUXILIAR query7_auxiliar) {
 
 struct query8_result {
   GArray *top_rides;
-  GPtrArray *users_reverse_lookup;
   CATALOG catalog;
 };
 
@@ -406,8 +394,6 @@ void *query8(CATALOG catalog, STATS stats, char **parameters) {
 
   QUERY8_RESULT query8_result = malloc(sizeof(struct query8_result));
   query8_result->top_rides = result;
-  query8_result->users_reverse_lookup =
-      get_catalog_users_reverse_lookup(catalog);
   query8_result->catalog = catalog;
 
   return (void *)query8_result;
@@ -417,17 +403,13 @@ GArray *get_query8_result_top_rides(QUERY8_RESULT query8_result) {
   return query8_result->top_rides;
 }
 
-GPtrArray *get_query8_result_users_reverse_lookup(QUERY8_RESULT query8_result) {
-  return query8_result->users_reverse_lookup;
-}
-
 CATALOG get_query8_result_catalog(QUERY8_RESULT query8_result) {
   return query8_result->catalog;
 }
 
 struct query9_result {
   GArray *rides_in_range;
-  GPtrArray *cities_reverse_lookup;
+  CATALOG catalog;
 };
 
 void *query9(CATALOG catalog, STATS stats, char **parameters) {
@@ -475,9 +457,6 @@ void *query9(CATALOG catalog, STATS stats, char **parameters) {
   qsort(rides_in_range->data, rides_in_range->len, sizeof(RIDE),
         (GCompareFunc)compare_rides_by_distance);
 
-  // Catalog is not used in this query
-  (void)catalog;
-
   if (rides_in_range->len == 0) {
     g_array_free(rides_in_range, TRUE);
     return NULL;
@@ -485,8 +464,7 @@ void *query9(CATALOG catalog, STATS stats, char **parameters) {
 
   QUERY9_RESULT query9_result = malloc(sizeof(struct query9_result));
   query9_result->rides_in_range = rides_in_range;
-  query9_result->cities_reverse_lookup =
-      get_catalog_cities_reverse_lookup(catalog);
+  query9_result->catalog = catalog;
 
   return (void *)query9_result;
 }
@@ -495,9 +473,8 @@ GArray *get_query9_result_rides_in_range(QUERY9_RESULT query9_result) {
   return query9_result->rides_in_range;
 }
 
-GPtrArray *get_query9_result_cities_reverse_lookup(
-    QUERY9_RESULT query9_result) {
-  return query9_result->cities_reverse_lookup;
+CATALOG get_query9_result_catalog(QUERY9_RESULT query9_result) {
+  return query9_result->catalog;
 }
 
 double calculate_average_price(GHashTable *rides_by_date, int lower_limit,

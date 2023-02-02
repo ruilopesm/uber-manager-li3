@@ -21,7 +21,7 @@ typedef struct query1_result *QUERY1_RESULT;
 
 void *query1(CATALOG catalog, STATS stats, char **parameters);
 
-bool get_query1_bool(QUERY1_RESULT result);
+bool get_query1_is_user(QUERY1_RESULT result);
 
 USER get_query1_result_user(QUERY1_RESULT result);
 
@@ -35,7 +35,7 @@ void *query3(CATALOG catalog, STATS stats, char **parameters);
 
 GArray *get_query3_result_users(QUERY3_RESULT result);
 
-GPtrArray *get_query3_result_users_reverse_lookup(QUERY3_RESULT result);
+CATALOG get_query3_result_catalog(QUERY3_RESULT result);
 
 void *query4(CATALOG catalog, STATS stats, char **parameters);
 
@@ -57,8 +57,6 @@ void *query8(CATALOG catalog, STATS stats, char **parameters);
 
 GArray *get_query8_result_top_rides(QUERY8_RESULT result);
 
-GPtrArray *get_query8_result_users_reverse_lookup(QUERY8_RESULT result);
-
 CATALOG get_query8_result_catalog(QUERY8_RESULT result);
 
 typedef struct query9_result *QUERY9_RESULT;
@@ -67,7 +65,7 @@ void *query9(CATALOG catalog, STATS stats, char **parameters);
 
 GArray *get_query9_result_rides_in_range(QUERY9_RESULT result);
 
-GPtrArray *get_query9_result_cities_reverse_lookup(QUERY9_RESULT result);
+CATALOG get_query9_result_catalog(QUERY9_RESULT result);
 
 double calculate_average_price(GHashTable *rides_by_date, int lower_limit,
                                int upper_limit);

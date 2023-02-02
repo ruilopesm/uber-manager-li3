@@ -1,7 +1,7 @@
 #include "base/stats.h"
 
 #include <glib.h>
-#include <malloc.h>
+/* #include <malloc.h> */
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -322,7 +322,7 @@ gint compare_rides_by_age(gconstpointer a, gconstpointer b) {
 }
 
 gint compare_users_by_total_distance(gconstpointer a, gconstpointer b,
-                                     gpointer users_reverse_gpointer) {
+                                     gpointer data) {
   USER user_a = *(USER *)a;
   USER user_b = *(USER *)b;
 
@@ -344,10 +344,10 @@ gint compare_users_by_total_distance(gconstpointer a, gconstpointer b,
 
   int username_code_a = get_user_username(user_a);
   int username_code_b = get_user_username(user_b);
-  GPtrArray *user_reverse = (GPtrArray *)users_reverse_gpointer;
 
-  char *username_a = g_ptr_array_index(user_reverse, username_code_a);
-  char *username_b = g_ptr_array_index(user_reverse, username_code_b);
+  CATALOG catalog = (CATALOG)data;
+  char *username_a = get_username_from_code(catalog, username_code_a);
+  char *username_b = get_username_from_code(catalog, username_code_b);
 
   int to_return = strcmp(username_a, username_b);
 

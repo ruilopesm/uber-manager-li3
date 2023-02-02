@@ -36,7 +36,7 @@ void draw_query_result(MANAGER manager, WINDOW *win, char *title, void *result,
 
 void write_query1_result(FILE *output_file, void *result) {
   QUERY1_RESULT query_result = (QUERY1_RESULT)result;
-  bool is_user = get_query1_bool(query_result);
+  bool is_user = get_query1_is_user(query_result);
 
   if (is_user) {
     USER user = get_query1_result_user(query_result);
@@ -75,7 +75,7 @@ void write_query1_result(FILE *output_file, void *result) {
 void draw_query1_result(MANAGER manager, WINDOW *win, char *title,
                         void *result) {
   QUERY1_RESULT query_result = (QUERY1_RESULT)result;
-  bool is_user = get_query1_bool(query_result);
+  bool is_user = get_query1_is_user(query_result);
 
   if (is_user) {
     USER user = get_query1_result_user(query_result);
@@ -224,18 +224,17 @@ void draw_query2_result(MANAGER manager, WINDOW *win, char *title,
 void write_query3_result(FILE *output_file, void *result) {
   QUERY3_RESULT query_result = (QUERY3_RESULT)result;
   GArray *users = get_query3_result_users(query_result);
-  GPtrArray *users_reverse_lookup =
-      get_query3_result_users_reverse_lookup(query_result);
+  CATALOG catalog = get_query3_result_catalog(query_result);
 
   for (int i = 0; i < (int)users->len; i++) {
     USER user = g_array_index(users, USER, i);
 
-    int username = get_user_username(user);
-    char *username_str = g_ptr_array_index(users_reverse_lookup, username);
+    int user_code = get_user_username(user);
+    char *username = get_username_from_code(catalog, user_code);
     char *name = get_user_name(user);
     int total_distance = get_user_total_distance(user);
 
-    fprintf(output_file, "%s;%s;%d\n", username_str, name, total_distance);
+    fprintf(output_file, "%s;%s;%d\n", username, name, total_distance);
 
     free(name);
   }
@@ -248,8 +247,7 @@ void draw_query3_result(MANAGER manager, WINDOW *win, char *title,
 
   QUERY3_RESULT query_result = (QUERY3_RESULT)result;
   GArray *users = get_query3_result_users(query_result);
-  GPtrArray *users_reverse_lookup =
-      get_query3_result_users_reverse_lookup(query_result);
+  CATALOG catalog = get_query3_result_catalog(query_result);
 
   int current_page = 0;
   int users_per_page = y - 4;
@@ -280,13 +278,13 @@ void draw_query3_result(MANAGER manager, WINDOW *win, char *title,
       if (counter >= start && counter <= end) {
         USER user = g_array_index(users, USER, i);
 
-        int username = get_user_username(user);
-        char *username_str = g_ptr_array_index(users_reverse_lookup, username);
+        int user_code = get_user_username(user);
+        char *username = get_username_from_code(catalog, user_code);
         char *name = get_user_name(user);
         int total_distance = get_user_total_distance(user);
 
-        mvwprintw(win, counter - start + 2, x / 2 - 15, "%s;%s;%d",
-                  username_str, name, total_distance);
+        mvwprintw(win, counter - start + 2, x / 2 - 15, "%s;%s;%d", username,
+                  name, total_distance);
 
         free(name);
       }
@@ -484,27 +482,24 @@ void draw_query7_result(MANAGER manager, WINDOW *win, char *title,
 void write_query8_result(FILE *output_file, void *result) {
   QUERY8_RESULT query_result = (QUERY8_RESULT)result;
   GArray *rides = get_query8_result_top_rides(query_result);
-  GPtrArray *users_reverse =
-      get_query8_result_users_reverse_lookup(query_result);
-
   CATALOG catalog = get_query8_result_catalog(query_result);
 
   for (int i = 0; i < (int)rides->len; i++) {
     RIDE_GENDER_STATS ride = g_array_index(rides, RIDE_GENDER_STATS, i);
 
-    int username = get_ride_gender_stats_username(ride);
-    char *username_str = g_ptr_array_index(users_reverse, username);
-    USER user = get_user_by_username(catalog, username_str);
-    char *user_name = get_user_name(user);
+    int user_code = get_ride_gender_stats_username(ride);
+    char *username = get_username_from_code(catalog, user_code);
+    USER user = get_user_by_username(catalog, username);
+    char *name = get_user_name(user);
 
     int driver_id = get_ride_gender_stats_driver_id(ride);
     DRIVER driver = get_driver_by_id(catalog, driver_id);
     char *driver_name = get_driver_name(driver);
 
-    fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name,
-            username_str, user_name);
+    fprintf(output_file, "%012d;%s;%s;%s\n", driver_id, driver_name, username,
+            name);
 
-    free(user_name);
+    free(name);
     free(driver_name);
   }
 }
@@ -516,9 +511,6 @@ void draw_query8_result(MANAGER manager, WINDOW *win, char *title,
 
   QUERY8_RESULT query_result = (QUERY8_RESULT)result;
   GArray *rides = get_query8_result_top_rides(query_result);
-  GPtrArray *users_reverse =
-      get_query8_result_users_reverse_lookup(query_result);
-
   CATALOG catalog = get_query8_result_catalog(query_result);
 
   int current_page = 0;
@@ -550,19 +542,19 @@ void draw_query8_result(MANAGER manager, WINDOW *win, char *title,
       if (counter >= start && counter <= end) {
         RIDE_GENDER_STATS ride = g_array_index(rides, RIDE_GENDER_STATS, i);
 
-        int username = get_ride_gender_stats_username(ride);
-        char *username_str = g_ptr_array_index(users_reverse, username);
-        USER user = get_user_by_username(catalog, username_str);
-        char *user_name = get_user_name(user);
+        int user_code = get_ride_gender_stats_username(ride);
+        char *username = get_username_from_code(catalog, user_code);
+        USER user = get_user_by_username(catalog, username);
+        char *name = get_user_name(user);
 
         int driver_id = get_ride_gender_stats_driver_id(ride);
         DRIVER driver = get_driver_by_id(catalog, driver_id);
         char *driver_name = get_driver_name(driver);
 
         mvwprintw(win, counter - start + 2, x / 2 - 25, "%012d;%s;%s;%s",
-                  driver_id, driver_name, username_str, user_name);
+                  driver_id, driver_name, username, name);
 
-        free(user_name);
+        free(name);
         free(driver_name);
       }
 
@@ -601,8 +593,7 @@ void draw_query8_result(MANAGER manager, WINDOW *win, char *title,
 void write_query9_result(FILE *output_file, void *result) {
   QUERY9_RESULT query_result = (QUERY9_RESULT)result;
   GArray *rides = get_query9_result_rides_in_range(query_result);
-  GPtrArray *cities_reverse =
-      get_query9_result_cities_reverse_lookup(query_result);
+  CATALOG catalog = get_query9_result_catalog(query_result);
 
   for (int i = rides->len - 1; i >= 0; i--) {
     RIDE ride = g_array_index(rides, RIDE, i);
@@ -610,7 +601,8 @@ void write_query9_result(FILE *output_file, void *result) {
     int id = get_ride_id(ride);
     char *date = date_to_string(get_ride_date(ride));
     int distance = get_ride_distance(ride);
-    char *city = g_ptr_array_index(cities_reverse, get_ride_city(ride));
+    int city_code = get_ride_city(ride);
+    char *city = get_city_from_code(catalog, city_code);
     double tip = get_ride_tip(ride);
 
     fprintf(output_file, "%012d;%s;%d;%s;%.3f\n", id, date, distance, city,
@@ -627,8 +619,7 @@ void draw_query9_result(MANAGER manager, WINDOW *win, char *title,
 
   QUERY9_RESULT query_result = (QUERY9_RESULT)result;
   GArray *rides = get_query9_result_rides_in_range(query_result);
-  GPtrArray *cities_reverse =
-      get_query9_result_cities_reverse_lookup(query_result);
+  CATALOG catalog = get_query9_result_catalog(query_result);
 
   int current_page = 0;
   int rides_per_page = y - 4;
@@ -662,7 +653,8 @@ void draw_query9_result(MANAGER manager, WINDOW *win, char *title,
         int id = get_ride_id(ride);
         char *date = date_to_string(get_ride_date(ride));
         int distance = get_ride_distance(ride);
-        char *city = g_ptr_array_index(cities_reverse, get_ride_city(ride));
+        int city_code = get_ride_city(ride);
+        char *city = get_city_from_code(catalog, city_code);
         double tip = get_ride_tip(ride);
 
         mvwprintw(win, counter - start + 2, x / 2 - 15, "%012d;%s;%d;%s;%.3f",
