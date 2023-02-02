@@ -4,7 +4,6 @@
 #include <glib.h>
 
 #include "catalog.h"
-#include "utils.h"
 
 typedef struct stats *STATS;
 
@@ -76,7 +75,16 @@ void upsert_city_driver_stats(STATS stats, int city, gpointer driver_id,
 void update_genders_rides_by_age(CATALOG catalog, STATS stats, gpointer ride_id,
                                  gpointer driver_id, gpointer username);
 
+RIDE_GENDER_STATS create_ride_gender_stats(gpointer ride_id, gpointer driver_id,
+                                           gpointer username,
+                                           int driver_account_creation,
+                                           int user_account_creation);
+
 int get_ride_gender_stats_id(RIDE_GENDER_STATS ride);
+
+int get_ride_gender_stats_driver_id(RIDE_GENDER_STATS ride);
+
+int get_ride_gender_stats_username(RIDE_GENDER_STATS ride);
 
 int get_ride_gender_stats_driver_account_creation(RIDE_GENDER_STATS ride);
 

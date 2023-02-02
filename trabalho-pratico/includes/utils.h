@@ -4,6 +4,9 @@
 #include <glib.h>
 #include <stdio.h>
 
+#include "catalog.h"
+#include "stats.h"
+
 #define MASTER_DATE "09/10/2022"
 
 enum gender { M, F };
@@ -14,7 +17,24 @@ enum account_status { ACTIVE, INACTIVE };
 
 enum car_class { BASIC, GREEN, PREMIUM };
 
+typedef enum errors {
+  ERR_OPENING_USERS_FILE = 1,
+  ERR_OPENING_DRIVERS_FILE = 2,
+  ERR_OPENING_RIDES_FILE = 3,
+  ERR_OPENING_QUERIES_FILE = 4,
+  ERR_CREATING_DIRECTORY = 5,
+  ERR_OPENING_OUTPUT_FILE = 6,
+} ERRORS;
+
+int setup_catalog_and_stats(CATALOG catalog, STATS stats, char *folder);
+
+char *get_error_as_string(ERRORS error);
+
 char *create_filename(char *folder, const char *string);
+
+FILE *create_output_file(int queries_counter);
+
+int create_directory(char *folder);
 
 const char *gender_to_string(int x);
 
@@ -49,5 +69,7 @@ enum gender string_to_gender(char *gender);
 int string_to_int(char *string);
 
 double string_to_float(char *string);
+
+char *zfill_id(int *id);
 
 #endif

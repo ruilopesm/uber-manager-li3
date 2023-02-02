@@ -3,15 +3,7 @@
 
 #include <glib.h>
 
-#include "utils.h"
-
 typedef struct catalog *CATALOG;
-
-struct query4_utils {
-  CATALOG catalog;
-  double total_spent;
-  int total_rides;
-};
 
 CATALOG create_catalog(void);
 
@@ -21,9 +13,9 @@ GHashTable *get_catalog_drivers(CATALOG catalog);
 
 GHashTable *get_catalog_rides(CATALOG catalog);
 
-GHashTable *get_catalog_city_code(CATALOG catalog);
+GHashTable *get_catalog_cities_code(CATALOG catalog);
 
-GPtrArray *get_catalog_city_reverse_lookup(CATALOG catalog);
+GPtrArray *get_catalog_cities_reverse_lookup(CATALOG catalog);
 
 GHashTable *get_catalog_users_code(CATALOG catalog);
 

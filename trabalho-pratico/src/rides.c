@@ -44,8 +44,8 @@ void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
   set_ride_date(ride, ride_params[1]);
   set_ride_driver(ride, ride_params[2]);
   set_ride_user(ride, ride_params[3], user_code_hash);
-  set_ride_city(ride, ride_params[4], get_catalog_city_code(catalog),
-                get_catalog_city_reverse_lookup(catalog));
+  set_ride_city(ride, ride_params[4], get_catalog_cities_code(catalog),
+                get_catalog_cities_reverse_lookup(catalog));
   set_ride_distance(ride, ride_params[5]);
   set_ride_score_user(ride, ride_params[6]);
   set_ride_score_driver(ride, ride_params[7]);
@@ -106,7 +106,7 @@ void set_ride_user(RIDE ride, char *user_string, GHashTable *user_code_hash) {
 }
 
 void set_ride_city(RIDE ride, char *city_string, GHashTable *city_code,
-                   GPtrArray *city_reverse_lookup) {
+                   GPtrArray *cities_reverse_lookup) {
   static char cities_parsed = 0;
   char *city_number;
   city_number = g_hash_table_lookup(city_code, city_string);
@@ -114,7 +114,7 @@ void set_ride_city(RIDE ride, char *city_string, GHashTable *city_code,
     ride->city = *city_number;
   } else {
     char *city_copy = strdup(city_string);
-    g_ptr_array_add(city_reverse_lookup, city_copy);
+    g_ptr_array_add(cities_reverse_lookup, city_copy);
     city_number = malloc(sizeof(char));
     *city_number = cities_parsed;
     ride->city = cities_parsed;

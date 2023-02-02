@@ -37,6 +37,8 @@ struct city_stats {
 
 struct ride_gender_stats {
   int id;
+  int driver_id;
+  int username;
   int driver_account_creation;
   int user_account_creation;
 };
@@ -144,8 +146,7 @@ int get_city_driver_stats_total_rides(CITY_DRIVER_STATS city_driver_stats) {
 }
 
 int get_city_driver_stats_id(CITY_DRIVER_STATS city_driver_stats) {
-  int id = city_driver_stats->id;
-  return id;
+  return city_driver_stats->id;
 }
 
 double get_city_driver_stats_total_spent(CITY_DRIVER_STATS city_driver_stats) {
@@ -231,12 +232,15 @@ void upsert_city_driver_stats(STATS stats, int city, gpointer driver_id,
   }
 }
 
-RIDE_GENDER_STATS create_ride_gender_stats(gpointer ride_id,
+RIDE_GENDER_STATS create_ride_gender_stats(gpointer ride_id, gpointer driver_id,
+                                           gpointer username,
                                            int driver_account_creation,
                                            int user_account_creation) {
   RIDE_GENDER_STATS new = malloc(sizeof(struct ride_gender_stats));
 
   new->id = GPOINTER_TO_INT(ride_id);
+  new->driver_id = GPOINTER_TO_INT(driver_id);
+  new->username = GPOINTER_TO_INT(username);
   new->driver_account_creation = driver_account_creation;
   new->user_account_creation = user_account_creation;
 
@@ -244,6 +248,14 @@ RIDE_GENDER_STATS create_ride_gender_stats(gpointer ride_id,
 }
 
 int get_ride_gender_stats_id(RIDE_GENDER_STATS ride) { return ride->id; }
+
+int get_ride_gender_stats_driver_id(RIDE_GENDER_STATS ride) {
+  return ride->driver_id;
+}
+
+int get_ride_gender_stats_username(RIDE_GENDER_STATS ride) {
+  return ride->username;
+}
 
 int get_ride_gender_stats_driver_account_creation(RIDE_GENDER_STATS ride) {
   return ride->driver_account_creation;
@@ -272,7 +284,8 @@ void update_genders_rides_by_age(CATALOG catalog, STATS stats, gpointer ride_id,
   }
   if (user_gender == driver_gender) {
     RIDE_GENDER_STATS to_insert = create_ride_gender_stats(
-        ride_id, driver_account_creation, user_account_creation);
+        ride_id, driver_id, username, driver_account_creation,
+        user_account_creation);
 
     if (user_gender == M) {
       g_array_append_val(male_rides_by_age, to_insert);
@@ -518,14 +531,13 @@ void free_rides_by_date(gpointer rides_of_the_day_gpointer) {
   RIDES_OF_THE_DAY rides_of_the_day =
       (RIDES_OF_THE_DAY)(rides_of_the_day_gpointer);
   GArray *array = rides_of_the_day->array;
-  int size = array->len;
-  for (int i = 0; i < size; i++) {
+
+  for (int i = 0; i < (int)array->len; i++) {
     GArray *temp = g_array_index(rides_of_the_day->array, GArray *, i);
-// GCC Complains it's unused but it is used two lines below
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-    GArray *copy = temp;
-    if (temp != NULL) g_array_free(temp, 1);
-    copy = malloc(sizeof(GArray *));
+
+    if (temp != NULL) {
+      g_array_free(temp, 1);
+    }
   }
 
   g_array_free(rides_of_the_day->array, 1);

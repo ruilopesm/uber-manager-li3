@@ -3,12 +3,96 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "drivers.h"
+#include "parser.h"
+#include "rides.h"
+#include "users.h"
+
+int setup_catalog_and_stats(CATALOG catalog, STATS stats, char *folder) {
+  char *users_filename = create_filename(folder, "/users.csv");
+  FILE *users_file = fopen(users_filename, "r");
+  if (users_file == NULL) {
+    return ERR_OPENING_USERS_FILE;
+  }
+
+  char *drivers_filename = create_filename(folder, "/drivers.csv");
+  FILE *drivers_file = fopen(drivers_filename, "r");
+  if (drivers_file == NULL) {
+    return ERR_OPENING_DRIVERS_FILE;
+  }
+
+  char *rides_filename = create_filename(folder, "/rides.csv");
+  FILE *rides_file = fopen(rides_filename, "r");
+  if (rides_file == NULL) {
+    return ERR_OPENING_RIDES_FILE;
+  }
+
+  parse_file(users_file, MAX_USER_TOKENS, insert_user, catalog, stats);
+  parse_file(drivers_file, MAX_DRIVER_TOKENS, insert_driver, catalog, stats);
+  parse_file(rides_file, MAX_RIDE_TOKENS, insert_ride, catalog, stats);
+
+  free(users_filename);
+  free(drivers_filename);
+  free(rides_filename);
+
+  fclose(users_file);
+  fclose(drivers_file);
+  fclose(rides_file);
+
+  return 0;
+}
+
+char *get_error_as_string(ERRORS error) {
+  switch (error) {
+    case ERR_OPENING_USERS_FILE:
+      return "Error opening users file!";
+
+    case ERR_OPENING_DRIVERS_FILE:
+      return "Error opening drivers file!";
+
+    case ERR_OPENING_RIDES_FILE:
+      return "Error opening rides file!";
+
+    case ERR_CREATING_DIRECTORY:
+      return "Error creating directory!";
+
+    case ERR_OPENING_QUERIES_FILE:
+      return "Error opening queries file!";
+
+    case ERR_OPENING_OUTPUT_FILE:
+      return "Error opening output file!";
+
+    default:
+      return "Unknown error.";
+  }
+}
+
 char *create_filename(char *folder, const char *string) {
   char *filename = malloc(sizeof(char) * (strlen(folder) + strlen(string) + 1));
   strcpy(filename, folder);
   strcat(filename, string);
 
   return filename;
+}
+
+int create_directory(char *folder) {
+  int ret = g_mkdir_with_parents(folder, 0777);
+
+  if (ret == -1) {
+    return ERR_CREATING_DIRECTORY;
+  }
+
+  return 0;
+}
+
+FILE *create_output_file(int queries_counter) {
+  char *filename = malloc(sizeof(char) * 256);
+  sprintf(filename, "Resultados/command%d_output.txt", queries_counter);
+
+  FILE *output_file = fopen(filename, "w");
+  free(filename);
+
+  return output_file;
 }
 
 const char *gender_to_string(int x) {
@@ -27,9 +111,9 @@ const char *pay_method_to_string(int x) {
     case CASH:
       return "cash";
     case CREDIT_CARD:
-      return "credit card";
+      return "credit_card";
     case DEBIT_CARD:
-      return "debit card";
+      return "debit_card";
   }
 
   return "NULL";
@@ -151,21 +235,6 @@ char *strip(char *string) {
   return stripped;
 }
 
-// function that edits the string to remove spaces and '\n' characters
-void edit_strip(char *string) {
-  int j = 0;
-  unsigned i;
-
-  for (i = 0; string[i] != '\0'; i++) {
-    if (string[i] != '\n' && string[i] != '\r' && string[i] != '\t' &&
-        string[i] != '\v' && string[i] != '\f') {
-      string[i - j] = string[i];
-    } else
-      j++;
-  }
-  string[i - j + 1] = '\0';
-}
-
 // Moves the date to the next day
 int increment_date(int date) {
   int date_year = date / 10000;
@@ -251,4 +320,14 @@ double string_to_float(char *string) {
     i++;
   }
   return value;
+}
+
+char *zfill_id(int *id) {
+  char *id_string = malloc(sizeof(char) * 13);
+  sprintf(id_string, "%d", *id);
+  char *id_string_zfilled = malloc(sizeof(char) * 13);
+  sprintf(id_string_zfilled, "%012d", *id);
+  free(id_string);
+
+  return id_string_zfilled;
 }

@@ -7,6 +7,8 @@
 #include "catalog.h"
 #include "stats.h"
 
+#define SEPARATOR ";"
+
 #define MAX_LINE_LENGTH 1024
 
 #define MAX_USER_TOKENS 7

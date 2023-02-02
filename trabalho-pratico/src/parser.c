@@ -27,23 +27,20 @@ void parse_file(FILE *file, int max_tokens, insert_function_pointer insert,
 
 char **parse_line(char *line, int max_tokens) {
   char **tokens = malloc(sizeof(char *) * max_tokens);
-  char comma[2] = ";";
-  char *temp = strstr(line, comma);
+  char *temp = strstr(line, SEPARATOR);
   char *token = NULL;
 
   int i = 0;
   while (temp != NULL) {
-    if (temp != line) {
-      token = line;
-    } else {
-      token = NULL;
-    }
+    token = temp != line ? line : NULL;
+
     tokens[i] = token;
     line = temp + 1;
     *temp = '\0';
-    temp = strstr(line, comma);
+    temp = strstr(line, SEPARATOR);
     i++;
   }
+
   token = line;
   tokens[i] = token;
 

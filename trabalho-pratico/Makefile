@@ -12,11 +12,10 @@ else ifeq ($(GRAPH), 1)
 else
 	FLAGS += -O3
 endif
-
-LIBS := -lm `pkg-config --libs glib-2.0`
-PKG_CONFIG := `pkg-config --cflags glib-2.0`
+LIBS := -lm `pkg-config --libs glib-2.0 ncursesw`
+PKG_CONFIG := `pkg-config --cflags glib-2.0 ncursesw`
 INC := -I includes/
-SRC := $(wildcard src/*.c)
+SRC := $(wildcard src/*.c src/views/*.c)
 OBJ := $(SRC:src/%.c=build/%.o)
 
 EXEC_TEST := programa-testes
@@ -25,8 +24,8 @@ INC_TEST := $(INC) -I lib/
 SRC_TEST := $(wildcard tests/*.c)
 OBJ_TEST := $(filter-out build/main.o, $(OBJ)) $(SRC_TEST:tests/%.c=build/%.o)
 
-BUILD_DIR := $(shell mkdir -p build)
-INCLUDE_FILES := $(wildcard includes/*.h)
+BUILD_DIR := $(shell mkdir -p build build/views)
+INCLUDE_FILES := $(wildcard includes/*.h includes/views/*.h)
 
 .SUFFIXES:
 
@@ -43,7 +42,7 @@ build/%.o: src/%.c
 rebuild: clean all
 
 .PHONY: test
-test: clean $(EXEC_TEST)
+test: $(EXEC_TEST)
 	./$(EXEC_TEST)
 
 $(EXEC_TEST): $(OBJ_TEST)
@@ -58,12 +57,10 @@ graph:
 
 .PHONY: clean
 clean:
-	@rm -f $(EXEC) ; echo "[Cleaning] programa-principal"
-	@rm -f $(EXEC_TEST) ; echo "[Cleaning] programa-testes"
-	@rm -rf build/*; echo "[Cleaning] build/"
-	@rm -f Resultados/* ; echo "[Cleaning] Resultados/"
-	@rm -f gprof.png ; echo "[Cleaning] gprof.png"
-	@rm -f gmon.out ; echo "[Cleaning] gmon.out"
+	@rm -f programa-principal ; echo "[Cleaning] programa-principal"
+	@rm -f programa-testes ; echo "[Cleaning] programa-testes"
+	@rm -rf build/ ; echo "[Cleaning] build/"
+	@rm -rf Resultados/ ; echo "[Cleaning] Resultados/"
 
 .PHONY: format
 format:
