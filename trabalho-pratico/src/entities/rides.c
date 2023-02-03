@@ -32,44 +32,33 @@ RIDE create_ride() {
   return ride;
 }
 
-void insert_ride(char **ride_params, CATALOG catalog, STATS stats) {
+void build_ride(char **ride_params, CATALOG catalog, STATS stats) {
   // If the input verification failed, we don't insert the ride
   if (!verify_ride_input(ride_params)) return;
 
   RIDE ride = create_ride();
-  GHashTable *rides_hash_table = get_catalog_rides(catalog);
 
-  GHashTable *user_code_hash = get_catalog_users_code(catalog);
   set_ride_id(ride, ride_params[0]);
   set_ride_date(ride, ride_params[1]);
   set_ride_driver(ride, ride_params[2]);
-  set_ride_user(ride, ride_params[3], user_code_hash);
-  set_ride_city(ride, ride_params[4], get_catalog_cities_code(catalog),
-                get_catalog_cities_reverse_lookup(catalog));
+  set_catalog_ride_user(catalog, ride, ride_params[3]);
+  set_catalog_ride_city(catalog, ride, ride_params[4]);
   set_ride_distance(ride, ride_params[5]);
   set_ride_score_user(ride, ride_params[6]);
   set_ride_score_driver(ride, ride_params[7]);
   set_ride_tip(ride, ride_params[8]);
 
-  GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
-  DRIVER driver = g_hash_table_lookup(drivers_hash_table, ride->driver);
+  DRIVER driver = get_driver_by_code(catalog, ride->driver);
   enum car_class car_class = get_driver_car_class(driver);
-
   double price = calculate_ride_price(ride->distance, car_class);
   set_ride_price(ride, price);
 
-  g_hash_table_insert(rides_hash_table, ride->id, ride);
-
-  insert_ride_by_date(ride, stats);
-  update_user_stats(catalog, ride->user, ride->distance, ride->score_user,
-                    ride->price, ride->tip, ride->date);
-  update_driver_stats(catalog, ride->driver, ride->score_driver, ride->price,
-                      ride->tip, ride->date);
-  upsert_city_driver_stats(stats, ride->city, ride->driver, ride->score_driver,
-                           ride->price);
-
-  update_genders_rides_by_age(catalog, stats, ride->id, ride->driver,
-                              ride->user);
+  insert_ride_and_update_catalog(
+      catalog, ride, ride->id, ride->user, ride->driver, ride->distance,
+      ride->score_user, ride->price, ride->tip, ride->date, ride->score_driver);
+  insert_ride_into_stats(stats, catalog, ride, ride->id, ride->driver,
+                         ride->user, ride->city, ride->score_driver,
+                         ride->price);
 }
 
 void set_ride_id(RIDE ride, char *id_string) {
@@ -100,29 +89,9 @@ void set_ride_driver(RIDE ride, char *driver_string) {
   ride->driver = GINT_TO_POINTER(driver_id);
 }
 
-void set_ride_user(RIDE ride, char *user_string, GHashTable *user_code_hash) {
-  gpointer user_code = g_hash_table_lookup(user_code_hash, user_string);
-  ride->user = user_code;
-}
+void set_ride_user(RIDE ride, gpointer user_code) { ride->user = user_code; }
 
-void set_ride_city(RIDE ride, char *city_string, GHashTable *city_code,
-                   GPtrArray *cities_reverse_lookup) {
-  static char cities_parsed = 0;
-  char *city_number;
-  city_number = g_hash_table_lookup(city_code, city_string);
-  if (city_number) {
-    ride->city = *city_number;
-  } else {
-    char *city_copy = strdup(city_string);
-    g_ptr_array_add(cities_reverse_lookup, city_copy);
-    city_number = malloc(sizeof(char));
-    *city_number = cities_parsed;
-    ride->city = cities_parsed;
-    cities_parsed++;
-    char *city_key = strdup(city_string);
-    g_hash_table_insert(city_code, city_key, city_number);
-  }
-}
+void set_ride_city(RIDE ride, char city) { ride->city = city; }
 
 void set_ride_distance(RIDE ride, char *distance_string) {
   ride->distance = string_to_int(distance_string);

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void parse_file(FILE *file, int max_tokens, insert_function_pointer insert,
+void parse_file(FILE *file, int max_tokens, build_function_pointer build,
                 CATALOG catalog, STATS stats) {
   char *line = malloc(sizeof(char) * MAX_LINE_LENGTH);
 
@@ -17,7 +17,7 @@ void parse_file(FILE *file, int max_tokens, insert_function_pointer insert,
     line[strlen(line) - 1] = '\0';
 
     char **tokens = parse_line(line, max_tokens);
-    insert(tokens, catalog, stats);
+    build(tokens, catalog, stats);
 
     free(tokens);
   }

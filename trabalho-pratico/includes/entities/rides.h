@@ -13,7 +13,7 @@ typedef struct ride *RIDE;
 
 RIDE create_ride();
 
-void insert_ride(char **ride_params, CATALOG catalog, STATS stats);
+void build_ride(char **ride_params, CATALOG catalog, STATS stats);
 
 void set_ride_id(RIDE ride, char *id_string);
 
@@ -21,10 +21,9 @@ void set_ride_date(RIDE ride, char *date_string);
 
 void set_ride_driver(RIDE ride, char *driver_string);
 
-void set_ride_user(RIDE ride, char *user_string, GHashTable *user_code_hash);
+void set_ride_user(RIDE ride, gpointer user);
 
-void set_ride_city(RIDE ride, char *city_string, GHashTable *city_code,
-                   GPtrArray *cities_reverse_lookup);
+void set_ride_city(RIDE ride, char city);
 
 void set_ride_distance(RIDE ride, char *distance_string);
 

@@ -31,16 +31,13 @@ USER create_user(void) {
   return new_user;
 }
 
-void insert_user(char **user_params, CATALOG catalog, STATS stats) {
+void build_user(char **user_params, CATALOG catalog, STATS stats) {
   // If the input verification failed, we don't insert the user
   if (!verify_user_input(user_params)) return;
 
-  GHashTable *users_hash_table = get_catalog_users(catalog);
   USER user = create_user();
 
-  GHashTable *users_code = get_catalog_users_code(catalog);
-  GPtrArray *users_reverse = get_catalog_users_reverse_lookup(catalog);
-  set_user_username(user, user_params[0], users_code, users_reverse);
+  set_catalog_user_username(catalog, user, user_params[0]);
   set_user_name(user, user_params[1]);
   set_user_gender(user, user_params[2]);
   set_user_birth_date(user, user_params[3]);
@@ -52,37 +49,16 @@ void insert_user(char **user_params, CATALOG catalog, STATS stats) {
   set_user_total_distance(user, 0);
   set_user_latest_ride(user, 0);
 
-  // udpate users array
-  GArray *users_array = get_top_users_by_total_distance(stats);
-  g_array_append_val(users_array, user);
-
-  g_hash_table_insert(users_hash_table, user->username, user);
-
-  (void)stats;  // To avoid the "unused variable" warning
+  insert_user(catalog, user, user->username);
+  insert_user_into_stats(stats, user);
 }
 
-void set_user_username(USER user, char *username_string, GHashTable *users_code,
-                       GPtrArray *users_reverse) {
-  static int users_parsed = 0;
-
-  // Creates the user_code and inserts it into the hash table
-  char *username = strdup(username_string);
-  gpointer user_code = GINT_TO_POINTER(users_parsed);
-  g_hash_table_insert(users_code, username, user_code);
-
-  // Inserts the username into the reverse search array
-  char *username_copy = strdup(username_string);
-  g_ptr_array_add(users_reverse, username_copy);
-
-  // Puts the user code into the user struct
-  gpointer username_code = GINT_TO_POINTER(users_parsed);
+void set_user_username(USER user, gpointer username_code) {
   user->username = username_code;
-  users_parsed++;
 }
 
 void set_user_name(USER user, char *name_string) {
-  char *name = strdup(name_string);
-  user->name = name;
+  user->name = strdup(name_string);
 }
 
 void set_user_gender(USER user, char *gender_string) {
@@ -163,71 +139,29 @@ void set_user_latest_ride(USER user, int latest_ride_date) {
   user->latest_ride = latest_ride_date;
 }
 
-int get_user_username(USER user) {
-  int username_copy = GPOINTER_TO_INT(user->username);
+int get_user_username(USER user) { return GPOINTER_TO_INT(user->username); }
 
-  return username_copy;
-}
+char *get_user_name(USER user) { return strdup(user->name); }
 
-char *get_user_name(USER user) {
-  char *name_copy = strdup(user->name);
+enum gender get_user_gender(USER user) { return user->gender; }
 
-  return name_copy;
-}
+int get_user_birth_date(USER user) { return user->birth_date; }
 
-enum gender get_user_gender(USER user) {
-  enum gender gender_copy = user->gender;
-
-  return gender_copy;
-}
-
-int get_user_birth_date(USER user) {
-  int birth_date_copy = user->birth_date;
-
-  return birth_date_copy;
-}
-
-int get_user_account_creation(USER user) {
-  int account_creation_copy = user->account_creation;
-
-  return account_creation_copy;
-}
+int get_user_account_creation(USER user) { return user->account_creation; }
 
 enum account_status get_user_account_status(USER user) {
-  enum account_status account_status_copy = user->account_status;
-
-  return account_status_copy;
+  return user->account_status;
 }
 
-int get_user_number_of_rides(USER user) {
-  int number_of_rides_copy = user->number_of_rides;
+int get_user_number_of_rides(USER user) { return user->number_of_rides; }
 
-  return number_of_rides_copy;
-}
+double get_user_total_rating(USER user) { return user->total_rating; }
 
-double get_user_total_rating(USER user) {
-  double total_rating_copy = user->total_rating;
+double get_user_total_spent(USER user) { return user->total_spent; }
 
-  return total_rating_copy;
-}
+int get_user_total_distance(USER user) { return user->total_distance; }
 
-double get_user_total_spent(USER user) {
-  double total_spent_copy = user->total_spent;
-
-  return total_spent_copy;
-}
-
-int get_user_total_distance(USER user) {
-  int total_distance_copy = user->total_distance;
-
-  return total_distance_copy;
-}
-
-int get_user_latest_ride(USER user) {
-  int latest_ride_copy = user->latest_ride;
-
-  return latest_ride_copy;
-}
+int get_user_latest_ride(USER user) { return user->latest_ride; }
 
 void free_user(USER user) {
   free(user->name);

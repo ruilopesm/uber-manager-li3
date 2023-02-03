@@ -15,11 +15,9 @@
 #define MAX_DRIVER_TOKENS 9
 #define MAX_RIDE_TOKENS 10
 
-FILE *open_file(char *filename);
+typedef void (*build_function_pointer)(char **, CATALOG, STATS);
 
-typedef void (*insert_function_pointer)(char **, CATALOG, STATS);
-
-void parse_file(FILE *file, int max_tokens, insert_function_pointer insert,
+void parse_file(FILE *file, int max_tokens, build_function_pointer build,
                 CATALOG catalog, STATS stats);
 
 char **parse_line(char *line, int token_count);

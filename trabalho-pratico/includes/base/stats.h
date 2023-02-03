@@ -63,11 +63,13 @@ GArray *get_male_rides_by_age(STATS stats);
 
 GArray *get_female_rides_by_age(STATS stats);
 
-void update_user_stats(CATALOG catalog, gpointer username, int distance,
-                       double rating, double price, double tip, int date);
+void insert_user_into_stats(STATS stats, USER user);
 
-void update_driver_stats(CATALOG catalog, gpointer driver_id, double rating,
-                         double price, double tip, int date);
+void insert_driver_into_stats(STATS stats, DRIVER driver);
+
+void insert_ride_into_stats(STATS stats, CATALOG catalog, RIDE ride,
+                            gpointer id, gpointer driver, gpointer user,
+                            int city, double score_driver, double price);
 
 void upsert_city_driver_stats(STATS stats, int city, gpointer driver_id,
                               double driver_score, double ride_price);

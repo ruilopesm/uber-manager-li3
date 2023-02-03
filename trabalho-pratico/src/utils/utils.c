@@ -28,9 +28,9 @@ int setup_catalog_and_stats(CATALOG catalog, STATS stats, char *folder) {
     return ERR_OPENING_RIDES_FILE;
   }
 
-  parse_file(users_file, MAX_USER_TOKENS, insert_user, catalog, stats);
-  parse_file(drivers_file, MAX_DRIVER_TOKENS, insert_driver, catalog, stats);
-  parse_file(rides_file, MAX_RIDE_TOKENS, insert_ride, catalog, stats);
+  parse_file(users_file, MAX_USER_TOKENS, build_user, catalog, stats);
+  parse_file(drivers_file, MAX_DRIVER_TOKENS, build_driver, catalog, stats);
+  parse_file(rides_file, MAX_RIDE_TOKENS, build_ride, catalog, stats);
 
   free(users_filename);
   free(drivers_filename);

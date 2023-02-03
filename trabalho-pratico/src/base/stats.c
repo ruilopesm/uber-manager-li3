@@ -169,32 +169,20 @@ GArray *get_female_rides_by_age(STATS stats) {
   return stats->female_rides_by_age;
 }
 
-void update_user_stats(CATALOG catalog, gpointer username, int distance,
-                       double rating, double price, double tip, int date) {
-  USER user = get_user_by_code(catalog, username);
-
-  set_user_number_of_rides(user, get_user_number_of_rides(user) + 1);
-  set_user_total_rating(user, get_user_total_rating(user) + rating);
-  set_user_total_spent(user, get_user_total_spent(user) + price + tip);
-  set_user_total_distance(user, get_user_total_distance(user) + distance);
-
-  if ((date - get_user_latest_ride(user)) > 0) {
-    set_user_latest_ride(user, date);
-  }
+void insert_user_into_stats(STATS stats, USER user) {
+  g_array_append_val(stats->top_users_by_total_distance, user);
 }
 
-void update_driver_stats(CATALOG catalog, gpointer driver_id, double rating,
-                         double price, double tip, int date) {
-  DRIVER driver = get_driver_by_code(catalog, driver_id);
+void insert_driver_into_stats(STATS stats, DRIVER driver) {
+  g_array_append_val(stats->top_drivers_by_average_score, driver);
+}
 
-  set_driver_number_of_rides(driver, get_driver_number_of_rides(driver) + 1);
-  set_driver_total_rating(driver, get_driver_total_rating(driver) + rating);
-  set_driver_total_earned(driver,
-                          get_driver_total_earned(driver) + price + tip);
-
-  if ((date - get_driver_latest_ride(driver)) > 0) {
-    set_driver_latest_ride(driver, date);
-  }
+void insert_ride_into_stats(STATS stats, CATALOG catalog, RIDE ride,
+                            gpointer id, gpointer driver, gpointer user,
+                            int city, double score_driver, double price) {
+  insert_ride_by_date(ride, stats);
+  upsert_city_driver_stats(stats, city, driver, score_driver, price);
+  update_genders_rides_by_age(catalog, stats, id, driver, user);
 }
 
 void upsert_city_driver_stats(STATS stats, int city, gpointer driver_id,

@@ -13,10 +13,9 @@ typedef struct user *USER;
 
 USER create_user(void);
 
-void insert_user(char **user_params, CATALOG catalog, STATS stats);
+void build_user(char **user_params, CATALOG catalog, STATS stats);
 
-void set_user_username(USER user, char *username_string, GHashTable *users_code,
-                       GPtrArray *users_reverse);
+void set_user_username(USER user, gpointer username);
 
 void set_user_name(USER user, char *name_string);
 

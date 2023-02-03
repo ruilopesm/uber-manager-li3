@@ -13,7 +13,7 @@ typedef struct driver *DRIVER;
 
 DRIVER create_driver(void);
 
-void insert_driver(char **driver_params, CATALOG catalog, STATS stats);
+void build_driver(char **driver_params, CATALOG catalog, STATS stats);
 
 void set_driver_id(DRIVER driver, char *id_string);
 

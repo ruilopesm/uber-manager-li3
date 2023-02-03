@@ -31,12 +31,11 @@ DRIVER create_driver(void) {
   return new_driver;
 }
 
-void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
+void build_driver(char **driver_params, CATALOG catalog, STATS stats) {
   // If the input verification failed, we don't insert the driver
   if (!verify_driver_input(driver_params)) return;
 
   DRIVER driver = create_driver();
-  GHashTable *drivers_hash_table = get_catalog_drivers(catalog);
 
   set_driver_id(driver, driver_params[0]);
   set_driver_name(driver, driver_params[1]);
@@ -50,13 +49,8 @@ void insert_driver(char **driver_params, CATALOG catalog, STATS stats) {
   set_driver_total_earned(driver, 0.0);
   set_driver_latest_ride(driver, 0);
 
-  // udpate drivers array
-  GArray *drivers_array = get_top_drivers_by_average_score(stats);
-  g_array_append_val(drivers_array, driver);
-
-  g_hash_table_insert(drivers_hash_table, driver->id, driver);
-
-  (void)stats;  // To avoid the "unused variable" warning
+  insert_driver(catalog, driver, driver->id);
+  insert_driver_into_stats(stats, driver);
 }
 
 void set_driver_id(DRIVER driver, char *id_string) {
