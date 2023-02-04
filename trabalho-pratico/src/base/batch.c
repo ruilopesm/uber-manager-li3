@@ -30,10 +30,11 @@ int batch(char **argv) {
     return ERR_CREATING_DIRECTORY;
   }
 
-  char *line = malloc(sizeof(char) * MAX_LINE_LENGTH);
+  char *line = NULL;
+  size_t line_size = 0;
   int queries_counter = 1;
 
-  while (fgets(line, MAX_LINE_LENGTH, queries_file)) {
+  while (getline(&line, &line_size, queries_file)) {
     // Remove \n from the end of line
     line[strlen(line) - 1] = '\0';
 

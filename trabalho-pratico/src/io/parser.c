@@ -7,12 +7,13 @@
 
 void parse_file(FILE *file, int max_tokens, build_function_pointer build,
                 CATALOG catalog, STATS stats) {
-  char *line = malloc(sizeof(char) * MAX_LINE_LENGTH);
+  char *line = NULL;
+  size_t line_size = 0;
 
   // Skip first line
-  fgets(line, MAX_LINE_LENGTH, file);
+  getline(&line, &line_size, file);
 
-  while (fgets(line, MAX_LINE_LENGTH, file)) {
+  while (getline(&line, &line_size, file) != -1) {
     // Remove the \n from the end of the line
     line[strlen(line) - 1] = '\0';
 
