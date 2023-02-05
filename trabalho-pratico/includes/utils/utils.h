@@ -177,6 +177,23 @@ int date_string_to_int(char *date_string);
 enum gender string_to_gender(char *gender);
 
 /**
+ * @brief Function that converts a string to an array of strings
+ *
+ * @param line The string of type `char *`
+ * @return char** The array of strings
+ */
+char **string_to_array(char *line);
+
+/**
+ * @brief Function that compares two files
+ *
+ * @param file1 The first file path of type `char *`
+ * @param file2 The second file path of type `char *`
+ * @return int 1 if the files are equal, 0 otherwise
+ */
+int compare_files(char *file1, char *file2);
+
+/**
  * @brief Function that converts a string to a valid integer
  *
  * @param string The string of type `char *`

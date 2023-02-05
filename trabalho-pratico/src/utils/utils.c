@@ -259,6 +259,52 @@ enum gender string_to_gender(char *gender) {
   }
 }
 
+char **string_to_array(char *line) {
+  char **tokens = malloc(sizeof(char *) * 4);
+  char *temp = strstr(line, " ");
+  char *token = NULL;
+
+  int i = 0;
+  while (temp != NULL) {
+    token = temp != line ? line : NULL;
+
+    tokens[i] = token;
+    line = temp + 1;
+    *temp = '\0';
+    temp = strstr(line, " ");
+    i++;
+  }
+
+  token = line;
+  tokens[i] = token;
+
+  return tokens;
+}
+
+int compare_files(char *path1, char *path2) {
+  FILE *file1 = fopen(path1, "r");
+  FILE *file2 = fopen(path2, "r");
+
+  if (file1 == NULL || file2 == NULL) {
+    return 0;
+  }
+
+  int equal = 1;
+  char c1, c2;
+
+  while ((c1 = fgetc(file1)) != EOF && (c2 = fgetc(file2)) != EOF) {
+    if (c1 != c2) {
+      equal = 0;
+      break;
+    }
+  }
+
+  fclose(file1);
+  fclose(file2);
+
+  return equal;
+}
+
 int string_to_int(char *string) {
   int value = 0;
   for (int i = 0; string[i] != '\0'; i++) {

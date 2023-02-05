@@ -1,0 +1,25 @@
+name: test
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+   testing-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Download dataset from Google Drive
+        run: |
+          # Fetch dataset
+          wget --no-check-certificate "https://drive.google.com/uc?export=download&id=1zvgeU0aG2HbcKYQFJhzUYvaXbuUfDci0" -O dataset.tar.gz
+          tar -xvf dataset.tar.gz -C trabalho-pratico
+          
+          # Fetch expected results
+          wget --no-check-certificate "https://drive.google.com/uc?export=download&id=1StFlCOhHL0AUR4inLMGl3PDx1i10oZcS" -O results.tar.gz
+          mkdir -p trabalho-pratico/tests/results && tar -xvf results.tar.gz -C trabalho-pratico/tests/results
+
+      - name: Test project
+        run: cd trabalho-pratico && make all && ./programa-testes . <<< echo "y"

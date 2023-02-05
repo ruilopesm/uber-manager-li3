@@ -57,8 +57,12 @@ dkms.conf
 *.csv
 data/
 Resultados/
+tests/results/
 .vscode/
 massif*
 gprof.png
+-s
+functional
+*.zip
 doc/html
 tests/results

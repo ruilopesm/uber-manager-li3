@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
   } else if (argc == 1) {
     interactive();
   } else {
-    printf("Batch mode: %s\n", argv[0]);
-    printf("Interactive mode: %s <folder> <queries-file>\n", argv[0]);
+    printf("Batch mode: %s <dataset> <queries-file>\n", argv[0]);
+    printf("Interactive mode: %s\n", argv[0]);
     return 1;
   }
   end = clock();
