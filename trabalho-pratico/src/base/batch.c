@@ -34,7 +34,7 @@ int batch(char **argv) {
   size_t line_size = 0;
   int queries_counter = 1;
 
-  while (getline(&line, &line_size, queries_file)) {
+  while (getline(&line, &line_size, queries_file) != -1) {
     // Remove \n from the end of line
     line[strlen(line) - 1] = '\0';
 
