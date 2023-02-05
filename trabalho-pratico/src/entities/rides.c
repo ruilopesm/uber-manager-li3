@@ -1,12 +1,14 @@
 #include "entities/rides.h"
 
 #include <glib.h>
-#include <regex.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "base/catalog.h"
 #include "base/stats.h"
+#include "catalogs/drivers_catalog.h"
+#include "catalogs/join_catalog.h"
+#include "catalogs/rides_catalog.h"
+#include "catalogs/users_catalog.h"
 #include "entities/drivers.h"
 #include "entities/users.h"
 #include "io/input.h"
@@ -32,33 +34,46 @@ RIDE create_ride() {
   return ride;
 }
 
-void build_ride(char **ride_params, CATALOG catalog, STATS stats) {
+void build_ride(char **ride_params, void *catalog, STATS stats) {
   // If the input verification failed, we don't insert the ride
   if (!verify_ride_input(ride_params)) return;
 
+  JOIN_CATALOG join_catalog = (JOIN_CATALOG)catalog;
+
   RIDE ride = create_ride();
+  RIDES_CATALOG rides_catalog = get_rides_catalog(join_catalog);
 
   set_ride_id(ride, ride_params[0]);
   set_ride_date(ride, ride_params[1]);
   set_ride_driver(ride, ride_params[2]);
-  set_catalog_ride_user(catalog, ride, ride_params[3]);
-  set_catalog_ride_city(catalog, ride, ride_params[4]);
+  set_catalog_ride_city(rides_catalog, ride, ride_params[4]);
   set_ride_distance(ride, ride_params[5]);
   set_ride_score_user(ride, ride_params[6]);
   set_ride_score_driver(ride, ride_params[7]);
   set_ride_tip(ride, ride_params[8]);
 
-  DRIVER driver = get_driver_by_code(catalog, ride->driver);
+  USERS_CATALOG users_catalog = get_users_catalog(join_catalog);
+  gpointer user_code =
+      get_user_code_from_username(users_catalog, ride_params[3]);
+  set_ride_user(ride, user_code);
+
+  DRIVERS_CATALOG drivers_catalog = get_drivers_catalog(join_catalog);
+  DRIVER driver = get_driver_by_code(drivers_catalog, ride->driver);
   enum car_class car_class = get_driver_car_class(driver);
   double price = calculate_ride_price(ride->distance, car_class);
   set_ride_price(ride, price);
 
-  insert_ride_and_update_catalog(
-      catalog, ride, ride->id, ride->user, ride->driver, ride->distance,
-      ride->score_user, ride->price, ride->tip, ride->date, ride->score_driver);
-  insert_ride_into_stats(stats, catalog, ride, ride->id, ride->driver,
+  insert_ride(rides_catalog, ride, ride->id);
+  insert_ride_into_stats(stats, join_catalog, ride, ride->id, ride->driver,
                          ride->user, ride->city, ride->score_driver,
                          ride->price);
+
+  // At this moment we have all the information we need to update the user and
+  // the driver
+  update_user(users_catalog, ride->user, ride->distance, ride->score_user,
+              ride->price, ride->tip, ride->date);
+  update_driver(drivers_catalog, ride->driver, ride->score_driver, ride->price,
+                ride->tip, ride->date);
 }
 
 void set_ride_id(RIDE ride, char *id_string) {

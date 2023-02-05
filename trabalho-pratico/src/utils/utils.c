@@ -9,7 +9,7 @@
 #include "entities/users.h"
 #include "io/parser.h"
 
-int setup_catalog_and_stats(CATALOG catalog, STATS stats, char *folder) {
+int setup_catalog_and_stats(JOIN_CATALOG catalog, STATS stats, char *folder) {
   char *users_filename = create_filename(folder, "/users.csv");
   FILE *users_file = fopen(users_filename, "r");
   if (users_file == NULL) {
@@ -28,8 +28,13 @@ int setup_catalog_and_stats(CATALOG catalog, STATS stats, char *folder) {
     return ERR_OPENING_RIDES_FILE;
   }
 
-  parse_file(users_file, MAX_USER_TOKENS, build_user, catalog, stats);
-  parse_file(drivers_file, MAX_DRIVER_TOKENS, build_driver, catalog, stats);
+  USERS_CATALOG users_catalog = get_users_catalog(catalog);
+  parse_file(users_file, MAX_USER_TOKENS, build_user, users_catalog, stats);
+
+  DRIVERS_CATALOG drivers_catalog = get_drivers_catalog(catalog);
+  parse_file(drivers_file, MAX_DRIVER_TOKENS, build_driver, drivers_catalog,
+             stats);
+
   parse_file(rides_file, MAX_RIDE_TOKENS, build_ride, catalog, stats);
 
   free(users_filename);
@@ -102,19 +107,6 @@ const char *gender_to_string(int x) {
       return "M";
     case F:
       return "F";
-  }
-
-  return "NULL";
-}
-
-const char *pay_method_to_string(int x) {
-  switch ((enum pay_method)x) {
-    case CASH:
-      return "cash";
-    case CREDIT_CARD:
-      return "credit_card";
-    case DEBIT_CARD:
-      return "debit_card";
   }
 
   return "NULL";

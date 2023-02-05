@@ -58,7 +58,7 @@ void confirm_and_load(MANAGER manager, WINDOW *win, char *input) {
     change_page_and_cleanup_window(manager, LOAD_DATASET, win);
     load_dataset(manager);
   } else {
-    CATALOG catalog = get_catalog(manager);
+    JOIN_CATALOG catalog = get_catalog(manager);
     STATS stats = get_stats(manager);
     int ret = setup_catalog_and_stats(catalog, stats, input);
 

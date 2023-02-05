@@ -4,7 +4,6 @@
 #include <glib.h>
 #include <stdio.h>
 
-#include "base/catalog.h"
 #include "base/stats.h"
 
 #define SEPARATOR ";"
@@ -15,10 +14,10 @@
 #define MAX_DRIVER_TOKENS 9
 #define MAX_RIDE_TOKENS 10
 
-typedef void (*build_function_pointer)(char **, CATALOG, STATS);
+typedef void (*build_function_pointer)(char **, void *, STATS);
 
 void parse_file(FILE *file, int max_tokens, build_function_pointer build,
-                CATALOG catalog, STATS stats);
+                void *catalog, STATS stats);
 
 char **parse_line(char *line, int token_count);
 

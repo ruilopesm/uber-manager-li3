@@ -5,9 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "base/catalog.h"
 #include "base/stats.h"
+#include "catalogs/drivers_catalog.h"
 #include "io/input.h"
+#include "utils/utils.h"
 
 struct driver {
   gpointer id;
@@ -31,11 +32,12 @@ DRIVER create_driver(void) {
   return new_driver;
 }
 
-void build_driver(char **driver_params, CATALOG catalog, STATS stats) {
+void build_driver(char **driver_params, void *catalog, STATS stats) {
   // If the input verification failed, we don't insert the driver
   if (!verify_driver_input(driver_params)) return;
 
   DRIVER driver = create_driver();
+  DRIVERS_CATALOG drivers_catalog = (DRIVERS_CATALOG)catalog;
 
   set_driver_id(driver, driver_params[0]);
   set_driver_name(driver, driver_params[1]);
@@ -49,7 +51,7 @@ void build_driver(char **driver_params, CATALOG catalog, STATS stats) {
   set_driver_total_earned(driver, 0.0);
   set_driver_latest_ride(driver, 0);
 
-  insert_driver(catalog, driver, driver->id);
+  insert_driver(drivers_catalog, driver, driver->id);
   insert_driver_into_stats(stats, driver);
 }
 

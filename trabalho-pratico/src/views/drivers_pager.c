@@ -4,9 +4,9 @@
 #include <ncurses.h>
 #include <stdbool.h>
 
-#include "base/catalog.h"
 #include "base/interactive.h"
 #include "base/stats.h"
+#include "catalogs/join_catalog.h"
 #include "entities/drivers.h"
 #include "utils/components.h"
 #include "utils/utils.h"
@@ -25,8 +25,7 @@ void drivers_pager(MANAGER manager) {
   int y, x;
   getmaxyx(win, y, x);
 
-  CATALOG catalog = get_catalog(manager);
-  GHashTable *drivers = get_catalog_drivers(catalog);
+  GHashTable *drivers = NULL;
 
   int current_page = 0;
   int drivers_per_page = y - 5;

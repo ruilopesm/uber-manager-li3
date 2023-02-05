@@ -3,7 +3,6 @@
 
 #include <glib.h>
 
-#include "base/catalog.h"
 #include "base/stats.h"
 #include "utils/utils.h"
 
@@ -11,9 +10,11 @@
 
 typedef struct driver *DRIVER;
 
+typedef struct stats *STATS;  // Forward declaration
+
 DRIVER create_driver(void);
 
-void build_driver(char **driver_params, CATALOG catalog, STATS stats);
+void build_driver(char **driver_params, void *catalog, STATS stats);
 
 void set_driver_id(DRIVER driver, char *id_string);
 

@@ -3,7 +3,7 @@
 
 #include <glib.h>
 
-#include "base/catalog.h"
+#include "catalogs/join_catalog.h"
 
 typedef struct stats *STATS;
 
@@ -21,7 +21,13 @@ typedef struct ride_gender_stats *RIDE_GENDER_STATS;
 
 typedef struct rides_of_the_day *RIDES_OF_THE_DAY;
 
-typedef struct ride *RIDE;  // To not cause conflicts
+typedef struct join_catalog *JOIN_CATALOG;  // Forward declaration
+
+typedef struct user *USER;  // Forward declaration
+
+typedef struct driver *DRIVER;  // Forward declaration
+
+typedef struct ride *RIDE;  // Forward declaration
 
 STATS create_stats(void);
 
@@ -67,15 +73,16 @@ void insert_user_into_stats(STATS stats, USER user);
 
 void insert_driver_into_stats(STATS stats, DRIVER driver);
 
-void insert_ride_into_stats(STATS stats, CATALOG catalog, RIDE ride,
+void insert_ride_into_stats(STATS stats, JOIN_CATALOG catalog, RIDE ride,
                             gpointer id, gpointer driver, gpointer user,
                             int city, double score_driver, double price);
 
 void upsert_city_driver_stats(STATS stats, int city, gpointer driver_id,
                               double driver_score, double ride_price);
 
-void update_genders_rides_by_age(CATALOG catalog, STATS stats, gpointer ride_id,
-                                 gpointer driver_id, gpointer username);
+void update_genders_rides_by_age(JOIN_CATALOG catalog, STATS stats,
+                                 gpointer ride_id, gpointer driver_id,
+                                 gpointer username);
 
 RIDE_GENDER_STATS create_ride_gender_stats(gpointer ride_id, gpointer driver_id,
                                            gpointer username,

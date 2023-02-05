@@ -5,18 +5,20 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "base/catalog.h"
-#include "base/stats.h"
-
-#define MASTER_DATE "09/10/2022"
-
 enum gender { M, F };
 
-enum pay_method { CASH, CREDIT_CARD, DEBIT_CARD };
+enum car_class { BASIC, GREEN, PREMIUM };
 
 enum account_status { ACTIVE, INACTIVE };
 
-enum car_class { BASIC, GREEN, PREMIUM };
+#include "base/stats.h"
+#include "catalogs/join_catalog.h"
+
+typedef struct join_catalog *JOIN_CATALOG;  // Forward declaration
+
+typedef struct stats *STATS;  // Forward declaration
+
+#define MASTER_DATE "09/10/2022"
 
 typedef enum errors {
   ERR_OPENING_USERS_FILE = 1,
@@ -27,7 +29,7 @@ typedef enum errors {
   ERR_OPENING_OUTPUT_FILE = 6,
 } ERRORS;
 
-int setup_catalog_and_stats(CATALOG catalog, STATS stats, char *folder);
+int setup_catalog_and_stats(JOIN_CATALOG catalog, STATS stats, char *folder);
 
 char *get_error_as_string(ERRORS error);
 
@@ -42,8 +44,6 @@ const char *gender_to_string(int x);
 const char *account_status_to_string(int x);
 
 const char *car_class_to_string(int x);
-
-const char *pay_method_to_string(int x);
 
 int calculate_age(int birth_date);
 

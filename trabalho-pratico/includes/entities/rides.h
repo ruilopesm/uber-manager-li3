@@ -3,7 +3,6 @@
 
 #include <glib.h>
 
-#include "base/catalog.h"
 #include "base/stats.h"
 #include "utils/utils.h"
 
@@ -13,7 +12,7 @@ typedef struct ride *RIDE;
 
 RIDE create_ride();
 
-void build_ride(char **ride_params, CATALOG catalog, STATS stats);
+void build_ride(char **ride_params, void *catalog, STATS stats);
 
 void set_ride_id(RIDE ride, char *id_string);
 

@@ -4,9 +4,9 @@
 #include <ncurses.h>
 #include <stdbool.h>
 
-#include "base/catalog.h"
 #include "base/interactive.h"
 #include "base/stats.h"
+#include "catalogs/join_catalog.h"
 #include "entities/rides.h"
 #include "utils/components.h"
 #include "utils/utils.h"
@@ -25,11 +25,9 @@ void rides_pager(MANAGER manager) {
   int y, x;
   getmaxyx(win, y, x);
 
-  CATALOG catalog = get_catalog(manager);
-  GHashTable *rides = get_catalog_rides(catalog);
-  GPtrArray *cities_reverse_lookup = get_catalog_cities_reverse_lookup(catalog);
-  GPtrArray *users_reverse_lookup = get_catalog_users_reverse_lookup(catalog);
-
+  GHashTable *rides = NULL;
+  GPtrArray *cities_reverse_lookup = NULL;
+  GPtrArray *users_reverse_lookup = NULL;
   int current_page = 0;
   int rides_per_page = y - 5;
   int max_pages = g_hash_table_size(rides) / rides_per_page;

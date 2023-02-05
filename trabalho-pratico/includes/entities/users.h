@@ -3,7 +3,6 @@
 
 #include <glib.h>
 
-#include "base/catalog.h"
 #include "base/stats.h"
 #include "utils/utils.h"
 
@@ -13,7 +12,7 @@ typedef struct user *USER;
 
 USER create_user(void);
 
-void build_user(char **user_params, CATALOG catalog, STATS stats);
+void build_user(char **user_params, void *catalog, STATS stats);
 
 void set_user_username(USER user, gpointer username);
 

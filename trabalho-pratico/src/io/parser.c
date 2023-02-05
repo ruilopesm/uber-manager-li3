@@ -6,7 +6,7 @@
 #include <string.h>
 
 void parse_file(FILE *file, int max_tokens, build_function_pointer build,
-                CATALOG catalog, STATS stats) {
+                void *catalog, STATS stats) {
   char *line = NULL;
   size_t line_size = 0;
 

@@ -1,12 +1,11 @@
 #include "base/stats.h"
 
 #include <glib.h>
-/* #include <malloc.h> */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "base/catalog.h"
 #include "base/stats.h"
+#include "catalogs/join_catalog.h"
 #include "entities/drivers.h"
 #include "entities/rides.h"
 #include "entities/users.h"
@@ -177,7 +176,7 @@ void insert_driver_into_stats(STATS stats, DRIVER driver) {
   g_array_append_val(stats->top_drivers_by_average_score, driver);
 }
 
-void insert_ride_into_stats(STATS stats, CATALOG catalog, RIDE ride,
+void insert_ride_into_stats(STATS stats, JOIN_CATALOG catalog, RIDE ride,
                             gpointer id, gpointer driver, gpointer user,
                             int city, double score_driver, double price) {
   insert_ride_by_date(ride, stats);
@@ -251,16 +250,19 @@ int get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride) {
   return ride->user_account_creation;
 }
 
-void update_genders_rides_by_age(CATALOG catalog, STATS stats, gpointer ride_id,
-                                 gpointer driver_id, gpointer username) {
+void update_genders_rides_by_age(JOIN_CATALOG catalog, STATS stats,
+                                 gpointer ride_id, gpointer driver_id,
+                                 gpointer username) {
   GArray *male_rides_by_age = get_male_rides_by_age(stats);
   GArray *female_rides_by_age = get_female_rides_by_age(stats);
 
-  USER user = get_user_by_code(catalog, username);
+  USERS_CATALOG users_catalog = get_users_catalog(catalog);
+  USER user = get_user_by_code(users_catalog, username);
   enum gender user_gender = get_user_gender(user);
   int user_account_creation = get_user_account_creation(user);
 
-  DRIVER driver = get_driver_by_code(catalog, driver_id);
+  DRIVERS_CATALOG drivers_catalog = get_drivers_catalog(catalog);
+  DRIVER driver = get_driver_by_code(drivers_catalog, driver_id);
   enum gender driver_gender = get_driver_gender(driver);
   int driver_account_creation = get_driver_account_creation(driver);
 
@@ -268,6 +270,7 @@ void update_genders_rides_by_age(CATALOG catalog, STATS stats, gpointer ride_id,
       get_user_account_status(user) == INACTIVE) {
     return;
   }
+
   if (user_gender == driver_gender) {
     RIDE_GENDER_STATS to_insert = create_ride_gender_stats(
         ride_id, driver_id, username, driver_account_creation,
@@ -333,9 +336,12 @@ gint compare_users_by_total_distance(gconstpointer a, gconstpointer b,
   int username_code_a = get_user_username(user_a);
   int username_code_b = get_user_username(user_b);
 
-  CATALOG catalog = (CATALOG)data;
-  char *username_a = get_username_from_code(catalog, username_code_a);
-  char *username_b = get_username_from_code(catalog, username_code_b);
+  JOIN_CATALOG catalog = (JOIN_CATALOG)data;
+  USERS_CATALOG users_catalog = get_users_catalog(catalog);
+  char *username_a =
+      get_username_from_code(users_catalog, GINT_TO_POINTER(username_code_a));
+  char *username_b =
+      get_username_from_code(users_catalog, GINT_TO_POINTER(username_code_b));
 
   int to_return = strcmp(username_a, username_b);
 

@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "base/catalog.h"
 #include "base/stats.h"
+#include "catalogs/users_catalog.h"
 #include "io/input.h"
 
 struct user {
@@ -31,11 +31,12 @@ USER create_user(void) {
   return new_user;
 }
 
-void build_user(char **user_params, CATALOG catalog, STATS stats) {
+void build_user(char **user_params, void *catalog, STATS stats) {
   // If the input verification failed, we don't insert the user
   if (!verify_user_input(user_params)) return;
 
   USER user = create_user();
+  USERS_CATALOG users_catalog = (USERS_CATALOG)catalog;
 
   set_catalog_user_username(catalog, user, user_params[0]);
   set_user_name(user, user_params[1]);
@@ -49,7 +50,7 @@ void build_user(char **user_params, CATALOG catalog, STATS stats) {
   set_user_total_distance(user, 0);
   set_user_latest_ride(user, 0);
 
-  insert_user(catalog, user, user->username);
+  insert_user(users_catalog, user, user->username);
   insert_user_into_stats(stats, user);
 }
 

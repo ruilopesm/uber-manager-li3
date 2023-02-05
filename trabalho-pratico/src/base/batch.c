@@ -1,20 +1,15 @@
 #include "base/batch.h"
 
-#include "base/catalog.h"
-#include "base/querier.h"
-#include "base/stats.h"
-#include "entities/drivers.h"
-#include "entities/rides.h"
-#include "entities/users.h"
-#include "io/output.h"
-#include "io/parser.h"
-#include "utils/utils.h"
-
 int batch(char **argv) {
-  CATALOG catalog = create_catalog();
+  // Catalogs and stats part
+  USERS_CATALOG users_catalog = create_users_catalog();
+  DRIVERS_CATALOG drivers_catalog = create_drivers_catalog();
+  RIDES_CATALOG rides_catalog = create_rides_catalog();
+  JOIN_CATALOG join_catalog =
+      create_join_catalog(users_catalog, drivers_catalog, rides_catalog);
   STATS stats = create_stats();
 
-  if (setup_catalog_and_stats(catalog, stats, argv[1]) == -1) {
+  if (setup_catalog_and_stats(join_catalog, stats, argv[1]) == -1) {
     return -1;
   }
 
@@ -38,7 +33,7 @@ int batch(char **argv) {
     // Remove \n from the end of line
     line[strlen(line) - 1] = '\0';
 
-    void *result = querier(catalog, stats, line);
+    void *result = querier(join_catalog, stats, line);
 
     FILE *output_file = create_output_file(queries_counter);
     if (output_file == NULL) {
@@ -55,7 +50,10 @@ int batch(char **argv) {
   free(line);
   fclose(queries_file);
 
-  free_catalog(catalog);
+  free_users_catalog(users_catalog);
+  free_drivers_catalog(drivers_catalog);
+  free_rides_catalog(rides_catalog);
+  free_join_catalog(join_catalog);
   free_stats(stats);
 
   return 0;

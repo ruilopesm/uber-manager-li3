@@ -24,7 +24,7 @@ INC_TEST := $(INC) -I lib/
 SRC_TEST := $(shell find tests/ -name "*.c")
 OBJ_TEST := $(filter-out build/main.o, $(OBJ)) $(SRC_TEST:tests/%.c=build/%.o)
 
-BUILD_DIR := $(shell mkdir -p build/views build/base build/io build/entities build/utils)
+BUILD_DIR := $(shell mkdir -p build/views build/base build/io build/entities build/utils build/catalogs)
 INCLUDE_FILES := $(shell find includes/ -name "*.h")
 
 .SUFFIXES:

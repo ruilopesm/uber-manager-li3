@@ -4,9 +4,9 @@
 #include <ncurses.h>
 #include <stdbool.h>
 
-#include "base/catalog.h"
 #include "base/interactive.h"
 #include "base/stats.h"
+#include "catalogs/join_catalog.h"
 #include "entities/users.h"
 #include "utils/components.h"
 #include "views/inspect_dataset.h"
@@ -24,9 +24,9 @@ void users_pager(MANAGER manager) {
   int y, x;
   getmaxyx(win, y, x);
 
-  CATALOG catalog = get_catalog(manager);
-  GHashTable *users = get_catalog_users(catalog);
-  GPtrArray *users_reverse_lookup = get_catalog_users_reverse_lookup(catalog);
+  JOIN_CATALOG catalog = get_catalog(manager);
+  USERS_CATALOG users_catalog = get_users_catalog(catalog);
+  GHashTable *users = NULL;
 
   int current_page = 0;
   int users_per_page = y - 5;
@@ -60,8 +60,7 @@ void users_pager(MANAGER manager) {
         USER user = (USER)value;
 
         gpointer username = (gpointer)key;
-        int user_code = GPOINTER_TO_INT(username);
-        char *username_str = g_ptr_array_index(users_reverse_lookup, user_code);
+        char *username_str = get_username_from_code(users_catalog, username);
 
         char *name = get_user_name(user);
 
