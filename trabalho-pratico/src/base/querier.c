@@ -321,6 +321,7 @@ void *query7(JOIN_CATALOG catalog, STATS stats, char **parameter) {
       i++;
     }
   } else {
+    free_query7_result(result);
     return NULL;
   }
 

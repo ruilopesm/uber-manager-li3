@@ -17,7 +17,7 @@ RIDES_CATALOG create_rides_catalog(void) {
 
   new_catalog->rides = g_hash_table_new_full(NULL, g_direct_equal, NULL, free);
   new_catalog->cities_code =
-      g_hash_table_new_full(g_str_hash, g_str_equal, free, NULL);
+      g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
   new_catalog->cities_reverse_lookup = g_ptr_array_new_with_free_func(free);
 
   return new_catalog;
