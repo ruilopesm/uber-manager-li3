@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #include "base/stats.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 #include "entities/drivers.h"
 #include "entities/rides.h"
 #include "entities/users.h"
@@ -176,7 +176,7 @@ void insert_driver_into_stats(STATS stats, DRIVER driver) {
   g_array_append_val(stats->top_drivers_by_average_score, driver);
 }
 
-void insert_ride_into_stats(STATS stats, JOIN_CATALOG catalog, RIDE ride,
+void insert_ride_into_stats(STATS stats, JOINT_CATALOG catalog, RIDE ride,
                             gpointer id, gpointer driver, gpointer user,
                             int city, double score_driver, double price) {
   insert_ride_by_date(ride, stats);
@@ -250,7 +250,7 @@ int get_ride_gender_stats_user_account_creation(RIDE_GENDER_STATS ride) {
   return ride->user_account_creation;
 }
 
-void update_genders_rides_by_age(JOIN_CATALOG catalog, STATS stats,
+void update_genders_rides_by_age(JOINT_CATALOG catalog, STATS stats,
                                  gpointer ride_id, gpointer driver_id,
                                  gpointer username) {
   GArray *male_rides_by_age = get_male_rides_by_age(stats);
@@ -336,7 +336,7 @@ gint compare_users_by_total_distance(gconstpointer a, gconstpointer b,
   int username_code_a = get_user_username(user_a);
   int username_code_b = get_user_username(user_b);
 
-  JOIN_CATALOG catalog = (JOIN_CATALOG)data;
+  JOINT_CATALOG catalog = (JOINT_CATALOG)data;
   USERS_CATALOG users_catalog = get_users_catalog(catalog);
   char *username_a =
       get_username_from_code(users_catalog, GINT_TO_POINTER(username_code_a));

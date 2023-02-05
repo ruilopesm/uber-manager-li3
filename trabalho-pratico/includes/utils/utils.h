@@ -26,9 +26,9 @@ enum car_class { BASIC, GREEN, PREMIUM };
 enum account_status { ACTIVE, INACTIVE };
 
 #include "base/stats.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 
-typedef struct join_catalog *JOIN_CATALOG;  // Forward declaration
+typedef struct joint_catalog *JOINT_CATALOG;  // Forward declaration
 
 typedef struct stats *STATS;  // Forward declaration
 
@@ -52,12 +52,12 @@ typedef enum errors {
 /**
  * @brief Function that setups catalog and stats
  *
- * @param catalog The join catalog of type `JOIN_CATALOG`
+ * @param catalog The join catalog of type `JOINT_CATALOG`
  * @param stats The stats of type `STATS`
  * @param folder The folder of type `char *`
  * @return int 1 if the setup was successful, 0 otherwise
  */
-int setup_catalog_and_stats(JOIN_CATALOG catalog, STATS stats, char *folder);
+int setup_catalog_and_stats(JOINT_CATALOG catalog, STATS stats, char *folder);
 
 /**
  * @brief Function that gets the error as a string

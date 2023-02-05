@@ -9,11 +9,11 @@
 #include <unistd.h>
 
 #include "base/stats.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 #include "entities/rides.h"
 #include "utils/utils.h"
 
-void *querier(JOIN_CATALOG catalog, STATS stats, char *line) {
+void *querier(JOINT_CATALOG catalog, STATS stats, char *line) {
   char **query_parameters = malloc(sizeof(char *) * MAX_INPUT_TOKENS);
 
   // Format of the line: <type> <params...>
@@ -45,7 +45,7 @@ struct query1_result {
   bool is_user;  // true if user, false if driver
 };
 
-void *query1(JOIN_CATALOG catalog, STATS stats, char **parameters) {
+void *query1(JOINT_CATALOG catalog, STATS stats, char **parameters) {
   char *id = parameters[0];
   bool flag = is_number(id);
 
@@ -102,7 +102,7 @@ DRIVER get_query1_result_driver(QUERY1_RESULT result) {
 }
 
 // Does not have a struct result, the result is simply a GArray of DRIVERS
-void *query2(JOIN_CATALOG catalog, STATS stats, char **parameters) {
+void *query2(JOINT_CATALOG catalog, STATS stats, char **parameters) {
   int n = atoi(parameters[0]);
 
   GArray *result = g_array_new(TRUE, TRUE, sizeof(DRIVER));
@@ -137,10 +137,10 @@ void *query2(JOIN_CATALOG catalog, STATS stats, char **parameters) {
 
 struct query3_result {
   GArray *users;
-  JOIN_CATALOG catalog;
+  JOINT_CATALOG catalog;
 };
 
-void *query3(JOIN_CATALOG catalog, STATS stats, char **parameters) {
+void *query3(JOINT_CATALOG catalog, STATS stats, char **parameters) {
   int n = atoi(parameters[0]);
 
   GArray *result = g_array_new(TRUE, TRUE, sizeof(DRIVER));
@@ -176,12 +176,12 @@ void *query3(JOIN_CATALOG catalog, STATS stats, char **parameters) {
 
 GArray *get_query3_result_users(QUERY3_RESULT result) { return result->users; }
 
-JOIN_CATALOG get_query3_result_catalog(QUERY3_RESULT result) {
+JOINT_CATALOG get_query3_result_catalog(QUERY3_RESULT result) {
   return result->catalog;
 }
 
 // Does not have a struct result, the result is simply a string
-void *query4(JOIN_CATALOG catalog, STATS stats, char **parameters) {
+void *query4(JOINT_CATALOG catalog, STATS stats, char **parameters) {
   char *city_string = parameters[0];
 
   char *result = malloc(sizeof(char) * 16);
@@ -209,7 +209,7 @@ void *query4(JOIN_CATALOG catalog, STATS stats, char **parameters) {
 }
 
 // Does not have a struct result, the result is simply a string
-void *query5(JOIN_CATALOG catalog, STATS stats, char **parameters) {
+void *query5(JOINT_CATALOG catalog, STATS stats, char **parameters) {
   int lower_limit = date_string_to_int(parameters[0]);
   int upper_limit = date_string_to_int(parameters[1]);
 
@@ -233,7 +233,7 @@ void *query5(JOIN_CATALOG catalog, STATS stats, char **parameters) {
 }
 
 // Does not have a struct result, the result is simply a string
-void *query6(JOIN_CATALOG catalog, STATS stats, char **parameters) {
+void *query6(JOINT_CATALOG catalog, STATS stats, char **parameters) {
   char *city = parameters[0];
   int lower_limit = date_string_to_int(parameters[1]);
   int upper_limit = date_string_to_int(parameters[2]);
@@ -268,7 +268,7 @@ struct query7_auxiliar {
   double average_score;
 };
 
-void *query7(JOIN_CATALOG catalog, STATS stats, char **parameter) {
+void *query7(JOINT_CATALOG catalog, STATS stats, char **parameter) {
   int n = atoi(parameter[0]);
   char *city = parameter[1];
 
@@ -338,10 +338,10 @@ double get_query7_auxiliar_average_score(QUERY7_AUXILIAR query7_auxiliar) {
 
 struct query8_result {
   GArray *top_rides;
-  JOIN_CATALOG catalog;
+  JOINT_CATALOG catalog;
 };
 
-void *query8(JOIN_CATALOG catalog, STATS stats, char **parameters) {
+void *query8(JOINT_CATALOG catalog, STATS stats, char **parameters) {
   char *gender = parameters[0];
   enum gender given_gender = string_to_gender(gender);
   int age = atoi(parameters[1]);
@@ -412,16 +412,16 @@ GArray *get_query8_result_top_rides(QUERY8_RESULT query8_result) {
   return query8_result->top_rides;
 }
 
-JOIN_CATALOG get_query8_result_catalog(QUERY8_RESULT query8_result) {
+JOINT_CATALOG get_query8_result_catalog(QUERY8_RESULT query8_result) {
   return query8_result->catalog;
 }
 
 struct query9_result {
   GArray *rides_in_range;
-  JOIN_CATALOG catalog;
+  JOINT_CATALOG catalog;
 };
 
-void *query9(JOIN_CATALOG catalog, STATS stats, char **parameters) {
+void *query9(JOINT_CATALOG catalog, STATS stats, char **parameters) {
   int lower_limit = date_string_to_int(parameters[0]);
   int upper_limit = date_string_to_int(parameters[1]);
 
@@ -482,7 +482,7 @@ GArray *get_query9_result_rides_in_range(QUERY9_RESULT query9_result) {
   return query9_result->rides_in_range;
 }
 
-JOIN_CATALOG get_query9_result_catalog(QUERY9_RESULT query9_result) {
+JOINT_CATALOG get_query9_result_catalog(QUERY9_RESULT query9_result) {
   return query9_result->catalog;
 }
 

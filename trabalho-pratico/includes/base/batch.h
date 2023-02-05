@@ -4,7 +4,7 @@
 #include "base/querier.h"
 #include "base/stats.h"
 #include "catalogs/drivers_catalog.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 #include "catalogs/rides_catalog.h"
 #include "catalogs/users_catalog.h"
 #include "io/output.h"

@@ -6,7 +6,7 @@
 
 #include "base/interactive.h"
 #include "base/stats.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 #include "entities/drivers.h"
 #include "utils/components.h"
 #include "utils/utils.h"

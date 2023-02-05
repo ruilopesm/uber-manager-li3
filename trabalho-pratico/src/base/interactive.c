@@ -6,7 +6,7 @@
 
 #include "base/stats.h"
 #include "catalogs/drivers_catalog.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 #include "catalogs/rides_catalog.h"
 #include "catalogs/users_catalog.h"
 #include "views/main_menu.h"
@@ -15,7 +15,7 @@ struct manager {
   enum page current_page;
   char *dataset_path;
   bool is_dataset_loaded;
-  JOIN_CATALOG catalog;
+  JOINT_CATALOG catalog;
   STATS stats;
 };
 
@@ -40,7 +40,7 @@ MANAGER create_manager() {
   DRIVERS_CATALOG drivers_catalog = create_drivers_catalog();
   RIDES_CATALOG rides_catalog = create_rides_catalog();
   manager->catalog =
-      create_join_catalog(users_catalog, drivers_catalog, rides_catalog);
+      create_joint_catalog(users_catalog, drivers_catalog, rides_catalog);
 
   manager->stats = create_stats();
 
@@ -90,7 +90,7 @@ bool get_is_dataset_loaded(MANAGER manager) {
   return manager->is_dataset_loaded;
 }
 
-JOIN_CATALOG get_catalog(MANAGER manager) { return manager->catalog; }
+JOINT_CATALOG get_catalog(MANAGER manager) { return manager->catalog; }
 
 STATS get_stats(MANAGER manager) { return manager->stats; }
 
@@ -102,7 +102,7 @@ void change_page_and_cleanup_window(MANAGER manager, enum page page,
 
 void free_manager(MANAGER manager) {
   free(manager->dataset_path);
-  free_join_catalog(manager->catalog);
+  free_joint_catalog(manager->catalog);
   free_users_catalog(get_users_catalog(manager->catalog));
   free_drivers_catalog(get_drivers_catalog(manager->catalog));
   free_rides_catalog(get_rides_catalog(manager->catalog));

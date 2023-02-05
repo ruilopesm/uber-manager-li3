@@ -5,11 +5,11 @@ int batch(char **argv) {
   USERS_CATALOG users_catalog = create_users_catalog();
   DRIVERS_CATALOG drivers_catalog = create_drivers_catalog();
   RIDES_CATALOG rides_catalog = create_rides_catalog();
-  JOIN_CATALOG join_catalog =
-      create_join_catalog(users_catalog, drivers_catalog, rides_catalog);
+  JOINT_CATALOG joint_catalog =
+      create_joint_catalog(users_catalog, drivers_catalog, rides_catalog);
   STATS stats = create_stats();
 
-  if (setup_catalog_and_stats(join_catalog, stats, argv[1]) == -1) {
+  if (setup_catalog_and_stats(joint_catalog, stats, argv[1]) == -1) {
     return -1;
   }
 
@@ -33,7 +33,7 @@ int batch(char **argv) {
     // Remove \n from the end of line
     line[strlen(line) - 1] = '\0';
 
-    void *result = querier(join_catalog, stats, line);
+    void *result = querier(joint_catalog, stats, line);
 
     FILE *output_file = create_output_file(queries_counter);
     if (output_file == NULL) {
@@ -53,7 +53,7 @@ int batch(char **argv) {
   free_users_catalog(users_catalog);
   free_drivers_catalog(drivers_catalog);
   free_rides_catalog(rides_catalog);
-  free_join_catalog(join_catalog);
+  free_joint_catalog(joint_catalog);
   free_stats(stats);
 
   return 0;

@@ -9,7 +9,7 @@
 #include "entities/users.h"
 #include "io/parser.h"
 
-int setup_catalog_and_stats(JOIN_CATALOG catalog, STATS stats, char *folder) {
+int setup_catalog_and_stats(JOINT_CATALOG catalog, STATS stats, char *folder) {
   char *users_filename = create_filename(folder, "/users.csv");
   FILE *users_file = fopen(users_filename, "r");
   if (users_file == NULL) {

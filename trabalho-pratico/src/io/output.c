@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #include "base/querier.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 #include "utils/components.h"
 #include "views/execute_query.h"
 
@@ -225,7 +225,7 @@ void draw_query2_result(MANAGER manager, WINDOW *win, char *title,
 void write_query3_result(FILE *output_file, void *result) {
   QUERY3_RESULT query_result = (QUERY3_RESULT)result;
   GArray *users = get_query3_result_users(query_result);
-  JOIN_CATALOG catalog = get_query3_result_catalog(query_result);
+  JOINT_CATALOG catalog = get_query3_result_catalog(query_result);
   USERS_CATALOG users_catalog = get_users_catalog(catalog);
 
   for (int i = 0; i < (int)users->len; i++) {
@@ -250,7 +250,7 @@ void draw_query3_result(MANAGER manager, WINDOW *win, char *title,
 
   QUERY3_RESULT query_result = (QUERY3_RESULT)result;
   GArray *users = get_query3_result_users(query_result);
-  JOIN_CATALOG catalog = get_query3_result_catalog(query_result);
+  JOINT_CATALOG catalog = get_query3_result_catalog(query_result);
   USERS_CATALOG users_catalog = get_users_catalog(catalog);
 
   int current_page = 0;
@@ -487,7 +487,7 @@ void draw_query7_result(MANAGER manager, WINDOW *win, char *title,
 void write_query8_result(FILE *output_file, void *result) {
   QUERY8_RESULT query_result = (QUERY8_RESULT)result;
   GArray *rides = get_query8_result_top_rides(query_result);
-  JOIN_CATALOG catalog = get_query8_result_catalog(query_result);
+  JOINT_CATALOG catalog = get_query8_result_catalog(query_result);
   USERS_CATALOG users_catalog = get_users_catalog(catalog);
   DRIVERS_CATALOG drivers_catalog = get_drivers_catalog(catalog);
 
@@ -519,7 +519,7 @@ void draw_query8_result(MANAGER manager, WINDOW *win, char *title,
 
   QUERY8_RESULT query_result = (QUERY8_RESULT)result;
   GArray *rides = get_query8_result_top_rides(query_result);
-  JOIN_CATALOG catalog = get_query8_result_catalog(query_result);
+  JOINT_CATALOG catalog = get_query8_result_catalog(query_result);
   USERS_CATALOG users_catalog = get_users_catalog(catalog);
   DRIVERS_CATALOG drivers_catalog = get_drivers_catalog(catalog);
 
@@ -604,7 +604,7 @@ void draw_query8_result(MANAGER manager, WINDOW *win, char *title,
 void write_query9_result(FILE *output_file, void *result) {
   QUERY9_RESULT query_result = (QUERY9_RESULT)result;
   GArray *rides = get_query9_result_rides_in_range(query_result);
-  JOIN_CATALOG catalog = get_query9_result_catalog(query_result);
+  JOINT_CATALOG catalog = get_query9_result_catalog(query_result);
   RIDES_CATALOG rides_catalog = get_rides_catalog(catalog);
 
   for (int i = rides->len - 1; i >= 0; i--) {
@@ -631,7 +631,7 @@ void draw_query9_result(MANAGER manager, WINDOW *win, char *title,
 
   QUERY9_RESULT query_result = (QUERY9_RESULT)result;
   GArray *rides = get_query9_result_rides_in_range(query_result);
-  JOIN_CATALOG catalog = get_query9_result_catalog(query_result);
+  JOINT_CATALOG catalog = get_query9_result_catalog(query_result);
   RIDES_CATALOG rides_catalog = get_rides_catalog(catalog);
 
   int current_page = 0;

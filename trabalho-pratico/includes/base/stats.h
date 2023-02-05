@@ -3,7 +3,7 @@
 
 #include <glib.h>
 
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 
 /**
  * @struct stats
@@ -12,7 +12,7 @@
  */
 typedef struct stats *STATS;
 
-typedef struct join_catalog *JOIN_CATALOG;  // Forward declaration
+typedef struct joint_catalog *JOINT_CATALOG;  // Forward declaration
 
 typedef struct user *USER;  // Forward declaration
 
@@ -245,7 +245,7 @@ void insert_driver_into_stats(STATS stats, DRIVER driver);
  * @brief Inserts a ride into the stats struct
  *
  * @param stats - The stats of type `STATS`
- * @param catalog - The catalog of type `JOIN_CATALOG`
+ * @param catalog - The catalog of type `JOINT_CATALOG`
  * @param ride - The ride of type `RIDE`
  * @param id - The id of type `gpointer`
  * @param driver - The driver of type `gpointer`
@@ -254,7 +254,7 @@ void insert_driver_into_stats(STATS stats, DRIVER driver);
  * @param score_driver - The score driver of type `double`
  * @param price - The price of type `double`
  */
-void insert_ride_into_stats(STATS stats, JOIN_CATALOG catalog, RIDE ride,
+void insert_ride_into_stats(STATS stats, JOINT_CATALOG catalog, RIDE ride,
                             gpointer id, gpointer driver, gpointer user,
                             int city, double score_driver, double price);
 
@@ -273,13 +273,13 @@ void upsert_city_driver_stats(STATS stats, int city, gpointer driver_id,
 /**
  * @brief Function that update the genders in the __rides_by_age__ struct
  *
- * @param catalog - The catalog of type `JOIN_CATALOG`
+ * @param catalog - The catalog of type `JOINT_CATALOG`
  * @param stats - The stats of type `STATS`
  * @param ride_id - The ride id of type `gpointer`
  * @param driver_id - The driver id of type `gpointer`
  * @param username - The username of type `gpointer`
  */
-void update_genders_rides_by_age(JOIN_CATALOG catalog, STATS stats,
+void update_genders_rides_by_age(JOINT_CATALOG catalog, STATS stats,
                                  gpointer ride_id, gpointer driver_id,
                                  gpointer username);
 

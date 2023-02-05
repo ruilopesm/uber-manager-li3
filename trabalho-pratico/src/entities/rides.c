@@ -6,7 +6,7 @@
 
 #include "base/stats.h"
 #include "catalogs/drivers_catalog.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 #include "catalogs/rides_catalog.h"
 #include "catalogs/users_catalog.h"
 #include "entities/drivers.h"
@@ -38,10 +38,10 @@ void build_ride(char **ride_params, void *catalog, STATS stats) {
   // If the input verification failed, we don't insert the ride
   if (!verify_ride_input(ride_params)) return;
 
-  JOIN_CATALOG join_catalog = (JOIN_CATALOG)catalog;
+  JOINT_CATALOG joint_catalog = (JOINT_CATALOG)catalog;
 
   RIDE ride = create_ride();
-  RIDES_CATALOG rides_catalog = get_rides_catalog(join_catalog);
+  RIDES_CATALOG rides_catalog = get_rides_catalog(joint_catalog);
 
   set_ride_id(ride, ride_params[0]);
   set_ride_date(ride, ride_params[1]);
@@ -52,19 +52,19 @@ void build_ride(char **ride_params, void *catalog, STATS stats) {
   set_ride_score_driver(ride, ride_params[7]);
   set_ride_tip(ride, ride_params[8]);
 
-  USERS_CATALOG users_catalog = get_users_catalog(join_catalog);
+  USERS_CATALOG users_catalog = get_users_catalog(joint_catalog);
   gpointer user_code =
       get_user_code_from_username(users_catalog, ride_params[3]);
   set_ride_user(ride, user_code);
 
-  DRIVERS_CATALOG drivers_catalog = get_drivers_catalog(join_catalog);
+  DRIVERS_CATALOG drivers_catalog = get_drivers_catalog(joint_catalog);
   DRIVER driver = get_driver_by_code(drivers_catalog, ride->driver);
   enum car_class car_class = get_driver_car_class(driver);
   double price = calculate_ride_price(ride->distance, car_class);
   set_ride_price(ride, price);
 
   insert_ride(rides_catalog, ride, ride->id);
-  insert_ride_into_stats(stats, join_catalog, ride, ride->id, ride->driver,
+  insert_ride_into_stats(stats, joint_catalog, ride, ride->id, ride->driver,
                          ride->user, ride->city, ride->score_driver,
                          ride->price);
 

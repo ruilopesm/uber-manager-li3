@@ -5,7 +5,7 @@
 #include "utils/utils.h"
 
 struct query5_test_data {
-  JOIN_CATALOG catalog;
+  JOINT_CATALOG catalog;
   STATS stats;
 };
 

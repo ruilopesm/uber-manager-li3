@@ -62,7 +62,7 @@ void confirm_and_execute(MANAGER manager, WINDOW *win, char *input) {
     if (validate_query(to_check)) {
       free(to_check);
 
-      JOIN_CATALOG catalog = get_catalog(manager);
+      JOINT_CATALOG catalog = get_catalog(manager);
       STATS stats = get_stats(manager);
 
       void *result = querier(catalog, stats, input);

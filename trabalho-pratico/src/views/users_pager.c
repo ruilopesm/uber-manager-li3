@@ -6,7 +6,7 @@
 
 #include "base/interactive.h"
 #include "base/stats.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 #include "entities/users.h"
 #include "utils/components.h"
 #include "views/inspect_dataset.h"
@@ -24,7 +24,7 @@ void users_pager(MANAGER manager) {
   int y, x;
   getmaxyx(win, y, x);
 
-  JOIN_CATALOG catalog = get_catalog(manager);
+  JOINT_CATALOG catalog = get_catalog(manager);
   USERS_CATALOG users_catalog = get_users_catalog(catalog);
   GHashTable *users = NULL;
 

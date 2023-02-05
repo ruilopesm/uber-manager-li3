@@ -5,7 +5,7 @@
 
 #include "base/querier.h"
 #include "base/stats.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 #include "io/output.h"
 #include "queries/query1.test.c"
 #include "queries/query2.test.c"
@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
   USERS_CATALOG users_catalog = create_users_catalog();
   DRIVERS_CATALOG drivers_catalog = create_drivers_catalog();
   RIDES_CATALOG rides_catalog = create_rides_catalog();
-  JOIN_CATALOG join_catalog =
-      create_join_catalog(users_catalog, drivers_catalog, rides_catalog);
+  JOINT_CATALOG join_catalog =
+      create_joint_catalog(users_catalog, drivers_catalog, rides_catalog);
   STATS stats = create_stats();
 
   // Setup dataset

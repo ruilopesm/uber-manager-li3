@@ -5,7 +5,7 @@
 
 #include "base/interactive.h"
 #include "base/stats.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 
 #define LOAD_DATASET_ENTRIES 2
 

@@ -7,7 +7,7 @@
 #define MAX_TIME 0.01
 
 struct query4_test_data {
-  JOIN_CATALOG catalog;
+  JOINT_CATALOG catalog;
   STATS stats;
 };
 

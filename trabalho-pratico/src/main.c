@@ -5,9 +5,8 @@
 #include "utils/utils.h"
 
 int main(int argc, char **argv) {
-  clock_t start, end;
-  double cpu_time_used;
-  start = clock();
+  clock_t start = clock();
+
   if (argc == 3) {
     int ret = batch(argv);
 
@@ -22,9 +21,10 @@ int main(int argc, char **argv) {
     printf("Interactive mode: %s\n", argv[0]);
     return 1;
   }
-  end = clock();
-  cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
-  printf("CPU Time:%f\n", cpu_time_used);
+
+  clock_t end = clock();
+  double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
+  printf("Time spent: %f seconds\n", time_spent);
 
   return 0;
 }

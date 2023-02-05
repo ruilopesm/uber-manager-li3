@@ -9,7 +9,7 @@
 #include <ncurses.h>
 
 #include "base/stats.h"
-#include "catalogs/join_catalog.h"
+#include "catalogs/joint_catalog.h"
 
 /**
  * @struct manager
@@ -119,9 +119,9 @@ bool get_is_dataset_loaded(MANAGER manager);
  *
  * @param manager - The manager struct of type `MANAGER`
  *
- * @return catalog - The catalog of type `JOIN_CATALOG`
+ * @return catalog - The catalog of type `JOINT_CATALOG`
  */
-JOIN_CATALOG get_catalog(MANAGER manager);
+JOINT_CATALOG get_catalog(MANAGER manager);
 
 /**
  * @brief Function that gets the stats in the manager struct
