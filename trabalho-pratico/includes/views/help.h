@@ -5,6 +5,11 @@
 
 #define HELP_ENTRIES 2
 
+/**
+ * @brief Function that draws the help component to a window
+ *
+ * @param manager - The manager of type `MANAGER`
+ */
 void help(MANAGER manager);
 
 #endif

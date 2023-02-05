@@ -1,0 +1,38 @@
+# Doxyfile 1.8.17
+
+# This is a sample configuration file for Doxygen.
+
+# Project information
+PROJECT_NAME           = "Uber.c"
+PROJECT_NUMBER         = "1.0"
+PROJECT_BRIEF          = "This project was developed for the LI3 (Software Labs III) class in the 1st semester of the 2nd year of the Computer Science and Engineering course at University of Minho. It consists of a query maker of 3 main files: drivers.csv, users.csv and rides.csv (just like Uber, the well-known application). Each file contains correlated information that when running the project you're able to obtain in fractions of seconds. All of this stored in memory and without the use of any kind of database."
+
+# Input options
+INPUT                  = includes/entities includes/base includes/io includes/utils includes/views 
+FILE_PATTERNS          = *.c *.h
+
+# Output options
+OUTPUT_DIRECTORY       = doc/
+HTML_OUTPUT            = html/
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+GENERATE_MAN           = NO
+
+# Build options
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = NO 
+EXTRACT_LOCAL_METHODS  = NO
+EXTRACT_ANON_NSPACES   = YES
+
+# Documentation options
+OPTIMIZE_OUTPUT_FOR_C  = YES
+INTERNAL_DOCS          = YES
+WARNINGS               = YES
+WARNINGS_ARE_ERRORS    = YES
+
+# Source code browsing options
+SOURCE_BROWSER         = YES
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES

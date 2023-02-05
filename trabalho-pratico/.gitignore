@@ -60,3 +60,5 @@ Resultados/
 .vscode/
 massif*
 gprof.png
+doc/html
+tests/results

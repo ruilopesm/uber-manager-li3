@@ -169,17 +169,6 @@ int calculate_age(int birth_date) {
   return age;
 }
 
-int is_id_smaller(char *id1, char *id2) {
-  int id1_int = atoi(id1);
-  int id2_int = atoi(id2);
-
-  if (id1_int < id2_int) {
-    return 1;
-  }
-
-  return 0;
-}
-
 bool is_number(char *string) {
   for (unsigned i = 0; i < strlen(string); i++) {
     if (string[i] < '0' || string[i] > '9') {
@@ -208,24 +197,6 @@ char *date_to_string(int date) {
   string[10] = '\0';
 
   return string;
-}
-
-// function that return a duplicate version of the string without spaces and
-// '\n' characters
-char *strip(char *string) {
-  char *stripped = malloc(sizeof(char) * (strlen(string) + 1));
-  int j = 0;
-
-  for (unsigned i = 0; i < strlen(string); i++) {
-    if (string[i] != ' ' && string[i] != '\n' && string[i] != '\r') {
-      stripped[j] = string[i];
-      j++;
-    }
-  }
-
-  stripped[j] = '\0';
-
-  return stripped;
 }
 
 // Moves the date to the next day

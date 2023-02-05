@@ -27,11 +27,11 @@ struct ride {
 };
 
 RIDE create_ride() {
-  RIDE ride = malloc(sizeof(struct ride));
-  ride->id = NULL;
-  ride->driver = NULL;
+  RIDE new_ride = malloc(sizeof(struct ride));
+  new_ride->id = NULL;
+  new_ride->driver = NULL;
 
-  return ride;
+  return new_ride;
 }
 
 void build_ride(char **ride_params, void *catalog, STATS stats) {
@@ -137,6 +137,7 @@ gpointer get_ride_driver(RIDE ride) {
   gpointer driver_copy = ride->driver;
   return driver_copy;
 }
+
 gpointer get_ride_user(RIDE ride) {
   gpointer user_copy = ride->user;
   return user_copy;
