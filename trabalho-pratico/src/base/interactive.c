@@ -67,18 +67,10 @@ char *get_page_as_string(enum page page) {
       return "Main menu";
     case EXECUTE_QUERY:
       return "Execute query";
-    case INSPECT_DATASET:
-      return "Inspect dataset";
     case LOAD_DATASET:
       return "Load dataset";
     case HELP:
       return "Help";
-    case USERS_PAGER:
-      return "Users pager";
-    case DRIVERS_PAGER:
-      return "Drivers pager";
-    case RIDES_PAGER:
-      return "Rides pager";
     default:
       return "Unkonwn page";
   }

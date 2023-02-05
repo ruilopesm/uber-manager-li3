@@ -18,8 +18,8 @@ void main_menu(MANAGER manager) {
   char *title = get_page_as_string(get_current_page(manager));
   WINDOW *win = draw_window(yMax, xMax, 0.85, title);
 
-  char *menu_entries[MAIN_MENU_ENTRIES] = {"Execute query", "Inspect dataset",
-                                           "Load dataset", "Help", "Leave"};
+  char *menu_entries[MAIN_MENU_ENTRIES] = {"Execute query", "Load dataset",
+                                           "Help", "Leave"};
 
   if (get_is_dataset_loaded(manager)) {
     char *dataset_path = get_dataset_path(manager);
@@ -54,33 +54,20 @@ void main_menu(MANAGER manager) {
       break;
     }
 
-    // See dataset
-    case 1: {
-      if (get_is_dataset_loaded(manager)) {
-        change_page_and_cleanup_window(manager, INSPECT_DATASET, win);
-        inspect_dataset(manager);
-      } else {
-        change_page_and_cleanup_window(manager, LOAD_DATASET, win);
-        load_dataset(manager);
-      }
-
-      break;
-    }
-
     // Load dataset
-    case 2:
+    case 1:
       change_page_and_cleanup_window(manager, LOAD_DATASET, win);
       load_dataset(manager);
       break;
 
     // Help
-    case 3:
+    case 2:
       change_page_and_cleanup_window(manager, HELP, win);
       help(manager);
       break;
 
     // Leave
-    case 4:
+    case 3:
       curs_set(1);
       echo();
       delwin(win);

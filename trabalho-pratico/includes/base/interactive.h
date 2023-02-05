@@ -26,12 +26,8 @@ typedef struct manager *MANAGER;
 enum page {
   MAIN_MENU,
   EXECUTE_QUERY,
-  INSPECT_DATASET,
   LOAD_DATASET,
   HELP,
-  USERS_PAGER,
-  DRIVERS_PAGER,
-  RIDES_PAGER,
   RESULTS_PAGER,
 };
 
