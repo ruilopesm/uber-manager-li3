@@ -28,7 +28,7 @@ OBJ_TEST := $(filter-out build/main.o, $(OBJ)) $(SRC_TEST:tests/%.c=build/%.o)
 BUILD_DIR := $(shell mkdir -p build/views build/base build/io build/entities build/utils build/catalogs build/queries)
 INCLUDE_FILES := $(shell find includes/ -name "*.h")
 
-DATASET_TEST_PATH ?= 0
+DATASET_PATH ?= 0
 QUERIES_PATH ?= 0
 
 .SUFFIXES:
