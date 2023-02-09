@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
   printf("\033[0;32m[INFO]\033[0m\n");
   printf("\033[0;32mThis program will run 32 tests for the queries.\033[0m\n");
   printf(
-      "\033[0;32mEvery time a query exceeds 0.1s it will be printed in red "
+      "\033[0;32mEvery time a query exceeds 0.01s it will be printed in red "
       "color.\033[0m\n");
   printf(
       "\033[0;32mIf you want to change the maximum time, change the MAX_TIME "

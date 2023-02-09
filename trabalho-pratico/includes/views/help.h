@@ -3,7 +3,7 @@
 
 #include "base/interactive.h"
 
-#define HELP_ENTRIES 2
+#define HELP_ENTRIES 9
 
 /**
  * @brief Function that draws the help component to a window
