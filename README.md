@@ -1,47 +1,62 @@
-# LI3
+# Uber Manager
 
-This project was developed for the LI3 (Software Labs III) class in the 1st semester of the 2nd year of the Computer Science and Engineering course at University of Minho. <br>
-It consists of a query maker of 3 main files: drivers.csv, users.csv and rides.csv (just like Uber, the well-known application).
-Each file contains correlated information that when running the project you're able to obtain in fractions of seconds. All of this stored in memory and without the use of any kind of database. <br>
+## Software Labs III | Laboratório de Informática III
+## Grade: 18/20 :star:
 
-The project has two main modes:<br>
-- __Batch__: In this mode, the program is run with two arguments, the first one is the path to the folder where the input files are located and the second one corresponds to the path to a text file that contains a list of commands (queries) to be executed. The result of executing each command should be written in an individual file located in the "Resultados" folder of the root of the "trabalho-pratico" folder. The format of the command files and the result files are described in Section 4.<br>
-- __Interactive__: In this mode, the program is run without arguments. In this mode, the group will provide an interactive menu containing all the information (instructions) necessary for the execution of each command (query). Here, each command is interpreted and executed individually, with the respective result displayed in the terminal. It is important to note that the initial phase of user interaction with the program corresponds to the introduction of the path to the folder where the input files are located.<br>
+This project was developed during the first semester of the 2nd year of the Software Engineering degree @ University of Minho.
 
-This project was fully developed in C with the assist of glib2 for most of the data structures used on it.
+The project consisted of recreating a simplified version of the Uber database. It is important to refer that the whole database is stored in memory, so it is not persistent. The main goal of learning how to apply some OOP principles, such as encapsulation and modularity. It was also a good opportunity to learn how to use some data structures, such as Hash Tables and AVL Trees.
 
-## Getting started
+The project has two main modes:
+- __Batch__: In this mode, the program reads a file with a list of commands and executes them. The commands consist of query-like commands, such as "2 10", which stands for "top 10 drivers by average rating".
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+- __Interactive__: In this mode, the program reads the user's input and executes the command. The commands are the same as the batch mode, but the user can input them directly on the terminal. We used ncurses to create a simple interface for the user. You can preview it below:
 
-### Prerequisites
+Main menu
 
-To run this project you'll only need to have [gcc](https://gcc.gnu.org/) and [glib2](https://docs.gtk.org/glib/) installed on your machine.
+![Main menu](.github/assets/main_menu.png)
 
-### Installing
+Query result pagination (the user can navigate through the results using some keyboard shortcuts)
 
-```
-git clone https://github.com/dium-li3/grupo-69
-cd grupo-69
-```
+![Query result pagination](.github/assets/query_result.png)
 
-### Running the project with batch mode
-```
-./programa-principal <path to *.csv files> <path to input file>
-```
+## Installing and running the project
 
-### Running the tests
-For this project some unit test were made to ensure the code written was going smoothly.
-To run them just do as follows:
-```
-make test
+Firstly, you will need to install some dependencies such as [glib2](https://docs.gtk.org/glib/) and [ncurses](https://invisible-island.net/ncurses/).
+
+#### Ubuntu
+```bash
+$ sudo apt-get install libglib2.0-dev libncurses5-dev
 ```
 
-## Project developed by:
+#### Arch Linux
+```bash
+$ sudo pacman -S glib2 ncurses
+```
 
-a100545,Daniel da Silva Pereira,danielsp45 
+#### Fedora
+```bash
+$ sudo dnf install glib2 ncurses
+```
 
-a100764,Duarte Afonso Freitas Ribeiro,DuduWater12 
+#### Cloning the repository
+```bash
+$ git clone git@github.com:RuiL1904/Uber-Manager-LI3.git
+```
 
-a100643,Rui Lopes Martins,RuiL1904 
+#### Compiling
+```bash
+$ cd Uber-Manager-LI3
+$ make
+```
 
+#### Running
+```bash
+$ ./programa-principal <path to *.csv files> <path to input file>
+```
+
+# Developed by:
+
+- [Rui Lopes](https://github.com/RuiL1904)
+- [Daniel Pereira](https://github.com/danielsp45)
+- [Duarte  Ribeiro](https://github.com/DuduWater12)
