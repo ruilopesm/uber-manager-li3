@@ -1,6 +1,6 @@
 # Uber Manager
 
-## Software Labs III | Laboratório de Informática III
+## Software Labs III | Laboratórios de Informática III
 ## Grade: 18/20 :star:
 
 This project was developed during the first semester of the 2nd year of the Software Engineering degree @ University of Minho.
