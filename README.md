@@ -41,7 +41,7 @@ $ sudo dnf install glib2 ncurses
 
 #### Cloning the repository
 ```bash
-$ git clone git@github.com:RuiL1904/Uber-Manager-LI3.git
+$ git clone git@github.com:ruilopesm/Uber-Manager-LI3.git
 ```
 
 #### Compiling
@@ -57,6 +57,6 @@ $ ./programa-principal <path to *.csv files> <path to input file>
 
 # Developed by:
 
-- [Rui Lopes](https://github.com/RuiL1904)
+- [Rui Lopes](https://github.com/ruilopesm)
 - [Daniel Pereira](https://github.com/danielsp45)
 - [Duarte  Ribeiro](https://github.com/DuduWater12)
